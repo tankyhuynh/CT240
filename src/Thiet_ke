@@ -1,0 +1,16 @@
+Đề tài: Webchat
+  - NodeJS: viết api
+  - CRUD
+  - Save db
+
+Công nghệ:
+  - NodeJS/ Express
+  - Angular
+  - Socket IO
+  - MongoDB
+  - CORS
+
+Thiết kế:
+  + Router - Controller - Service - Model
+  + Document
+  + Content-path: /api
