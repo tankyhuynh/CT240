@@ -1,3 +1,14 @@
-<h2>Hello</h2>
 
-
+<div class="container-fluid">
+  <div class="row">
+    <app-header style="width: 100%"></app-header>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-4 menu" *ngIf="isUserAuthenticated">
+      <app-menu-contact [(items)]="itemsInAppComponent">App Menu</app-menu-contact>
+    </div>
+    <div class="col-8 content">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

@@ -4,42 +4,56 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 import { from } from 'rxjs';
 
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { HttpClientModule, HttpClientXsrfModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { HeaderComponent } from './header/header.component';
 
-import { MatInputModule} from "@angular/material/input";
-import {  MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatExpansionModule } from '@angular/material/expansion';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatProgressSpinner, MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+import { AuthInterceptor } from './auth/auth-interceptor';
+import { SearchComponent } from './search/search.component';
+import { MessageComponent } from './message/message.component';
+import { ContactComponent } from './contact/contact.component';
+import { AddFriendComponent } from './add-friend/add-friend.component';
+import { PersonalInformationComponent } from './personal-information/personal-information.component';
+import { ErrInterceptor } from './err-interceptor';
+import { ErrorComponent } from './error/error.component';
+
+import { AngularMaterialModule } from './angular-material.module';
+import { MenuContactComponent } from './menu-contact/menu-contact.component';
+
+import { ContactModule } from './contact/contact.module';
 
 
 
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HeaderComponent,
+    SearchComponent,
+    MessageComponent,
+    AddFriendComponent,
+    PersonalInformationComponent,
+    ErrorComponent,
+    MenuContactComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     ReactiveFormsModule,
+    AngularMaterialModule,
+    FormsModule,
     BrowserAnimationsModule,
-    MatInputModule,
-    MatCardModule,
-    MatButtonModule,
-    MatToolbarModule,
-    MatExpansionModule,
-    MatProgressSpinnerModule,
-    MatPaginatorModule,
     HttpClientModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrInterceptor, multi: true}
+  ],
+  bootstrap: [AppComponent],
+  entryComponents: [ErrorComponent]
 })
 export class AppModule { }

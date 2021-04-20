@@ -1,5 +1,7 @@
-main {
-  margin-top: 1rem;
-  width: 80%;
-  margin: auto;
+.menu {
+  padding: 0.5rem 1rem;
+}
+
+.content {
+  padding: 1rem;
 }
