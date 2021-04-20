@@ -5,6 +5,7 @@ import { AutheService } from './auth/auth.service';
 import { SharingService } from './sharing.service';
 
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -19,11 +20,15 @@ export class AppComponent implements OnInit {
   private itemListenerSub: Subscription;
   @Output() itemsInAppComponent = [['app1', 'url1'], ['app2', 'url2']];
 
+  @Output() menuClass = 'base_class';
+
   constructor(private authService: AutheService, private sharingData: SharingService){};
 
   ngOnInit(){
 
-    this.sharingData.currentMessage.subscribe(newItems => this.itemsInAppComponent = newItems);
+    this.sharingData.currentMenuItems.subscribe(newItems => this.itemsInAppComponent = newItems);
+
+    this.sharingData.currentMenuClass.subscribe(newItems => this.menuClass = newItems);
 
     this.itemsInAppComponent = JSON.parse(localStorage.getItem('menuItems'));
 

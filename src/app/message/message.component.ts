@@ -10,10 +10,14 @@ export class MessageComponent implements OnInit {
 
   imgPath = "http://localhost:3000/images/img.jpg";
 
+  users = ["User 1", "User 2"];
+
+  items: string[][];
+
   constructor(private sharingService: SharingService) {
-    const items = [['msg1', '/message/message1'], ['msg2', '/message/message2']];
-    localStorage.setItem("menuItems", JSON.stringify(items));
-    this.sharingService.changeMessage(items);
+    const items = [['msg1', ''], ['msg2', '']];
+    this.sharingService.changeMenuItems(items);
+    sharingService.changeMenuClass('message');
    }
 
   ngOnInit(): void {

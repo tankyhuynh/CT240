@@ -1,5 +1,6 @@
 
-<app-search></app-search>
+<div [class]="menuClass + '_component'">Menu herererereS</div>
+<!-- <app-search></app-search> -->
 <div *ngIf="isUserAuthenticated" >
   <div *ngFor="let item of items">
 
@@ -12,7 +13,7 @@
           id="add-friends"
           mat-button
           [routerLink]="item[1]"
-          routerLinkActive="mat-accent"
+          routerLinkActive="highlight"
         >
           <i class="fas fa-user-plus"></i> {{ item[0] }}
         </span>
@@ -24,3 +25,16 @@
     <span class="notification__count">25</span>
   </div>
 </div>
+
+
+
+<span
+          *ngIf="isUserAuthenticated"
+          class="tabs-contact__item"
+          id="add-friends"
+          mat-button
+
+          routerLinkActive="highlight"
+        >
+          <i class="fas fa-user-plus"></i>
+</span>

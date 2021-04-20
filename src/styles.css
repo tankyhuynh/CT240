@@ -17,6 +17,22 @@
   font-family: Comfortaa;
 }
 
+.highlight {
+  background-color: var(--color-3) !important;
+}
+
+.base_class {
+  background-color: var(--color-1) !important;
+}
+
+.message_component {
+  background-color: var(--color-2) !important;
+}
+
+.contact_component {
+  background-color: var(--color-3) !important;
+}
+
 body {
   height: 100%;
   margin: 0;

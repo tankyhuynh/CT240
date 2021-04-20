@@ -22,9 +22,12 @@ import { ErrInterceptor } from './err-interceptor';
 import { ErrorComponent } from './error/error.component';
 
 import { AngularMaterialModule } from './angular-material.module';
-import { MenuContactComponent } from './menu-contact/menu-contact.component';
+import { MenuComponent } from './menu/menu.component';
 
 import { ContactModule } from './contact/contact.module';
+import { MenuModule } from './menu/menu.module';
+import { SearchModule } from './search/search.module';
+
 
 
 
@@ -33,12 +36,10 @@ import { ContactModule } from './contact/contact.module';
   declarations: [
     AppComponent,
     HeaderComponent,
-    SearchComponent,
     MessageComponent,
     AddFriendComponent,
     PersonalInformationComponent,
-    ErrorComponent,
-    MenuContactComponent
+    ErrorComponent
   ],
   imports: [
     BrowserModule,
@@ -47,7 +48,9 @@ import { ContactModule } from './contact/contact.module';
     AngularMaterialModule,
     FormsModule,
     BrowserAnimationsModule,
-    HttpClientModule
+    HttpClientModule,
+    MenuModule,
+    SearchModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},

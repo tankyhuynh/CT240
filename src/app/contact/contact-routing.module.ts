@@ -1,9 +1,11 @@
 import { NgModule } from "@angular/core";
 import { Router, RouterModule, Routes } from "@angular/router";
-import { ListAddFriendsComponent } from "../list-add-friends/list-add-friends.component";
-import { ListFriendsComponent } from "../list-friends/list-friends.component";
-import { ListGroupsComponent } from "../list-groups/list-groups.component";
+import { ListAddFriendsComponent } from "./list-add-friends/list-add-friends.component";
+import { ListFriendsComponent } from "./list-friends/list-friends.component";
+import { ListGroupsComponent } from "./list-groups/list-groups.component";
 import { ContactComponent } from "./contact.component";
+
+import { MenuComponent } from '../menu/menu.component';
 
 
 const routes: Routes = [

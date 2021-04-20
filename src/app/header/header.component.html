@@ -1,8 +1,8 @@
+
 <div
   class="row align-items-center justify-content-between header"
   *ngIf="isUserAuthenticated"
 >
-  <!-- <span> <a mat-button routerLink="/">My List Post</a> </span> -->
   <div *ngIf="!isUserAuthenticated">
     <img [src]="imgPath" alt="" />
     <h3>{{ username }}</h3>
@@ -19,53 +19,32 @@
     />
     <h3 *ngIf="isUserAuthenticated">{{ username }}</h3>
   </div>
-  <!-- <app-search></app-search> -->
 
   <div class="col-8">
     <span class="spacer"></span>
-    <ul [ngClass]="{ ul_style_isAuth: isUserAuthenticated }">
-      <!-- <li *ngIf="isUserAuthenticated"> <a mat-button routerLink="/create" routerLinkActive="mat-accent">Create New Post</a> </li> -->
+    <ul [ngClass]="{ ul_style_isAuth: isUserAuthenticated }"  >
+      <span *ngFor="let item of items">
+        <span
+          *ngIf="isUserAuthenticated"
+          class="user__case--item"
+          mat-button
+          [routerLink]="'/' + item[1]"
+          routerLinkActive="highlight"
+          > {{ item[0] }}
+        </span>
+      </span>
 
       <span
-        *ngIf="isUserAuthenticated"
-        class="user__case--item"
-        mat-button
-        routerLink="/message"
-        routerLinkActive="mat-accent"
-        >Tin nhắn
-      </span>
-      <span
-        *ngIf="isUserAuthenticated"
-        class="user__case--item"
-        mat-button
-        routerLink="/contact"
-        routerLinkActive="mat-accent"
-        >Danh bạ
-      </span>
-      <span
-        *ngIf="isUserAuthenticated"
-        class="user__case--item"
-        mat-button
-        routerLink="/add-friend"
-        routerLinkActive="mat-accent"
-        >Thêm bạn
-      </span>
-      <span
-        *ngIf="isUserAuthenticated"
-        class="user__case--item"
-        mat-button
-        routerLink="/personal-information"
-        routerLinkActive="mat-accent"
-        >Chỉnh sửa
-      </span>
-      <span
-        *ngIf="isUserAuthenticated"
         class="user__case--item"
         mat-button
         (click)="onLogout()"
-        >Đăng xuất
-      </span>
+      >Đăng xuất
+  </span>
+
     </ul>
+
+
+
   </div>
 </div>
 
@@ -94,3 +73,5 @@
     >
   </li>
 </div>
+
+

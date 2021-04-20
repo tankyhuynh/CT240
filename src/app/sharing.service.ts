@@ -3,12 +3,19 @@ import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class SharingService {
-  private messageSource = new BehaviorSubject<string[][]>(['Default message']['Default URL']);
-  currentMessage = this.messageSource.asObservable();
+  private menuItemsSource = new BehaviorSubject<string[][]>(['Default message']['Default URL']);
+  currentMenuItems = this.menuItemsSource.asObservable();
+
+  private menuClassSource = new BehaviorSubject<string>("Default Class");
+  currentMenuClass = this.menuClassSource.asObservable();
 
   constructor() { }
 
-  changeMessage(message: string[][]) {
-    this.messageSource.next(message);
+  changeMenuItems(message: string[][]) {
+    this.menuItemsSource.next(message);
+  }
+
+  changeMenuClass(message: string) {
+    this.menuClassSource.next(message);
   }
 }

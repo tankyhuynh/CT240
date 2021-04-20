@@ -5,16 +5,19 @@ import { Subscription } from 'rxjs';
 import { AutheService } from '../auth/auth.service';
 
 @Component({
-  selector: 'app-menu-contact',
-  templateUrl: './menu-contact.component.html',
-  styleUrls: ['./menu-contact.component.css']
+  selector: 'app-menu',
+  templateUrl: './menu.component.html',
+  styleUrls: ['./menu.component.css']
 })
-export class MenuContactComponent implements OnInit {
+export class MenuComponent implements OnInit {
   isUserAuthenticated = false;
   private authListenerSub: Subscription;
 
   @Input() items: string[][];
   @Output() itemsChange: EventEmitter<string[][]> = new EventEmitter();
+
+  @Input() menuClass: string;
+  @Output() menuClassChange: EventEmitter<string> = new EventEmitter();
 
   constructor(private authService: AutheService) {}
 

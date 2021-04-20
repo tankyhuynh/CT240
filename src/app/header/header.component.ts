@@ -16,9 +16,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   username: string;
 
+  items =  [["Tin nhắn", "message"], ["Danh bạ", "contact"], ["Thêm bạn", "add-friend"], ["Chỉnh sửa", "personal-information"]];
+
   imgPath = "http://localhost:3000/images/img.jpg";
 
   constructor(private authService: AutheService, private router: Router, private sharingService: SharingService ){};
+
 
   ngOnInit(){
     this.isUserAuthenticated = this.authService.getIsAuthenticated();
@@ -36,7 +39,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLogout(){
-    this.sharingService.changeMessage([['msg1', '/message/message1'], ['msg2', '/message/message2']]);
+    this.sharingService.changeMenuItems([['msg1', '/message/message1'], ['msg2', '/message/message2']]);
     this.authService.logout();
   }
 
