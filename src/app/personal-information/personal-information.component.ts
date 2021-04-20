@@ -12,6 +12,7 @@ export class PersonalInformationComponent implements OnInit {
     const items = [['Personal Information 1', '/add-friend/func1'], ['Personal Information 2', '/add-friend/func2']];
     localStorage.setItem("menuItems", JSON.stringify(items));
     this.sharingService.changeMenuItems(items);
+    sharingService.changeMenuClass("personal-information");
    }
 
   ngOnInit(): void {

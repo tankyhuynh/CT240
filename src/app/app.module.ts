@@ -22,7 +22,6 @@ import { ErrInterceptor } from './err-interceptor';
 import { ErrorComponent } from './error/error.component';
 
 import { AngularMaterialModule } from './angular-material.module';
-import { MenuComponent } from './menu/menu.component';
 
 import { ContactModule } from './contact/contact.module';
 import { MenuModule } from './menu/menu.module';

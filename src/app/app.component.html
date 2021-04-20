@@ -5,7 +5,7 @@
   </div>
   <div class="row justify-content-center">
     <div class="col-4 menu" *ngIf="isUserAuthenticated">
-      <app-menu [(items)]="itemsInAppComponent" [(menuClass)]="menuClass">App Menu</app-menu>
+      <app-menu class="align_center" [(items)]="itemsInAppComponent" [(menuClass)]="menuClass">App Menu</app-menu>
     </div>
     <div class="col-8 content">
       <router-outlet></router-outlet>

@@ -12,6 +12,7 @@ export class AddFriendComponent implements OnInit {
     const items = [['Addfriend 1', '/add-friend/func1'], ['Addfriend 2', '/add-friend/func2']];
     localStorage.setItem("menuItems", JSON.stringify(items));
     this.sharingService.changeMenuItems(items);
+    sharingService.changeMenuClass("addfriend");
    }
 
   ngOnInit(): void {

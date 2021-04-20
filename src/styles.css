@@ -11,26 +11,41 @@
   /*màu nền tối */
   --color-2: white;
   --color-3: black;
+
+  /* Base color */
+
 }
 
 * {
   font-family: Comfortaa;
 }
 
+.align_center{
+  text-align: center;
+}
+
 .highlight {
   background-color: var(--color-3) !important;
 }
 
-.base_class {
-  background-color: var(--color-1) !important;
+.base_class_component {
+  background-color: brown !important;
 }
 
 .message_component {
-  background-color: var(--color-2) !important;
+  background-color: green !important;
 }
 
 .contact_component {
-  background-color: var(--color-3) !important;
+  background-color: pink !important;
+}
+
+.addfriend_component {
+  background-color: blue !important;
+}
+
+.personal-information_component {
+  background-color: cyan !important;
 }
 
 body {

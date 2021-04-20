@@ -1,13 +1,11 @@
 
-<app-menu [(items)]="items">Menu</app-menu>
-
 <app-search>Search</app-search>
 
-<div class="col" *ngFor="let user of users">
+<div class="col">
   <div class="row chat-box__title align-items-center">
     <img src="{{ imgPath }}" alt="" class="img-fluid chat-box__title--img" />
     <span class="chat-box__title--desc">
-      Tên bạn bè  {{ user }}
+      Tên bạn bè
     </span>
   </div>
   <div class="row chat-box__body">
