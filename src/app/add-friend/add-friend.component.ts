@@ -8,6 +8,8 @@ import { SharingService } from '../sharing.service';
 })
 export class AddFriendComponent implements OnInit {
 
+  imgPath = "http://localhost:3000/images/img.jpg";
+
   constructor(private sharingService: SharingService) {
     const items = [['Addfriend 1', '/add-friend/func1'], ['Addfriend 2', '/add-friend/func2']];
     localStorage.setItem("menuItems", JSON.stringify(items));

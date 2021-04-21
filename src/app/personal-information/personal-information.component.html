@@ -1,6 +1,97 @@
 
+<div class="setting" id="setting-content">
+  <div class="col">
+    <div class="row justify-content-between">
+      <span> <i class="fas fa-cog"></i> Chỉnh sửa thông tin: </span>
+      <span>
+        <i
+          class="fas fa-times"
+          style="font-size: 1.2rem; cursor: pointer"
+        ></i>
+      </span>
+    </div>
+    <div class="row">
+      <span></span>
+    </div>
+    <form action="" method="POST">
+      <div class="row justify-content-center">
+        <input
+          type="text"
+          class="add-friend__input edit-input"
+          placeholder="Họ và tên"
+          name="name"
+          id="edit-name"
+          value="Chương Quân"
+          disabled
+          matInput
+        />
+      </div>
+      <div class="row error" id="edit-name-err"></div>
+      <div class="row justify-content-end">
+        <span class="edit-user__card--icon" id="edit-user">
+          <i class="fas fa-edit"></i> Chỉnh sửa
+        </span>
+        <button
+          class="add-friend__card--icon"
+          id="save-edit-user"
+          style="display: none"
+        >
+          <i class="fas fa-save"></i> Lưu
+        </button>
+      </div>
+    </form>
+    <hr />
+    <div class="row justify-content-between">
+      <span> <i class="fas fa-key"></i> Đổi mật khẩu: </span>
+    </div>
 
-<app-search>Seach</app-search>
+    <form action="">
+      <div class="row justify-content-center align-items-center">
+        <input
+          type="password"
+          class="add-friend__input"
+          placeholder="Mật khẩu cũ"
+          name="password"
+          id="edit-password"
+          matInput
+        />
+      </div>
+      <div class="row error" id="edit-password-err"></div>
 
-<br>
-<p>personal-information works!</p>
+      <div class="row justify-content-center">
+        <input
+          type="password"
+          class="add-friend__input"
+          placeholder="Mật khẩu mới"
+          name="new-password"
+          id="edit-new-password"
+          matInput
+        />
+      </div>
+      <div class="row error" id="edit-new-password-err"></div>
+
+      <div class="row justify-content-center">
+        <input
+          matInput
+          type="password"
+          class="add-friend__input"
+          placeholder="Xác nhận mật khẩu"
+          name="re-password"
+          id="edit-re-password"
+        />
+      </div>
+      <div class="row error" id="edit-re-password-err"></div>
+
+      <div class="row justify-content-end">
+        <button
+          mat-button
+          type="submit"
+          class="add-friend__card--icon"
+          id="save-change-password"
+        >
+          <i class="fas fa-save"></i> Lưu
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
