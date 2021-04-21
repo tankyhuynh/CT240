@@ -1,23 +1,45 @@
-
-<app-search>Search</app-search>
-
-<div class="col">
-  <div class="row justify-content-center">
-    <span class="tabs-contact__item active" id="add-friends">
-      <i class="fas fa-user-plus"></i> Lời mời kết bạn
-    </span>
+<div class="row">
+  <div class="col-4 menu">
+    <app-search>Search</app-search>
+    <div class="col">
+      <div class="row justify-content-center">
+        <span
+          class="tabs-contact__item"
+          id="add-friends"
+          routerLink="/contact/list-add-friends"
+          routerLinkActive="mat-accent"
+        >
+          <i class="fas fa-user-plus"></i> Lời mời kết bạn
+        </span>
+      </div>
+      <div class="row justify-content-center">
+        <span
+          class="tabs-contact__item"
+          id="friends"
+          routerLink="/contact/list-friends"
+          routerLinkActive="mat-accent"
+        >
+          <i class="fas fa-user-friends"></i> Bạn bè
+        </span>
+      </div>
+      <div class="row justify-content-center">
+        <span
+          class="tabs-contact__item"
+          id="group"
+          routerLink="/contact/list-groups"
+          routerLinkActive="mat-accent"
+        >
+          <i class="fas fa-users"></i> Nhóm chat
+        </span>
+      </div>
+    </div>
   </div>
-  <div class="row justify-content-center">
-    <span class="tabs-contact__item" id="friends">
-      <i class="fas fa-user-friends"></i> Bạn bè
-    </span>
-  </div>
-  <div class="row justify-content-center">
-    <span class="tabs-contact__item" id="group">
-      <i class="fas fa-users"></i> Nhóm chat
-    </span>
+  <div class="col-8">
+    <!-- <app-list-add-friend></app-list-add-friend> -->
+    <router-outlet></router-outlet>
   </div>
 </div>
+
 <div class="notification">
   <i class="far fa-comment-dots notification__icon"></i>
   <span class="notification__count">25</span>

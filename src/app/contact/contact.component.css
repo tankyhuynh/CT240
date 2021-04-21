@@ -1,3 +1,11 @@
+.menu {
+  padding: 0.5rem 0;
+}
+
+.content {
+  padding: 1rem !important;
+}
+
 /* Contact */
 
 .tabs-contact__item {
@@ -22,6 +30,8 @@
 .list-contacts__title {
   height: 10%;
   background-color: var(--color-1);
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
 }
 
 .list-contacts__title--text {
@@ -30,11 +40,16 @@
 }
 
 .list-contacts__tbl {
-  max-height: 90vh;
+  height: 74.5vh;
+  max-height: 74vh;
   padding: 0 1rem;
   background-color: var(--color-2);
   border-top: 2px solid var(--color-2);
-  border-bottom: 2px solid var(--color-2);
+  border-bottom: 1px solid var(--color-1);
+  border-left: 1px solid var(--color-1);
+  border-right: 1px solid var(--color-1);
+  border-bottom-left-radius: 15px;
+  border-bottom-right-radius: 15px;
   overflow-y: scroll;
 }
 
@@ -49,7 +64,7 @@
 
 .list-contacts__card {
   display: inline-block;
-  width: 16rem;
+  width: 31%;
   padding: 0.5rem;
   margin: 1rem 0.5rem;
   text-align: center;
@@ -88,6 +103,45 @@
 .card__icon:hover {
   background-color: var(--color-1);
   transition: all 750ms;
+}
+
+/* Notification */
+.notification {
+  position: fixed;
+  display: flex;
+  width: 4rem;
+  height: 4rem;
+  bottom: 2rem;
+  right: 2rem;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-2);
+  border: 1px solid var(--color-1);
+  border-radius: 50%;
+  transition: all 750ms;
+  z-index: 1;
+  cursor: pointer;
+}
+
+.notification:hover {
+  background-color: var(--color-1);
+  border: 1px solid var(--color-2);
+  transition: all 750ms;
+}
+
+.notification__icon {
+  font-size: 1.75rem;
+}
+
+.notification__count {
+  position: fixed;
+  padding: 0.3rem 0.4rem;
+  margin-top: 2.5rem;
+  margin-left: 2.75rem;
+  font-size: 0.75rem;
+  background-color: var(--color-1);
+  border: 1px solid var(--color-2);
+  border-radius: 50%;
 }
 
 /* Tabs Responsive */

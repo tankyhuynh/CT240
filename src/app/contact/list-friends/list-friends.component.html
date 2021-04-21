@@ -1,61 +1,98 @@
-<app-add-friend>Its here</app-add-friend>
-
-<div class="col" id="list-friends">
-  <div class="row list-contacts__title align-items-center">
-    <span class="icon-close" style="display: none">
-      <i class="fas fa-arrow-left"></i>
-    </span>
-    <span class="list-contacts__title--text"> Danh sách bạn bè </span>
-  </div>
-  <div class="row list-contacts__tbl">
+<div class="row">
+  <div class="col-4 menu">
+    <app-search>Search</app-search>
     <div class="col">
-      <div class="row">
-        <div class="list-contacts__card">
-          <div>
-            <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
-          </div>
-          <div class="row justify-content-center">
-            <span class="card__title">
-              Tên bạn bèsdfas sadjf à jshad fjhsa
-            </span>
-          </div>
-          <div>
-            <span class="card__icon"> Nhắn tin </span>
-            <span class="card__icon">
-              <i class="fas fa-ellipsis-h"></i>
-            </span>
-          </div>
-        </div>
-        <div class="list-contacts__card">
-          <div>
-            <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
-          </div>
-          <div class="row justify-content-center">
-            <span class="card__title">
-              Tên bạn bèsdfas sadjf à jshad fjhsa
-            </span>
-          </div>
-          <div>
-            <span class="card__icon"> Nhắn tin </span>
-            <span class="card__icon">
-              <i class="fas fa-ellipsis-h"></i>
-            </span>
-          </div>
-        </div>
-        <div class="list-contacts__card">
-          <div>
-            <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
-          </div>
-          <div class="row justify-content-center">
-            <span class="card__title">
-              Tên bạn bèsdfas sadjf à jshad fjhsa
-            </span>
-          </div>
-          <div>
-            <span class="card__icon"> Nhắn tin </span>
-            <span class="card__icon">
-              <i class="fas fa-ellipsis-h"></i>
-            </span>
+      <div class="row justify-content-center">
+        <span
+          class="tabs-contact__item"
+          id="add-friends"
+          routerLink="/contact/list-add-friends"
+          routerLinkActive="mat-accent"
+        >
+          <i class="fas fa-user-plus"></i> Lời mời kết bạn
+        </span>
+      </div>
+      <div class="row justify-content-center">
+        <span
+          class="tabs-contact__item active"
+          id="friends"
+          routerLink="/contact/list-friends"
+          routerLinkActive="mat-accent"
+        >
+          <i class="fas fa-user-friends"></i> Bạn bè
+        </span>
+      </div>
+      <div class="row justify-content-center">
+        <span
+          class="tabs-contact__item"
+          id="group"
+          routerLink="/contact/list-groups"
+          routerLinkActive="mat-accent"
+        >
+          <i class="fas fa-users"></i> Nhóm chat
+        </span>
+      </div>
+    </div>
+  </div>
+  <div class="col-8 content">
+    <div class="col" id="list-friends">
+      <div class="row list-contacts__title align-items-center">
+        <span class="icon-close" style="display: none">
+          <i class="fas fa-arrow-left"></i>
+        </span>
+        <span class="list-contacts__title--text"> Danh sách bạn bè </span>
+      </div>
+      <div class="row list-contacts__tbl">
+        <div class="col">
+          <div class="row">
+            <div class="list-contacts__card">
+              <div>
+                <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
+              </div>
+              <div class="row justify-content-center">
+                <span class="card__title">
+                  Tên bạn bèsdfas sadjf à jshad fjhsa
+                </span>
+              </div>
+              <div>
+                <span class="card__icon"> Nhắn tin </span>
+                <span class="card__icon">
+                  <i class="fas fa-ellipsis-h"></i>
+                </span>
+              </div>
+            </div>
+            <div class="list-contacts__card">
+              <div>
+                <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
+              </div>
+              <div class="row justify-content-center">
+                <span class="card__title">
+                  Tên bạn bèsdfas sadjf à jshad fjhsa
+                </span>
+              </div>
+              <div>
+                <span class="card__icon"> Nhắn tin </span>
+                <span class="card__icon">
+                  <i class="fas fa-ellipsis-h"></i>
+                </span>
+              </div>
+            </div>
+            <div class="list-contacts__card">
+              <div>
+                <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
+              </div>
+              <div class="row justify-content-center">
+                <span class="card__title">
+                  Tên bạn bèsdfas sadjf à jshad fjhsa
+                </span>
+              </div>
+              <div>
+                <span class="card__icon"> Nhắn tin </span>
+                <span class="card__icon">
+                  <i class="fas fa-ellipsis-h"></i>
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

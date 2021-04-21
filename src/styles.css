@@ -13,14 +13,13 @@
   --color-3: black;
 
   /* Base color */
-
 }
 
 * {
   font-family: Comfortaa;
 }
 
-.align_center{
+.align_center {
   text-align: center;
 }
 
@@ -71,5 +70,3 @@ button:focus,
 span:focus {
   outline: none;
 }
-
-

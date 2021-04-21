@@ -1,3 +1,29 @@
+.menu {
+  padding: 0.5rem 1rem;
+}
+
+.content {
+  padding: 1rem 2rem 0rem 2rem;
+}
+
+/* Tabs list */
+.tabs-list {
+  height: 72.5vh;
+  max-height: 72.5vh;
+  overflow: scroll;
+  margin: 0.5rem -0.5rem;
+  background-color: var(--color-2);
+}
+
+.tabs-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.tabs-list::-webkit-scrollbar-thumb {
+  background-color: var(--color-4);
+  border-radius: 5px;
+}
+
 /* Tabs Item */
 
 .tabs-card__item {
@@ -42,7 +68,6 @@
   font-size: 0.8rem;
   color: var(--color-3);
 }
-
 
 /* Chat Box Title */
 
