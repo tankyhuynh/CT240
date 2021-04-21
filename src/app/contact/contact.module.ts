@@ -9,6 +9,7 @@ import { ContactRoutingModule } from "./contact-routing.module";
 import { ContactComponent } from "./contact.component";
 import { MenuModule } from "../menu/menu.module";
 import { SearchModule } from "../search/search.module";
+import { AddfriendModule } from "../add-friend/add-friend.module";
 
 
 
@@ -25,7 +26,8 @@ import { SearchModule } from "../search/search.module";
     FormsModule,
     ContactRoutingModule,
     MenuModule,
-    SearchModule
+    SearchModule,
+    AddfriendModule
   ]
 })
 export class ContactModule {}

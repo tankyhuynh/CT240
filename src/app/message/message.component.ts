@@ -10,7 +10,7 @@ export class MessageComponent implements OnInit {
 
   imgPath = "http://localhost:3000/images/img.jpg";
 
-  users = ["User 1", "User 2"];
+  users = ["User 1", "User 2", "User 3", "User 4"];
 
   items: string[][];
 

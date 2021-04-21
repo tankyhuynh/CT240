@@ -13,10 +13,8 @@ import { HeaderComponent } from './header/header.component';
 
 
 import { AuthInterceptor } from './auth/auth-interceptor';
-import { SearchComponent } from './search/search.component';
 import { MessageComponent } from './message/message.component';
-import { ContactComponent } from './contact/contact.component';
-import { AddFriendComponent } from './add-friend/add-friend.component';
+;
 import { PersonalInformationComponent } from './personal-information/personal-information.component';
 import { ErrInterceptor } from './err-interceptor';
 import { ErrorComponent } from './error/error.component';
@@ -26,9 +24,7 @@ import { AngularMaterialModule } from './angular-material.module';
 import { ContactModule } from './contact/contact.module';
 import { MenuModule } from './menu/menu.module';
 import { SearchModule } from './search/search.module';
-
-
-
+import { AddfriendModule } from './add-friend/add-friend.module';
 
 
 @NgModule({
@@ -36,7 +32,6 @@ import { SearchModule } from './search/search.module';
     AppComponent,
     HeaderComponent,
     MessageComponent,
-    AddFriendComponent,
     PersonalInformationComponent,
     ErrorComponent
   ],
@@ -49,7 +44,8 @@ import { SearchModule } from './search/search.module';
     BrowserAnimationsModule,
     HttpClientModule,
     MenuModule,
-    SearchModule
+    SearchModule,
+    AddfriendModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},

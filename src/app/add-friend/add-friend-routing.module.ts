@@ -1,10 +1,9 @@
 import { NgModule } from "@angular/core";
 import { Router, RouterModule, Routes } from "@angular/router";
-import { SearchComponent } from "./search.component";
-
+import { AddFriendComponent } from "./add-friend.component";
 
 const routes: Routes = [
-  {path: '', component: SearchComponent}
+  {path: '', component: AddFriendComponent}
 ]
 
 @NgModule({
@@ -13,4 +12,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule]
 })
-export class SearchRoutingModule {}
+export class AddFriendRoutingModule {}

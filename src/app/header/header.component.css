@@ -1,5 +1,5 @@
 .highlight {
-  background-color: blue !important;
+  background-color: var(--color-1) !important;
 }
 
 .bg_color {
