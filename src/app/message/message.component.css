@@ -188,3 +188,41 @@
   background-color: var(--color-1);
   transition: all 750ms;
 }
+
+/* Responsive */
+
+@media only screen and (max-width: 480px) {
+  .content.show {
+    display: inline-block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem;
+  }
+  .content {
+    display: none;
+    transition: all 750ms;
+  }
+
+  .chat-box__body {
+    height: 72.5vh;
+    max-height: 72.5vh;
+  }
+
+  .icon-close {
+    display: inline-block !important;
+    margin-left: 0.75rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 50%;
+    transition: all 750ms;
+    background-color: var(--color-2);
+    cursor: pointer;
+  }
+
+  .icon-close:hover {
+    background-color: var(--color-2);
+    transition: all 750ms;
+  }
+}

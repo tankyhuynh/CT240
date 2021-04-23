@@ -6,6 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['../contact.component.css']
 })
 export class ListFriendsComponent implements OnInit {
+  valShowContactContent = false;
+
 
   imgPath = "http://localhost:3000/images/img.jpg";
 
@@ -14,4 +16,7 @@ export class ListFriendsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  contactContent() {
+    this.valShowContactContent = !this.valShowContactContent;
+  }
 }

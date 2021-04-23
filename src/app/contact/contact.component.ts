@@ -8,6 +8,7 @@ import { SharingService } from '../sharing.service';
   styleUrls: ['./contact.component.css']
 })
 export class ContactComponent implements OnInit {
+  valShowContactContent = false;
 
   imgPath = "http://localhost:3000/images/img.jpg";
 
@@ -18,6 +19,10 @@ export class ContactComponent implements OnInit {
   }
 
   ngOnInit(): void {
+  }
+
+  contactContent() {
+    this.valShowContactContent = !this.valShowContactContent;
   }
 
 }

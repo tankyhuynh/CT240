@@ -1,51 +1,96 @@
-
 <div
   class="row align-items-center justify-content-between header"
   *ngIf="isUserAuthenticated"
 >
-  <div *ngIf="!isUserAuthenticated">
+  <!-- <div *ngIf="!isUserAuthenticated">
     <img [src]="imgPath" alt="" />
     <h3>{{ username }}</h3>
     <app-search></app-search>
-  </div>
+  </div> -->
 
   <!-- Avatar & UserName -->
-  <div class="col-4">
-    <img
-      *ngIf="isUserAuthenticated"
-      [src]="imgPath"
-      alt=""
-      class="img-fluid user__avatar"
-    />
-    <h3 *ngIf="isUserAuthenticated">{{ username }}</h3>
+  <!-- <div class="col-4">
+    <div class="row align-items-center">
+      <img
+        *ngIf="isUserAuthenticated"
+        [src]="imgPath"
+        alt=""
+        class="img-fluid user__avatar"
+      />
+      <span class="user__name" *ngIf="isUserAuthenticated">Chương Quân</span>
+    </div>
   </div>
 
   <div class="col-8">
-    <span class="spacer"></span>
-    <ul [ngClass]="{ ul_style_isAuth: isUserAuthenticated }"  >
-      <span *ngFor="let item of items">
+    <div class="row" [ngClass]="{ ul_style_isAuth: isUserAuthenticated }">
+      <div *ngFor="let item of items">
         <span
           *ngIf="isUserAuthenticated"
           class="user__case--item"
-          mat-button
           [routerLink]="'/' + item[1]"
           routerLinkActive="highlight"
-          > {{ item[0] }}
+        >
+          {{ item[0] }}
         </span>
-      </span>
+      </div>
+      <div>
+        <span
+          *ngIf="isUserAuthenticated"
+          class="user__case--item"
+          (click)="onLogout()"
+        >
+          Đăng xuất
+        </span>
+      </div>
+    </div>
+  </div> -->
+  <nav class="navbar navbar-expand-lg">
+    <span class="navbar-brand">
+      <img
+        *ngIf="isUserAuthenticated"
+        [src]="imgPath"
+        alt=""
+        class="img-fluid user__avatar"
+      />
+      <span class="user__name" *ngIf="isUserAuthenticated">Chương Quân</span>
+    </span>
+    <button
+      class="navbar-toggler"
+      data-toggle="collapse"
+      data-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <i class="fas fa-bars"></i>
+    </button>
 
-      <span
-        class="user__case--item"
-        mat-button
-        (click)="onLogout()"
-      >Đăng xuất
-  </span>
-
-    </ul>
-
-
-
-  </div>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div class="row justify-content-center">
+        <div *ngFor="let item of items">
+          <span
+            *ngIf="isUserAuthenticated"
+            class="user__case--item"
+            [routerLink]="'/' + item[1]"
+            routerLinkActive="highlight"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+          >
+            {{ item[0] }}
+          </span>
+        </div>
+        <div>
+          <span
+            *ngIf="isUserAuthenticated"
+            class="user__case--item"
+            (click)="onLogout()"
+          >
+            Đăng xuất
+          </span>
+        </div>
+      </div>
+    </div>
+  </nav>
 </div>
 
 <div
@@ -55,7 +100,7 @@
 >
   <li *ngIf="!isUserAuthenticated">
     <span
-      class="user__case--item"
+      class="user__case--item log-res"
       mat-button
       routerLink="/auth/login"
       routerLinkActive="mat-accent"
@@ -65,7 +110,7 @@
   </li>
   <li *ngIf="!isUserAuthenticated">
     <span
-      class="user__case--item"
+      class="user__case--item log-res"
       mat-button
       routerLink="/auth/signup"
       routerLinkActive="mat-accent"
@@ -73,5 +118,3 @@
     >
   </li>
 </div>
-
-

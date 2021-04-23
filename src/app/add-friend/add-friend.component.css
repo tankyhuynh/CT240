@@ -1,5 +1,6 @@
 .add-friend {
-  margin: 1rem;
+  width: 32.5rem;
+  margin: 2rem 1rem;
   padding: 2rem 3rem;
   background-color: var(--color-2);
   border: 2px solid var(--color-1);
@@ -54,6 +55,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: center;
   font-size: 1rem;
   color: var(--color-3);
 }
@@ -75,4 +77,26 @@
 .edit-user__card--icon:hover {
   background-color: var(--color-1);
   transition: all 750ms;
+}
+
+/* Responsive */
+
+@media only screen and (max-width: 480px) {
+  .add-friend {
+    padding: 1.5rem 2rem;
+  }
+
+  .add-friend__input {
+    width: 70%;
+  }
+
+  .add-friend__card--title {
+    width: 60vw;
+    max-width: 59.5vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1rem;
+    color: var(--color-3);
+  }
 }

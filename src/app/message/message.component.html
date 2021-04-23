@@ -1,27 +1,12 @@
 <div class="row">
-  <div class="col-4 menu">
+  <div class="col-md-4 col-12 menu">
     <app-search>Search</app-search>
     <div class="row tabs-list">
       <div class="col">
         <div
           class="row tabs-card__item align-items-center"
           *ngFor="let user of users"
-        >
-          <div class="col-md-3 col-4">
-            <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
-          </div>
-          <div class="col-md-9 col-8">
-            <div class="row">
-              <span class="card__title">Tên bạn bè {{ user }}</span>
-            </div>
-            <div class="row">
-              <i class="card__desc"> Tin nhắn mới nhâtshdfjgasjgfsjhbdjb </i>
-            </div>
-          </div>
-        </div>
-        <div
-          class="row tabs-card__item align-items-center"
-          *ngFor="let user of users"
+          (click)="messContent()"
         >
           <div class="col-md-3 col-4">
             <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
@@ -38,8 +23,11 @@
       </div>
     </div>
   </div>
-  <div class="col-8 content">
-    <div class="row chat-box__title align-items-center">
+  <div class="col-md-8 col-12 content" [ngClass]="{ show: valShowMessContent }">
+    <div class="row chat-box__title align-items-center" >
+      <span class="icon-close" style="display: none" (click)="messContent()">
+        <i class="fas fa-arrow-left"></i>
+      </span>
       <img src="{{ imgPath }}" alt="" class="img-fluid chat-box__title--img" />
       <span class="chat-box__title--desc">
         Tên bạn bè hsgfd jhasgfjhsa gfjhsag fjhgsjhfgsajhfgjhsagdfjh

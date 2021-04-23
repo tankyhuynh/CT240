@@ -7,7 +7,7 @@ import { SharingService } from '../sharing.service';
   styleUrls: ['./message.component.css']
 })
 export class MessageComponent implements OnInit {
-
+  valShowMessContent = false;
   imgPath = "http://localhost:3000/images/img.jpg";
 
   users = ["User 1", "User 2", "User 3", "User 4"];
@@ -23,4 +23,7 @@ export class MessageComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  messContent() {
+    this.valShowMessContent = !this.valShowMessContent;
+  }
 }
