@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { AfterViewChecked, ElementRef, ViewChild, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { SharingService } from '../sharing.service';
 
 @Component({
@@ -6,7 +6,8 @@ import { SharingService } from '../sharing.service';
   templateUrl: './message.component.html',
   styleUrls: ['./message.component.css']
 })
-export class MessageComponent implements OnInit {
+export class MessageComponent implements OnInit, AfterViewChecked {
+  @ViewChild('scollMe') private myScrollMeContainer: ElementRef;
   valShowMessContent = false;
   imgPath = "http://localhost:3000/images/img.jpg";
 
@@ -21,7 +22,22 @@ export class MessageComponent implements OnInit {
    }
 
   ngOnInit(): void {
+    this.scrollToBottom();
   }
+
+  ngAfterViewChecked(){
+    this.scrollToBottom();
+  }
+
+  scrollToBottom():void{
+    try {
+      this.myScrollMeContainer.nativeElement.scrollTop = this.myScrollMeContainer.nativeElement.scrollHeight;
+    } catch (error) {
+
+    }
+  }
+
+
 
   messContent() {
     this.valShowMessContent = !this.valShowMessContent;

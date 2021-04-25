@@ -83,6 +83,7 @@
 
 @media only screen and (max-width: 480px) {
   .add-friend {
+    width: 90vw;
     padding: 1.5rem 2rem;
   }
 
