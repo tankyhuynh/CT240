@@ -49,7 +49,7 @@ export class AutheService {
   createUser(fullName: string, mobilePhone: string, password: string) {
     const authData: UserData = {fullName: fullName, mobilePhone: mobilePhone, password: password };
     this.http
-      .post(BACKEND_URL + "/signup", authData)
+      .post(BACKEND_URL + "signup", authData)
       .subscribe(() => {
         this.router.navigate(['/auth/login']);
       }, error => {
