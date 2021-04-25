@@ -12,6 +12,8 @@ import { SharingService } from "../sharing.service";
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isUserAuthenticated = false;
+  menuMobile = false;
+
   private authListenerSub: Subscription;
 
   username: string;
@@ -46,5 +48,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnDestroy(){
     this.authListenerSub.unsubscribe();
   }
-
+  
+  showMenuMobile() {
+    this.menuMobile = true;
+  }
 }

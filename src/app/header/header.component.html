@@ -61,11 +61,43 @@
       aria-controls="navbarSupportedContent"
       aria-expanded="false"
       aria-label="Toggle navigation"
+      (click)="showMenuMobile()"
     >
       <i class="fas fa-bars"></i>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <div
+      class="collapse navbar-collapse"
+      id="navbarSupportedContent"
+      *ngIf="!menuMobile"
+    >
+      <div class="row justify-content-center">
+        <div *ngFor="let item of items">
+          <span
+            *ngIf="isUserAuthenticated"
+            class="user__case--item"
+            [routerLink]="'/' + item[1]"
+            routerLinkActive="highlight"
+          >
+            {{ item[0] }}
+          </span>
+        </div>
+        <div>
+          <span
+            *ngIf="isUserAuthenticated"
+            class="user__case--item"
+            (click)="onLogout()"
+          >
+            Đăng xuất
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="collapse navbar-collapse"
+      id="navbarSupportedContent"
+      *ngIf="menuMobile"
+    >
       <div class="row justify-content-center">
         <div *ngFor="let item of items">
           <span

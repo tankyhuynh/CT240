@@ -60,8 +60,8 @@
 
 .tabs-card__item > div > div > i {
   margin: 0.25rem;
-  width: 100%;
-  max-width: 90%;
+  width: 90%;
+  max-width: 85%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
