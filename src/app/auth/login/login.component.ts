@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (form.invalid) {
       return;
     }
-    this.authSevice.login(form.value.email, form.value.password);
+    this.authSevice.login(form.value.mobilePhone, form.value.password);
   }
 
   ngOnDestroy(){

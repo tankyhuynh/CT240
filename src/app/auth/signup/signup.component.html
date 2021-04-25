@@ -70,21 +70,28 @@
             matInput
             name="fullName"
             ngModel
+            #fullNameInput="ngModel"
             placeholder="Họ và tên"
           />
+          <mat-error *ngIf="fullNameInput.invalid">
+            Content must be greater than 3 digits
+          </mat-error>
         </div>
         <div class="row justify-content-center">
           <input
             class="form-input"
             matInput
             type="text"
-            name="email"
+            name="mobilePhone"
             ngModel
-            #emailInput="ngModel"
+            #mobilePhoneInput="ngModel"
             required
-            email
+            pattern="[0-9 ]{10}"
             placeholder="Số điện thoại"
           />
+          <mat-error *ngIf="mobilePhoneInput.invalid">
+            Mobile must be valid
+          </mat-error>
         </div>
         <div class="row justify-content-center">
           <input
@@ -97,6 +104,9 @@
             required
             placeholder="Mật khẩu"
           />
+          <mat-error *ngIf="passwordInput.invalid">
+            Password must be valid
+          </mat-error>
         </div>
         <div class="row justify-content-center">
           <input
@@ -105,10 +115,13 @@
             type="password"
             name="re-password"
             ngModel
-            #passwordInput="ngModel"
+            #repasswordInput="ngModel"
             required
             placeholder="Xác nhận mật khẩu"
           />
+          <mat-error *ngIf="repasswordInput.invalid">
+            Password must be matched
+          </mat-error>
         </div>
 
         <div class="row justify-content-end">

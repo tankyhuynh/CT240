@@ -8,6 +8,7 @@ import { Subject } from "rxjs";
 import { environment } from '../../environments/environment';
 import { SharingService } from "../sharing.service";
 import { AuthData } from "./auth.model";
+import { UserData } from "./user.model";
 
 const BACKEND_URL = environment.apiUrl + "/users/";
 
@@ -45,8 +46,8 @@ export class AutheService {
 
   constructor(private http: HttpClient, private router: Router){}
 
-  createUser(email: string, password: string, fullName: string, address: string) {
-    const authData: AuthData = { email: email, password: password };
+  createUser(fullName: string, mobilePhone: string, password: string) {
+    const authData: UserData = {fullName: fullName, mobilePhone: mobilePhone, password: password };
     this.http
       .post(BACKEND_URL + "/signup", authData)
       .subscribe(() => {
@@ -57,11 +58,11 @@ export class AutheService {
       });
   }
 
-  login(email: string, password: string){
+  login(mobilePhone: string, password: string){
 
-    const authData: AuthData = {email: email, password: password};
+    const authData: AuthData = {mobilePhone: mobilePhone, password: password};
     this.http
-          .post<{token: string, expiresIn: number, userId: string, email: string}>(BACKEND_URL + "/login", authData)
+          .post<{token: string, expiresIn: number, userId: string, mobilePhone: string}>(BACKEND_URL + "/login", authData)
             .subscribe(response => {
               const token = response.token;
               this.token = token;
@@ -74,7 +75,7 @@ export class AutheService {
                 this.authStatusListener.next(true);
                 const now = new Date();
                 const expirationDate = new Date(now.getTime() + (expiresInDuration * 1000));
-                this.saveDataToLocalStorage(token, expirationDate, response.userId, email);
+                this.saveDataToLocalStorage(token, expirationDate, response.userId, mobilePhone);
                 console.log(expirationDate);
                 this.router.navigate(['/']);
               }
