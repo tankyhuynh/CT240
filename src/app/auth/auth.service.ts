@@ -46,8 +46,8 @@ export class AutheService {
 
   constructor(private http: HttpClient, private router: Router){}
 
-  createUser(fullName: string, mobilePhone: string, password: string) {
-    const authData: UserData = {name: fullName, phone: mobilePhone, password: password };
+  createUser(name: string, phone: string, password: string) {
+    const authData: UserData = {name: name, phone: phone, password: password };
     this.http
       .post(BACKEND_URL + "register", authData)
       .subscribe(() => {
@@ -62,11 +62,14 @@ export class AutheService {
 
     const authData: AuthData = {phone: mobilePhone, password: password};
     this.http
-          .post<{token: string, expiresIn: number, userId: string, mobilePhone: string}>(BACKEND_URL + "/login", authData)
+          .post<{token: string, expiresIn: number, userId: string, phone: string}>(BACKEND_URL + "login", authData)
             .subscribe(response => {
+              console.log("Success");
               const token = response.token;
+              console.log(response);
               this.token = token;
               if ( token ) {
+                console.log("In iff");
                 const expiresInDuration =  response.expiresIn;
                 this.setAuthTimer(expiresInDuration);
                 this.isAuthenticated = true;
@@ -77,9 +80,11 @@ export class AutheService {
                 const expirationDate = new Date(now.getTime() + (expiresInDuration * 1000));
                 this.saveDataToLocalStorage(token, expirationDate, response.userId, mobilePhone);
                 console.log(expirationDate);
+                console.log(".......");
                 this.router.navigate(['/']);
               }
             }, err => {
+              console.log("Errrr");
               this.router.navigate(['/auth/login']);
             });
   }

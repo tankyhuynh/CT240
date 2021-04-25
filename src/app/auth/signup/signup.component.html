@@ -46,7 +46,7 @@
             placeholder="Mật khẩu"
           />
           <mat-error *ngIf="form.get('password').invalid">
-            Mật khẩu không hợp lý
+            Mật khẩu không hợp lệ
           </mat-error>
         </div>
         <div class="row justify-content-center">
@@ -54,7 +54,8 @@
             class="form-input"
             matInput
             type="password"
-            name="re-password"
+            name="repassword"
+            formControlName="repassword"
             placeholder="Xác nhận mật khẩu"
           />
           <!-- <mat-error>

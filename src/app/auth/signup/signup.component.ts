@@ -2,7 +2,9 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { repeatWhen } from 'rxjs/operators';
 import { AutheService } from '../auth.service';
+
 
 @Component({
   selector: 'app-signup',
@@ -31,20 +33,23 @@ export class SignupComponent implements OnInit, OnDestroy {
       validators: [Validators.required]}),
     'password': new FormControl(null, {
       validators: [Validators.required]
-    })
-
+    }),
+    'repassword': new FormControl(null, {
+      validators: [Validators.required]
+    }),
   });
   }
 
+
   onSignup(){
-    // if(this.form.invalid){
-    //   console.log("Invalid form !!!!");
-    //   return;
-    // }
-    // if(this.form.value.password !== this.form.value.repassword){
-    //   console.log("Password not matched !!!!");
-    //   return ;
-    // }
+    if(this.form.invalid){
+      console.log("Invalid form !!!!");
+      return;
+    }
+    if(this.form.value.password !== this.form.value.repassword){
+      console.log("Password not mat ched !!!!");
+      return ;
+    }
     this.authService
           .createUser(this.form.value.name, this.form.value.phone, this.form.value.password);
 
