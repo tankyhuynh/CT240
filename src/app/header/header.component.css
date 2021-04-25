@@ -8,7 +8,7 @@
 
 .header {
   margin: 0 !important;
-  padding: 0rem 2rem;
+  padding: 0rem 1rem;
   width: 100%;
   height: 12.5vh;
   background-color: var(--color-1);
@@ -59,12 +59,17 @@
 }
 
 /* Set Boostrap */
+.navbar {
+  width: 100vw;
+  padding: 0 !important;
+}
 .navbar-brand {
-  width: 17.5rem;
+  width: 22.5vw;
 }
 
 .navbar-collapse {
-  margin-left: 10rem;
+  width: 72.5vw;
+  padding-left: 10.75rem;
 }
 
 /* Responsive */

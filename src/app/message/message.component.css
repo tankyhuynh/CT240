@@ -46,8 +46,8 @@
 }
 
 .tabs-card__item > div > img {
-  width: 4rem;
-  height: 4rem;
+  width: 4vw;
+  height: 4vw ;
   object-fit: cover;
   border-radius: 50%;
 }
