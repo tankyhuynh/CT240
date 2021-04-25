@@ -1,66 +1,13 @@
 <mat-spinner *ngIf="isLoading"></mat-spinner>
 
-<!-- <form (submit)="onSignup(signupForm)" #signupForm="ngForm" *ngIf="!isLoading">
-  <mat-card>
-    <mat-form-field>
-      <input
-        matInput
-        type="text"
-        name="email"
-        ngModel
-        #emailInput="ngModel"
-        required
-        email
-        placeholder="Your email"
-      />
-      <mat-error *ngIf="emailInput.invalid"
-        >Please input your Email address</mat-error
-      >
-    </mat-form-field>
 
-    <mat-form-field>
-      <input
-        type="text"
-        matInput
-        name="fullName"
-        ngModel
-        placeholder="Your full name"
-      />
-    </mat-form-field>
 
-    <mat-form-field>
-      <input
-        type="text"
-        matInput
-        name="address"
-        ngModel
-        placeholder="Your address"
-      />
-    </mat-form-field>
-
-    <mat-form-field>
-      <input
-        matInput
-        type="password"
-        name="password"
-        ngModel
-        #passwordInput="ngModel"
-        required
-        placeholder="Your password"
-      />
-      <mat-error *ngIf="passwordInput.invalid"
-        >Content must be greater than 3 digits</mat-error
-      >
-    </mat-form-field>
-    <button mat-raised-button color="accent" type="submit">Signup</button>
-  </mat-card>
-</form> -->
 <div class="container-fluid">
   <div class="row justify-content-center">
     <div class="form-log-res">
       <form
-        (submit)="onSignup(signupForm)"
-        #signupForm="ngForm"
+        [formGroup]="form"
+        (submit)="onSignup()"
         *ngIf="!isLoading"
       >
         <div class="row justify-content-center">
@@ -68,13 +15,12 @@
             class="form-input"
             type="text"
             matInput
-            name="fullName"
-            ngModel
-            #fullNameInput="ngModel"
+            name="name"
+            formControlName="name"
             placeholder="Họ và tên"
           />
-          <mat-error *ngIf="fullNameInput.invalid">
-            Content must be greater than 3 digits
+          <mat-error *ngIf="form.get('name').invalid">
+            Họ và tên có độ dài tối thiểu 3 kí tự
           </mat-error>
         </div>
         <div class="row justify-content-center">
@@ -82,15 +28,12 @@
             class="form-input"
             matInput
             type="text"
-            name="mobilePhone"
-            ngModel
-            #mobilePhoneInput="ngModel"
-            required
-            pattern="[0-9 ]{10}"
+            name="phone"
+            formControlName="phone"
             placeholder="Số điện thoại"
           />
-          <mat-error *ngIf="mobilePhoneInput.invalid">
-            Mobile must be valid
+          <mat-error *ngIf="form.get('phone').invalid">
+            Số điện thoại gồm 10 chữ số
           </mat-error>
         </div>
         <div class="row justify-content-center">
@@ -99,13 +42,11 @@
             matInput
             type="password"
             name="password"
-            ngModel
-            #passwordInput="ngModel"
-            required
+            formControlName="password"
             placeholder="Mật khẩu"
           />
-          <mat-error *ngIf="passwordInput.invalid">
-            Password must be valid
+          <mat-error *ngIf="form.get('password').invalid">
+            Mật khẩu không hợp lý
           </mat-error>
         </div>
         <div class="row justify-content-center">
@@ -114,14 +55,11 @@
             matInput
             type="password"
             name="re-password"
-            ngModel
-            #repasswordInput="ngModel"
-            required
             placeholder="Xác nhận mật khẩu"
           />
-          <mat-error *ngIf="repasswordInput.invalid">
-            Password must be matched
-          </mat-error>
+          <!-- <mat-error>
+            Mật khẩu không khớp
+          </mat-error> -->
         </div>
 
         <div class="row justify-content-end">

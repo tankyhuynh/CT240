@@ -47,9 +47,9 @@ export class AutheService {
   constructor(private http: HttpClient, private router: Router){}
 
   createUser(fullName: string, mobilePhone: string, password: string) {
-    const authData: UserData = {fullName: fullName, mobilePhone: mobilePhone, password: password };
+    const authData: UserData = {name: fullName, phone: mobilePhone, password: password };
     this.http
-      .post(BACKEND_URL + "signup", authData)
+      .post(BACKEND_URL + "register", authData)
       .subscribe(() => {
         this.router.navigate(['/auth/login']);
       }, error => {
@@ -60,7 +60,7 @@ export class AutheService {
 
   login(mobilePhone: string, password: string){
 
-    const authData: AuthData = {mobilePhone: mobilePhone, password: password};
+    const authData: AuthData = {phone: mobilePhone, password: password};
     this.http
           .post<{token: string, expiresIn: number, userId: string, mobilePhone: string}>(BACKEND_URL + "/login", authData)
             .subscribe(response => {

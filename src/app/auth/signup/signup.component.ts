@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AutheService } from '../auth.service';
@@ -14,6 +14,8 @@ export class SignupComponent implements OnInit, OnDestroy {
   isLoading = false;
   private authStatusSub: Subscription;
 
+  form: FormGroup;
+
   constructor(public authService: AutheService) { }
 
   ngOnInit(): void {
@@ -21,15 +23,30 @@ export class SignupComponent implements OnInit, OnDestroy {
           .subscribe(authStatus => {
 
           });
+
+  this.form = new FormGroup({
+    'name': new FormControl(null, {
+      validators: [Validators.required, Validators.minLength(3)]}),
+    'phone': new FormControl(null, {
+      validators: [Validators.required]}),
+    'password': new FormControl(null, {
+      validators: [Validators.required]
+    })
+
+  });
   }
 
-  onSignup(form: NgForm){
-    if(form.invalid){
-      console.log("Invalid form !!!!");
-      return;
-    }
+  onSignup(){
+    // if(this.form.invalid){
+    //   console.log("Invalid form !!!!");
+    //   return;
+    // }
+    // if(this.form.value.password !== this.form.value.repassword){
+    //   console.log("Password not matched !!!!");
+    //   return ;
+    // }
     this.authService
-          .createUser(form.value.fullName, form.value.mobilePhone, form.value.password);
+          .createUser(this.form.value.name, this.form.value.phone, this.form.value.password);
 
   }
 

@@ -1,5 +1,5 @@
 export interface UserData {
-  fullName: string,
-  mobilePhone: string,
+  name: string,
+  phone: string,
   password: string
 }

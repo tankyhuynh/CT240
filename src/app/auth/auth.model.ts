@@ -1,4 +1,4 @@
 export interface AuthData {
-  mobilePhone: string,
+  phone: string,
   password: string
 }

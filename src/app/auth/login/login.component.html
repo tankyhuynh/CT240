@@ -1,11 +1,10 @@
 <mat-spinner *ngIf="isLoading"></mat-spinner>
-
 <div class="container-fluid">
   <div class="row justify-content-center">
     <div class="form-log-res">
       <form
-        (submit)="onLogin(loginForm)"
-        #loginForm="ngForm"
+        [formGroup]="form"
+        (submit)="onLogin()"
         *ngIf="!isLoading"
       >
         <div class="row justify-content-center">
@@ -14,9 +13,7 @@
             matInput
             type="text"
             name="mobilePhone"
-            ngModel
-            #mobilePhoneInput="ngModel"
-            required
+            formControlName="phone"
             placeholder="Số điện thoại"
           />
         </div>
@@ -26,9 +23,7 @@
             matInput
             type="password"
             name="password"
-            ngModel
-            #passwordInput="ngModel"
-            required
+            formControlName="password"
             placeholder="Mật khẩu"
           />
         </div>
