@@ -15,6 +15,9 @@ var accountSchema = new mongoose.Schema({
     password:{
         type: String,
         require: true,
+    },
+    socket: {
+        type: String
     }
 });
 

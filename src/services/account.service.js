@@ -1,3 +1,7 @@
+/*
+    Checked
+*/
+
 const AccountModel = require('../models/account.models');
 const bcrypt = require('bcrypt');
 
@@ -13,7 +17,8 @@ async function create(phone, password){
         password = await bcrypt.hash(password, 1);
         account = new AccountModel({phone,password});
         account.save();
-    } catch { 
+    } catch {
+        console.warn("Create account error!");
         return null;
     }
     return pack(account);
@@ -24,18 +29,30 @@ async function getWithPhone(phone){
     if(!account) return null;
     return pack(account)
 }
-async function passwordChecker(phone, password){
+async function getIdWithCheck(phone, password){
     let account = null;
     try {
         account = await AccountModel.findOne({phone}).lean();
     } catch {}
-    if(!account) return false;
+    if(!account) return undefined;
     const checkResult = await bcrypt.compare(password, account.password);
-    return checkResult;
+    if(!checkResult) return undefined;
+    return pack(account);
 }
+async function setPassword(_id, password){
+    password = await bcrypt.hash(password, 1);
+    try {
+        await AccountModel.updateOne({_id}, {password});
+    } catch {
+        return false
+    }
+    return true;
+}
+
 
 module.exports = {
     create,
     getWithPhone,
-    passwordChecker
+    getIdWithCheck,
+    setPassword
 }

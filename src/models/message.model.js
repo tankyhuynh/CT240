@@ -6,6 +6,10 @@ var messageSchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: "Profile"
     },
+    room: {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Room"
+    },
     data: {
         type: {},
         require: true

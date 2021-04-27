@@ -1,20 +1,42 @@
+// check
 const RequestModel = require('../models/request.model');
+const FriendService = require('./friend.service');
 
 async function create(sender, receiver, introduce){
-    const request = await RequestModel({sender, receiver, introduce});
-    await request.save();
+    if(await FriendService.isFriend(sender, receiver)) return null;
+
+    let request = await RequestModel.findOne({sender, receiver}).lean();
+    if(!request){
+        request = new RequestModel({sender, receiver, introduce});
+        await request.save();
+    } 
+    return request;
+}
+
+async function getWithId(_id, actor){
+    const request = await RequestModel.findOne({_id, $or: [{sender: actor}, {receiver: actor}]}).lean();
     return request;
 }
 async function getSended(sender){
-    const request = await RequestModel.find({sender});
-    return request;
+    const requests = await RequestModel.find({sender});
+    return requests;
 }
 async function getReceived(receiver){
-    const request = await RequestModel.find({sender});
-    return request;
+    const requests = await RequestModel.find({receiver});
+    return requests;
 }
-async function removeWithId(_id){
-    await RequestModel.deleteOne({_id});
+async function removeWithId(_id, actor){
+    // only sender can remove
+    await RequestModel.deleteOne({_id, sender: actor});
+    return true;
+}
+async function replyRequest(_id, accept, receiver){
+    // only receiver can reply
+    const request = await RequestModel.findOneAndDelete({_id, receiver});
+    if(!request) return false;
+    if(accept=='true' || accept ) {
+        await FriendService.create(request.sender, request.receiver);
+    }
     return true;
 }
 
@@ -23,5 +45,7 @@ module.exports = {
     create,
     getSended,
     getReceived,
-    removeWithId
+    getWithId,
+    removeWithId,
+    replyRequest
 }

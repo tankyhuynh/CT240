@@ -23,7 +23,11 @@ var roomSchema = new mongoose.Schema({
         type: Date,
         require: true,
         default: Date.now
-    }
+    },
+    admin: [{
+        type: mongoose.SchemaTypes.ObjectId,
+    }]
+
 });
 
 //Export the model
