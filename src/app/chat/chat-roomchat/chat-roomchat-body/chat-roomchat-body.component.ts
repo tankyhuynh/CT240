@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
+import { ChatRoomModel } from '../chatroom.model'
+
 @Component({
   selector: 'app-chat-roomchat-body',
   templateUrl: './chat-roomchat-body.component.html',
@@ -7,16 +9,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ChatRoomchatBodyComponent implements OnInit {
 
-  @Input() chatroom: {
-    receive: {
-      content: string,
-      time: string
-    },
-    send: {
-      content: string,
-      time: string
-    }
-  };
+  @Input() chatroom: ChatRoomModel;
 
   constructor() { }
 

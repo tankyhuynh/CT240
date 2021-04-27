@@ -1,5 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 
+import { ChatRoomModel } from './chatroom.model'
+
 @Component({
   selector: 'app-chat-roomchat',
   templateUrl: './chat-roomchat.component.html',
@@ -10,7 +12,7 @@ export class ChatRoomchatComponent implements OnInit {
   imgPath = "http://localhost:3000/images/img.jpg";
   @Input() username: string;
 
-  @Input() chatroom: {};
+  @Input() chatroom: ChatRoomModel ;
 
 
   constructor() { }
