@@ -1,0 +1,25 @@
+/* Chat Box Title */
+
+.chat-box__title {
+  height: 12.5vh;
+  background-color: var(--color-1);
+  border-bottom: 2px solid var(--color-2);
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+}
+
+.chat-box__title--img {
+  margin: 0 1rem;
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--color-2);
+}
+
+.chat-box__title--desc {
+  max-width: 10rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,29 @@
+<div #scrollMe class="row chat-box__body">
+  <div class="col">
+    <div class="row">
+      <div class="mess mess-left">
+        <span>
+          {{ chatroom.receive.content }}
+        </span>
+      </div>
+      <div class="mess-sender">
+        <span>
+          {{ chatroom.receive.time }}
+        </span>
+      </div>
+    </div>
+    <div class="row justify-content-end">
+      <div class="mess mess-right">
+        <span>
+          {{ chatroom.send.content }}
+        </span>
+      </div>
+      <div class="mess-sender" style="text-align: end">
+        <span>
+          {{ chatroom.send.time }}
+        </span>
+      </div>
+    </div>
+
+  </div>
+</div>

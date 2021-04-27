@@ -13,7 +13,7 @@ import { HeaderComponent } from './header/header.component';
 
 
 import { AuthInterceptor } from './auth/auth-interceptor';
-import { MessageComponent } from './message/message.component';
+import { ChatComponent } from './chat/chat.component';
 ;
 import { PersonalInformationComponent } from './personal-information/personal-information.component';
 import { ErrInterceptor } from './err-interceptor';
@@ -21,7 +21,6 @@ import { ErrorComponent } from './error/error.component';
 
 import { AngularMaterialModule } from './angular-material.module';
 
-import { ContactModule } from './contact/contact.module';
 import { MenuModule } from './menu/menu.module';
 import { SearchModule } from './search/search.module';
 import { AddfriendModule } from './add-friend/add-friend.module';
@@ -32,7 +31,6 @@ import { AddGroupComponent } from './add-group/add-group.component';
   declarations: [
     AppComponent,
     HeaderComponent,
-    MessageComponent,
     PersonalInformationComponent,
     ErrorComponent,
     AddGroupComponent

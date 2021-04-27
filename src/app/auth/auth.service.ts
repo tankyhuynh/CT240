@@ -98,7 +98,7 @@ export class AutheService {
     this.clearLocalStorage();
     // this.email = null;
     this.router.navigate(['/auth/login']);
-    // this.sharingService.changeMessage([['msg1', '/message/message1'], ['msg2', '/message/message2']]);
+    // this.sharingService.changeMessage([['msg1', '/chat/chat1'], ['msg2', '/chat/chat2']]);
   }
 
   private saveDataToLocalStorage(token: string, expiration: Date, userId: string, email: string){

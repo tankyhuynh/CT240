@@ -18,7 +18,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   username: string;
 
-  items =  [["Tin nhắn", "message"], ["Danh bạ", "contact"], ["Thêm bạn", "add-friend"], ["Chỉnh sửa", "personal-information"]];
+  items =  [["Tin nhắn", "chat"], ["Danh bạ", "contact"], ["Thêm bạn", "add-friend"], ["Chỉnh sửa", "personal-information"]];
 
   imgPath = "http://localhost:3000/images/img.jpg";
 
@@ -41,14 +41,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   onLogout(){
-    this.sharingService.changeMenuItems([['msg1', '/message/message1'], ['msg2', '/message/message2']]);
+    this.sharingService.changeMenuItems([['msg1', '/chat/chat1'], ['msg2', '/chat/chat2']]);
     this.authService.logout();
   }
 
   ngOnDestroy(){
     this.authListenerSub.unsubscribe();
   }
-  
+
   showMenuMobile() {
     this.menuMobile = true;
   }

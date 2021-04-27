@@ -6,16 +6,16 @@ import { AppComponent } from './app.component';
 import { AuthGuard } from './auth/auth.guard';
 import { ContactComponent } from './contact/contact.component';
 import { MenuComponent } from './menu/menu.component';
-import { MessageComponent } from './message/message.component';
+import { ChatComponent } from './chat/chat.component';
 import { PersonalInformationComponent } from './personal-information/personal-information.component';
 
 
-
 const routes: Routes = [
-  {path: '', component: MessageComponent},
+  {path: '', component: ChatComponent},
   {path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)},
   {path: 'menu', component: MenuComponent},
-  {path: 'message', component: MessageComponent},
+  {path: 'chat', loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule)},
+  {path: 'chat/:username', component: ChatComponent},
   {path: 'contact', loadChildren: () => import('./contact/contact.module').then(m => m.ContactModule)},
   {path: 'add-friend', component: AddFriendComponent},
   {path: 'add-group', component: AddGroupComponent},
