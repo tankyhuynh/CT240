@@ -23,3 +23,20 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+@media only screen and (max-width: 480px) {
+  .icon-close {
+    display: inline-block !important;
+    margin-left: 0.75rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 50%;
+    transition: all 750ms;
+    background-color: var(--color-2);
+    cursor: pointer;
+  }
+
+  .icon-close:hover {
+    background-color: var(--color-2);
+    transition: all 750ms;
+  }
+}

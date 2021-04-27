@@ -1,24 +1,23 @@
-
-  <app-search>Search</app-search>
-  <div class="row tabs-list">
-    <div class="col">
-      <div
-        class="row tabs-card__item align-items-center"
-        *ngFor="let user of users"
-        [routerLink]="['/chat', user]"
-      >
-        <div class="col-md-3 col-4">
-          <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
+<app-search>Search</app-search>
+<div class="row tabs-list">
+  <div class="col">
+    <div
+      class="row tabs-card__item align-items-center"
+      *ngFor="let user of users"
+      [routerLink]="['/chat', user]"
+      (click)="onClickShowContent()"
+    >
+      <div class="col-md-3 col-4">
+        <img src="{{ imgPath }}" alt="" class="img-fluid card__img" />
+      </div>
+      <div class="col-md-9 col-8">
+        <div class="row">
+          <span class="card__title">Tên bạn bè {{ user }}</span>
         </div>
-        <div class="col-md-9 col-8">
-          <div class="row">
-            <span class="card__title">Tên bạn bè {{ user }}</span>
-          </div>
-          <div class="row">
-            <i class="card__desc"> Tin nhắn mới nhâtshdfjgasjgfsjhbdjb </i>
-          </div>
+        <div class="row">
+          <i class="card__desc"> Tin nhắn mới nhâtshdfjgasjgfsjhbdjb </i>
         </div>
       </div>
     </div>
   </div>
-
+</div>

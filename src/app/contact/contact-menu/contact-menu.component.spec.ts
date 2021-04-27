@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ListGroupsComponent } from './list-groups.component';
+import { ContactMenuComponent } from './contact-menu.component';
 
-describe('ListGroupsComponent', () => {
-  let component: ListGroupsComponent;
-  let fixture: ComponentFixture<ListGroupsComponent>;
+describe('ContactMenuComponent', () => {
+  let component: ContactMenuComponent;
+  let fixture: ComponentFixture<ContactMenuComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ListGroupsComponent ]
+      declarations: [ ContactMenuComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ListGroupsComponent);
+    fixture = TestBed.createComponent(ContactMenuComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

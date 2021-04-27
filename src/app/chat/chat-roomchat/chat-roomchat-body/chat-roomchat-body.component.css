@@ -47,3 +47,10 @@
   background-color: var(--color-4);
   box-shadow: 2px 2px 5px 0px var(--color-1);
 }
+
+@media only screen and (max-width: 480px) {
+  .chat-box__body {
+    height: 72.5vh;
+    max-height: 72.5vh;
+  }
+}

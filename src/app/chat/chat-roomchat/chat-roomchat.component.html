@@ -1,10 +1,10 @@
-
+<div class="content" [ngClass]="{ show: valShowMessContent }">
   <!-- ChatRoom Header -->
   <app-chat-roomchat-header [username]="username"></app-chat-roomchat-header>
   <!-- end ChatRoom Header -->
 
   <!-- ChatRoom Body -->
-  <app-chat-roomchat-body [chatroom]="chatroom" ></app-chat-roomchat-body>
+  <app-chat-roomchat-body [chatroom]="chatroom"></app-chat-roomchat-body>
   <!-- end ChatRoom Body -->
 
   <div class="row chat-box__send align-items-center">
@@ -30,4 +30,4 @@
       </div>
     </div>
   </div>
-
+</div>

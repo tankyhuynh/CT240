@@ -1,0 +1,59 @@
+<!-- <app-search>Search</app-search> -->
+<div class="col">
+  <div class="row justify-content-center">
+    <span
+      class="tabs-contact__item"
+      id="add-friends"
+      routerLink="/contact/content/list-add-friend"
+      routerLinkActive="mat-accent"
+      (click)="onClickHideContent()"
+    >
+      <i class="fas fa-user-plus"></i> Lời mời kết bạn
+    </span>
+  </div>
+  <div class="row justify-content-center">
+    <span
+      class="tabs-contact__item"
+      id="friends"
+      routerLink="/contact/content/list-friend"
+      routerLinkActive="mat-accent"
+      (click)="onClickHideContent()"
+    >
+      <i class="fas fa-user-friends"></i> Bạn bè
+    </span>
+  </div>
+  <div class="row justify-content-center">
+    <span
+      class="tabs-contact__item"
+      id="group"
+      routerLink="/contact/content/list-group"
+      routerLinkActive="mat-accent"
+      (click)="onClickHideContent()"
+    >
+      <i class="fas fa-users"></i> Nhóm chat
+    </span>
+  </div>
+  <div class="row justify-content-center">
+    <span
+      class="tabs-contact__item"
+      id="group"
+      routerLink="/contact/content/add-friend"
+      routerLinkActive="mat-accent"
+      (click)="onClickHideContent()"
+    >
+      <i class="fas fa-user-plus"></i> Thêm bạn
+    </span>
+  </div>
+  <div class="row justify-content-center">
+    <span
+      class="tabs-contact__item"
+      id="group"
+      routerLink="/contact/content/add-group"
+      routerLinkActive="mat-accent"
+      (click)="onClickHideContent()"
+    >
+      <i class="fas fa-users"></i>
+      <i class="fas fa-plus plus-add-group"></i> Thêm nhóm
+    </span>
+  </div>
+</div>

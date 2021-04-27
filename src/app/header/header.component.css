@@ -68,8 +68,9 @@
 }
 
 .navbar-collapse {
+  justify-content: flex-end;
   width: 72.5vw;
-  padding-left: 10.75rem;
+  padding-right: 1rem;
 }
 
 /* Responsive */
@@ -98,7 +99,7 @@
     border-radius: 10px !important;
   }
   .user__case--item.log-res {
-    width: 10rem;
+    width: 9.5rem;
     margin: 1rem 0.5rem;
   }
 

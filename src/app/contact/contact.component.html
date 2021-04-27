@@ -1,43 +1,9 @@
 <div class="row">
   <div class="col-md-4 menu">
-    <app-search>Search</app-search>
-    <div class="col">
-      <div class="row justify-content-center">
-        <span
-          class="tabs-contact__item"
-          id="add-friends"
-          routerLink="/contact/list-add-friends"
-          routerLinkActive="mat-accent"
-        >
-          <i class="fas fa-user-plus"></i> Lời mời kết bạn
-        </span>
-      </div>
-      <div class="row justify-content-center">
-        <span
-          class="tabs-contact__item"
-          id="friends"
-          routerLink="/contact/list-friends"
-          routerLinkActive="mat-accent"
-        >
-          <i class="fas fa-user-friends"></i> Bạn bè
-        </span>
-      </div>
-      <div class="row justify-content-center">
-        <span
-          class="tabs-contact__item"
-          id="group"
-          routerLink="/contact/list-groups"
-          routerLinkActive="mat-accent"
-        >
-          <i class="fas fa-users"></i> Nhóm chat
-        </span>
-      </div>
-    </div>
+    <app-search></app-search>
+    <app-contact-menu></app-contact-menu>
   </div>
-  <div class="col-md-8"></div>
-</div>
-
-<div class="notification">
-  <i class="far fa-comment-dots notification__icon"></i>
-  <span class="notification__count">25</span>
+  <div class="col-md-8 content">
+    <app-contact-content></app-contact-content>
+  </div>
 </div>

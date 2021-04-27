@@ -1,43 +1,9 @@
 <div class="row">
   <div class="col-md-4 menu">
-    <app-search>Search</app-search>
-    <div class="col">
-      <div class="row justify-content-center">
-        <span
-          class="tabs-contact__item active"
-          id="add-friends"
-          routerLink="/contact/list-add-friends"
-          routerLinkActive="mat-accent"
-          (click)="contactContent()"
-        >
-          <i class="fas fa-user-plus"></i> Lời mời kết bạn
-        </span>
-      </div>
-      <div class="row justify-content-center">
-        <span
-          class="tabs-contact__item"
-          id="friends"
-          routerLink="/contact/list-friends"
-          routerLinkActive="mat-accent"
-          (click)="contactContent()"
-        >
-          <i class="fas fa-user-friends"></i> Bạn bè
-        </span>
-      </div>
-      <div class="row justify-content-center">
-        <span
-          class="tabs-contact__item"
-          id="group"
-          routerLink="/contact/list-groups"
-          routerLinkActive="mat-accent"
-          (click)="contactContent()"
-        >
-          <i class="fas fa-users"></i> Nhóm chat
-        </span>
-      </div>
-    </div>
+    <app-search></app-search>
+    <app-contact-menu></app-contact-menu>
   </div>
-  <div class="col-md-8 content" [ngClass]="{ hide: valShowContactContent }">
+  <div class="col-md-8 content" [ngClass]="{ hide: valHideContactContent }">
     <div class="col" id="list-add-friends">
       <div
         class="row list-contacts__title align-items-center justify-content-between"
@@ -52,9 +18,6 @@
           </span>
           <span class="list-contacts__title--text"> Lời mời kết bạn </span>
         </div>
-        <span class="icon-close" routerLink="/add-friend">
-          <i class="fas fa-user-plus"></i>
-        </span>
       </div>
       <div class="row list-contacts__tbl">
         <div class="col">

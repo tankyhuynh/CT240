@@ -1,14 +1,14 @@
-import { Component, OnDestroy, OnInit } from "@angular/core"
-import { Router } from "@angular/router";
-import { BehaviorSubject } from "rxjs";
-import { Subscription } from "rxjs";
-import { AutheService } from "../auth/auth.service";
-import { SharingService } from "../sharing.service";
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+import { Subscription } from 'rxjs';
+import { AutheService } from '../auth/auth.service';
+import { SharingService } from '../sharing.service';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isUserAuthenticated = false;
@@ -18,34 +18,44 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   username: string;
 
-  items =  [["Tin nhắn", "chat"], ["Danh bạ", "contact"], ["Thêm bạn", "add-friend"], ["Chỉnh sửa", "personal-information"]];
+  items = [
+    ['Tin nhắn', 'chat'],
+    ['Danh bạ', 'contact'],
+    ['Chỉnh sửa', 'personal-information'],
+  ];
 
-  imgPath = "http://localhost:3000/images/img.jpg";
+  imgPath = 'http://localhost:3000/images/img.jpg';
 
-  constructor(private authService: AutheService, private router: Router, private sharingService: SharingService ){};
+  constructor(
+    private authService: AutheService,
+    private router: Router,
+    private sharingService: SharingService
+  ) {}
 
-
-  ngOnInit(){
+  ngOnInit() {
     this.isUserAuthenticated = this.authService.getIsAuthenticated();
 
     this.authListenerSub = this.authService
-                  .getAuthStatusListener()
-                  .subscribe(isAuth => {
-                    this.username = this.authService.getUsername();
-                    this.isUserAuthenticated = isAuth;
-                  });
+      .getAuthStatusListener()
+      .subscribe((isAuth) => {
+        this.username = this.authService.getUsername();
+        this.isUserAuthenticated = isAuth;
+      });
   }
 
-  onClick(){
+  onClick() {
     this.router.navigate(['/']);
   }
 
-  onLogout(){
-    this.sharingService.changeMenuItems([['msg1', '/chat/chat1'], ['msg2', '/chat/chat2']]);
+  onLogout() {
+    this.sharingService.changeMenuItems([
+      ['msg1', '/chat/chat1'],
+      ['msg2', '/chat/chat2'],
+    ]);
     this.authService.logout();
   }
 
-  ngOnDestroy(){
+  ngOnDestroy() {
     this.authListenerSub.unsubscribe();
   }
 

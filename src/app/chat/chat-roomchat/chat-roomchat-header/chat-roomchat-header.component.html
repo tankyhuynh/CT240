@@ -1,9 +1,7 @@
 <div class="row chat-box__title align-items-center">
-  <span class="icon-close">
+  <span class="icon-close" style="display: none" (click)="onClickShowContent()">
     <i class="fas fa-arrow-left"></i>
   </span>
   <img src="{{ imgPath }}" alt="" class="img-fluid chat-box__title--img" />
-  <span class="chat-box__title--desc">
-    Tên bạn bè {{ username }}
-  </span>
+  <span class="chat-box__title--desc"> {{ username }} </span>
 </div>
