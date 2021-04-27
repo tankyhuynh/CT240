@@ -11,7 +11,7 @@ const db = require('./configs/database.config');
 db.config();
 
 const realtime = require('./configs/realtime.config');
-realtime.config(serverConfig.io);
+realtime.config(serverConfig.server);
 
 
 

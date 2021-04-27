@@ -26,9 +26,8 @@ class SocketService {
     static async clearSocket(account){
         await SocketService.setSocket(account, "");
     }
-    static async sendTo(to, type, data){
-        io.to(await SocketService.getSocket(to)).emit(type, data);
-    }
+    
+
 }
 
 module.exports = SocketService;

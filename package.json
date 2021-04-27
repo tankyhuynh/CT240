@@ -8,7 +8,8 @@
     "test/model": "nodemon test-module.js",
     "test/service": "nodemon test-service.js",
     "test/controller": "nodemon test-controller.js",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "start/main": "node index.js"
   },
   "repository": {
     "type": "git",

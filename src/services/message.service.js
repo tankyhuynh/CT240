@@ -24,27 +24,8 @@ async function create(sender, room, data){
     if(!await RoomService.memberChecker(room, sender)) return null;
     const message = new MessageModel({sender ,room,  data});
     await message.save();
-    sendMessageToRoom(message, room);
     return message;
 }
-async function sendMessageToRoom(message, room){
-    const members = await RoomService.getMemberWithId(room, message.sender);
-    members.forEach(member => {
-        sendMessage(message, member);
-    });
-}
-
-// realtime
-const iox = require('../../configs/server.config').io;
-const {io} = require('../../configs/server.config');
-const { getSocket } = require('../socket/socket.service');
-
-async function sendMessage(message, user){
-    console.log(iox===io);
-    const socket_id = await getSocket(user);
-    io.to(socket_id).emit("receive:message", message);
-}
-
 
 module.exports =  {
     get,

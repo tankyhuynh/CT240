@@ -1,19 +1,9 @@
-const SocketRouter = require('../src/socket/socket.router.js');
+const socketServer = require('../socket/socket.server');
 
-function config(io){
-    SocketRouter.route(io); 
+const realtimeServer =  socketServer;
+function config(server){
+    realtimeServer.connect(server);
 }
-
-function saveGlobalIO(app){
-    if(!io) return false;
-    app.set("socketio", io);
-    return true;
-}
-function getIO(){
-    return io;
-}
-module.exports = {
-    getIO,
-    config,
-    saveGlobalIO,
+module.exports  = {
+    config
 }

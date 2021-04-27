@@ -29,7 +29,7 @@ function setAuth(req, key){
     req.session.account = key;
 }
 function genarateToken(data){
-    const token = jwt.sign({account: data.toString()} , secret, {expiresIn: 1800});
+    const token = jwt.sign({account: data.toString()} , secret, {expiresIn: "2d"});
     return token;
 }
 function clearAuth(req){
