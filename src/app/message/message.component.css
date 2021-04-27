@@ -47,7 +47,7 @@
 
 .tabs-card__item > div > img {
   width: 4vw;
-  height: 4vw ;
+  height: 4vw;
   object-fit: cover;
   border-radius: 50%;
 }
@@ -204,6 +204,11 @@
   .content {
     display: none;
     transition: all 750ms;
+  }
+
+  .tabs-card__item > div > img {
+    width: 15vw;
+    height: 15vw;
   }
 
   .chat-box__body {

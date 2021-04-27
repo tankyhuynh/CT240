@@ -1,0 +1,110 @@
+.add-friend.show,
+.overlay.show {
+  display: inline-block;
+}
+
+.add-friend {
+  display: none;
+  position: absolute;
+  top: 6.5rem;
+  width: 35vw;
+  padding: 2rem 3rem;
+  background-color: var(--color-2);
+  border: 2px solid var(--color-1);
+  border-radius: 20px;
+  z-index: 3;
+}
+
+.add-friend__input {
+  width: 80%;
+  margin: 1rem 0.5rem;
+  padding: 0 0.5rem;
+  display: block;
+  font-size: 0.9rem;
+  color: var(--color-3);
+  background-color: var(--color-2);
+  border: none;
+  border-bottom: 1px solid var(--color-3);
+}
+
+.add-friend__input::placeholder {
+  color: var(--color-3);
+}
+
+.add-friend__submit {
+  margin: 1rem 0.5rem;
+  background-color: var(--color-2);
+  border: none;
+  border-radius: 15px;
+  transition: all 750ms;
+}
+
+/* Add Friends Content */
+.add-friends__card {
+  padding: 1rem;
+  border: 1px solid var(--color-1);
+  border-radius: 20px;
+}
+
+.add-friend__card--img {
+  margin: 1rem 0;
+  width: 5rem;
+  height: 5rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.add-friend__card--title {
+  margin: 0.25rem 0;
+  padding: 0 1rem;
+  width: 20vw;
+  max-width: 19.5vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  font-size: 1rem;
+  color: var(--color-3);
+}
+
+.add-friend__card--icon,
+.edit-user__card--icon {
+  display: inline-block;
+  margin: 1rem 0.25rem;
+  padding: 0.4rem 1rem;
+  font-size: 0.8rem;
+  background-color: var(--color-2);
+  border: 1px solid var(--color-1);
+  border-radius: 15px;
+  transition: all 750ms;
+  cursor: pointer;
+}
+
+.add-friend__card--icon:hover,
+.edit-user__card--icon:hover {
+  background-color: var(--color-1);
+  transition: all 750ms;
+}
+
+/* Responsive */
+
+@media only screen and (max-width: 480px) {
+  .add-friend {
+    width: 90vw;
+    padding: 1.5rem 2rem;
+  }
+
+  .add-friend__input {
+    width: 70%;
+  }
+
+  .add-friend__card--title {
+    width: 60vw;
+    max-width: 59.5vw;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 1rem;
+    color: var(--color-3);
+  }
+}

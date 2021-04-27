@@ -39,15 +39,22 @@
   </div>
   <div class="col-md-8 content" [ngClass]="{ hide: valShowContactContent }">
     <div class="col" id="list-friends">
-      <div class="row list-contacts__title align-items-center">
-        <span
-          class="icon-close"
-          style="display: none"
-          (click)="contactContent()"
-        >
-          <i class="fas fa-arrow-left"></i>
+      <div
+        class="row list-contacts__title align-items-center justify-content-between"
+      >
+        <div>
+          <span
+            class="icon-close"
+            style="display: none"
+            (click)="contactContent()"
+          >
+            <i class="fas fa-arrow-left"></i>
+          </span>
+          <span class="list-contacts__title--text"> Danh sách bạn bè </span>
+        </div>
+        <span class="icon-close" routerLink="/add-friend">
+          <i class="fas fa-user-plus"></i>
         </span>
-        <span class="list-contacts__title--text"> Danh sách bạn bè </span>
       </div>
       <div class="row list-contacts__tbl">
         <div class="col">
@@ -106,3 +113,54 @@
     </div>
   </div>
 </div>
+<!-- <div class="overlay" [ngClass]="{ show: valShowAddFriendsContent }"></div>
+<div class="row justify-content-center">
+  <div class="add-friend" [ngClass]="{ show: valShowAddFriendsContent }">
+    <div class="row justify-content-between">
+      <span> <i class="fas fa-user-plus"></i> Thêm bạn bè </span>
+      <span (click)="addFriendsContent()">
+        <i class="fas fa-times" style="font-size: 1.2rem; cursor: pointer"></i>
+      </span>
+    </div>
+    <hr />
+    <form action="">
+      <div class="row justify-content-center">
+        <input
+          type="text"
+          class="add-friend__input"
+          placeholder="Số điện thoại hoặc ID"
+          name="add-friend-ip"
+          id="add-friend-ip"
+        />
+        <button type="submit" class="add-friend__submit">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </form>
+    <br />
+    <div class="row add-friends__card" id="add-friends__card">
+      <div class="col">
+        <div class="row justify-content-center">
+          <img
+            src="{{ imgPath }}"
+            alt=""
+            class="img-fluid add-friend__card--img"
+          />
+        </div>
+        <div class="row justify-content-center">
+          <span class="add-friend__card--title"> #212 </span>
+        </div>
+        <div class="row justify-content-center">
+          <span class="add-friend__card--title"> Tên bạn bè </span>
+        </div>
+        <div class="row justify-content-center">
+          <span class="add-friend__card--title"> 0924668320 </span>
+        </div>
+        <div class="row justify-content-center">
+          <span class="add-friend__card--icon"> Gửi lời mời </span>
+          <span class="add-friend__card--icon"> Hủy </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> -->

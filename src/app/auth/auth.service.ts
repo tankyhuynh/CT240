@@ -67,22 +67,22 @@ export class AutheService {
               console.log("Success");
               const token = "asdasd";
               console.log(response);
-              // this.token = "asdasdas";
-              // if ( true ) {
-              //   console.log("In iff");
-              //   const expiresInDuration =  response.expiresIn;
-              //   this.setAuthTimer(expiresInDuration);
+              this.token = "asdasdas";
+              if ( true ) {
+                console.log("In iff");
+                const expiresInDuration =  response.expiresIn;
+                this.setAuthTimer(expiresInDuration);
                 this.isAuthenticated = true;
-              //   this.userId = response.userId;
+                this.userId = response.userId;
 
                 this.authStatusListener.next(true);
-              //   const now = new Date();
-              //   const expirationDate = new Date(now.getTime() + (expiresInDuration * 1000));
-              //   this.saveDataToLocalStorage(token, expirationDate, response.userId, mobilePhone);
-              //   console.log(expirationDate);
-              //   console.log(".......");
+                const now = new Date();
+                const expirationDate = new Date(now.getTime() + (expiresInDuration * 1000));
+                this.saveDataToLocalStorage(token, expirationDate, response.userId, mobilePhone);
+                console.log(expirationDate);
+                console.log(".......");
                 this.router.navigate(['/']);
-              // }
+              }
             }, err => {
               console.log("Errrr");
               this.router.navigate(['/auth/login']);

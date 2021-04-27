@@ -39,15 +39,24 @@
   </div>
   <div class="col-md-8 content" [ngClass]="{ hide: valShowContactContent }">
     <div class="col">
-      <div class="row list-contacts__title align-items-center">
-        <span
-          class="icon-close"
-          style="display: none"
-          (click)="contactContent()"
-        >
-          <i class="fas fa-arrow-left"></i>
+      <div
+        class="row list-contacts__title align-items-center justify-content-between"
+      >
+        <div>
+          <span
+            class="icon-close"
+            style="display: none"
+            (click)="contactContent()"
+          >
+            <i class="fas fa-arrow-left"></i>
+          </span>
+          <span class="list-contacts__title--text"> Danh sách nhóm chat </span>
+        </div>
+
+        <span class="icon-close" routerLink="/add-group">
+          <i class="fas fa-users"></i>
+          <i class="fas fa-plus plus-add-group"></i>
         </span>
-        <span class="list-contacts__title--text"> Danh sách nhóm chat </span>
       </div>
       <div class="row list-contacts__tbl">
         <div class="col">
@@ -122,3 +131,56 @@
     </div>
   </div>
 </div>
+<!-- <div class="overlay" [ngClass]="{ show: valShowAddFriendsContent }"></div>
+<div class="row justify-content-center">
+  <div class="add-groups" [ngClass]="{ show: valShowAddFriendsContent }">
+    <div class="row justify-content-between">
+      <span>
+        <i class="fas fa-users"></i>
+        <i class="fas fa-plus plus-add-group"></i>
+        Tạo nhóm
+      </span>
+      <span (click)="addFriendsContent()">
+        <i class="fas fa-times" style="font-size: 1.2rem; cursor: pointer"></i>
+      </span>
+    </div>
+    <hr />
+    <form action="">
+      <label for="">Tên nhóm:</label>
+      <div class="row justify-content-center">
+        <input
+          type="text"
+          class="add-groups__input"
+          placeholder="Nhập tên nhóm"
+          name="groups-name"
+          id="groups-name"
+        />
+      </div>
+      <label>
+        <span>Chọn bạn bè thêm vào nhóm:</span>
+      </label>
+      <div class="row list-friends-add-groups">
+        <div class="col">
+          <div class="row align-items-center list-friends-add-groups__item">
+            <input class="input-checkbox" type="checkbox" name="add-groups" />
+            <img src="{{ imgPath }}" alt="" class="img-fluid item__img" />
+            <span class="item__name">Chương quân</span>
+          </div>
+          <div class="row align-items-center list-friends-add-groups__item">
+            <input class="input-checkbox" type="checkbox" name="add-groups" />
+            <img src="{{ imgPath }}" alt="" class="img-fluid item__img" />
+            <span class="item__name">Chương quân</span>
+          </div>
+          <div class="row align-items-center list-friends-add-groups__item">
+            <input class="input-checkbox" type="checkbox" name="add-groups" />
+            <img src="{{ imgPath }}" alt="" class="img-fluid item__img" />
+            <span class="item__name">Chương quân</span>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-end">
+        <button class="sb-add-groups" type="submit">Tạo nhóm</button>
+      </div>
+    </form>
+  </div>
+</div> -->

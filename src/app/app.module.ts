@@ -25,6 +25,7 @@ import { ContactModule } from './contact/contact.module';
 import { MenuModule } from './menu/menu.module';
 import { SearchModule } from './search/search.module';
 import { AddfriendModule } from './add-friend/add-friend.module';
+import { AddGroupComponent } from './add-group/add-group.component';
 
 
 @NgModule({
@@ -33,7 +34,8 @@ import { AddfriendModule } from './add-friend/add-friend.module';
     HeaderComponent,
     MessageComponent,
     PersonalInformationComponent,
-    ErrorComponent
+    ErrorComponent,
+    AddGroupComponent
   ],
   imports: [
     BrowserModule,

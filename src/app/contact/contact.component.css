@@ -144,6 +144,23 @@
   border-radius: 50%;
 }
 
+/* Icon close */
+
+.icon-close {
+  display: inline-block;
+  margin: 0 0.75rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 50%;
+  transition: all 750ms;
+  background-color: var(--color-2);
+  cursor: pointer;
+}
+
+.icon-close:hover {
+  background-color: var(--color-2);
+  transition: all 750ms;
+}
+
 /* Tabs Responsive */
 @media only screen and (max-width: 480px) {
   .content {

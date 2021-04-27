@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AddFriendComponent } from './add-friend/add-friend.component';
+import { AddGroupComponent } from './add-group/add-group.component';
 import { AppComponent } from './app.component';
 import { AuthGuard } from './auth/auth.guard';
 import { ContactComponent } from './contact/contact.component';
@@ -17,6 +18,7 @@ const routes: Routes = [
   {path: 'message', component: MessageComponent},
   {path: 'contact', loadChildren: () => import('./contact/contact.module').then(m => m.ContactModule)},
   {path: 'add-friend', component: AddFriendComponent},
+  {path: 'add-group', component: AddGroupComponent},
   {path: 'personal-information', component: PersonalInformationComponent},
 ];
 

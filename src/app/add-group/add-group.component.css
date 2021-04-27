@@ -1,12 +1,5 @@
-.add-groups.show,
-.overlay.show {
-  display: inline-block;
-}
-
 .add-groups {
-  display: none;
-  position: absolute;
-  top: 6.5rem;
+  margin-top: 2rem;
   width: 35vw;
   padding: 2rem 3rem;
   padding-bottom: 0.75rem;
@@ -16,6 +9,8 @@
   z-index: 3;
 }
 
+/* Add Group Content */
+/* Input */
 .add-groups__input {
   width: 90%;
   margin-bottom: 0.75rem;
@@ -31,6 +26,8 @@
 .add-groups__input::placeholder {
   color: var(--color-3);
 }
+
+/* List Friends */
 
 .list-friends-add-groups {
   height: 37.5vh;
@@ -53,6 +50,8 @@
 .list-friends-add-groups__item {
   margin-bottom: 0.75rem;
 }
+
+/* Item */
 
 .input-checkbox {
   margin: 0 1rem;
@@ -90,53 +89,6 @@
   transition: all 750ms;
 }
 
-/* Add Friends Content */
-.add-friends__card {
-  padding: 1rem;
-  border: 1px solid var(--color-1);
-  border-radius: 20px;
-}
-
-.add-friend__card--img {
-  margin: 1rem 0;
-  width: 5rem;
-  height: 5rem;
-  object-fit: cover;
-  border-radius: 50%;
-}
-
-.add-friend__card--title {
-  margin: 0.25rem 0;
-  padding: 0 1rem;
-  width: 20vw;
-  max-width: 19.5vw;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  text-align: center;
-  font-size: 1rem;
-  color: var(--color-3);
-}
-
-.add-friend__card--icon,
-.edit-user__card--icon {
-  display: inline-block;
-  margin: 1rem 0.25rem;
-  padding: 0.4rem 1rem;
-  font-size: 0.8rem;
-  background-color: var(--color-2);
-  border: 1px solid var(--color-1);
-  border-radius: 15px;
-  transition: all 750ms;
-  cursor: pointer;
-}
-
-.add-friend__card--icon:hover,
-.edit-user__card--icon:hover {
-  background-color: var(--color-1);
-  transition: all 750ms;
-}
-
 .plus-add-group {
   font-size: 0.5rem;
   margin-left: 0.2rem;
@@ -145,22 +97,12 @@
 /* Responsive */
 
 @media only screen and (max-width: 480px) {
-  .add-friend {
+  .add-groups {
     width: 90vw;
     padding: 1.5rem 2rem;
   }
 
-  .add-friend__input {
+  .add-groups__input {
     width: 70%;
-  }
-
-  .add-friend__card--title {
-    width: 60vw;
-    max-width: 59.5vw;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 1rem;
-    color: var(--color-3);
   }
 }
