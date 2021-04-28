@@ -8,7 +8,9 @@ const profilesRouter = require('./profiles.router');
 const friendsRouter = require('./friends.router');
 const requestsRouter = require('./requests.router');
 const roomsRouter = require("./rooms.router");
+const imagesRouter = require('./images.router');
 
+router.use('/images', imagesRouter);
 router.use('/users', usersRouter);
 router.use('/accounts', accountsRouter);
 router.use('/profiles', profilesRouter);
