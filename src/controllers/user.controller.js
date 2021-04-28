@@ -3,7 +3,7 @@ const AccountService = require('../services/account.service');
 const ProfileService = require('../services/profile.service');
 const {sendSuccess, sendReject} = require('../result');
 const {getAuth, setAuth, clearAuth, genarateToken}= require('../authentication');
-
+const  expiresIn = process.env.EXPIRESIN || "1d";
 
 async function login(req, res){
     let data;
@@ -17,7 +17,7 @@ async function login(req, res){
     const token = genarateToken(account._id);
     setAuth(req, account._id);
     
-    sendSuccess(res, {...account, token});
+    sendSuccess(res, {...account, token, expiresIn});
 }
 async function logout(req, res){
     clearAuth(req);

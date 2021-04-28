@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const secret = process.env.SECRET_TOKEN || "core-chat";
-
+const expiresIn = process.env.EXPIRESIN || '1d';
 
 async function authenticate(req, res, next){
     if(!req.session.account) {
@@ -29,7 +29,7 @@ function setAuth(req, key){
     req.session.account = key;
 }
 function genarateToken(data){
-    const token = jwt.sign({account: data.toString()} , secret, {expiresIn: "2d"});
+    const token = jwt.sign({account: data.toString()} , secret, {expiresIn});
     return token;
 }
 function clearAuth(req){
