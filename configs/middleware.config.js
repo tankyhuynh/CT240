@@ -1,10 +1,11 @@
 const session = require('express-session');
 const cors = require('cors');
 const express=  require('express');
-const maxAge = process.env.EXPIRESIN || 60;
-
+const maxAge = process.env.TOKEN_EXPIRESLN || 60;
+const cookieParser = require('cookie-parser');
 
 function config(app){
+    console.log(maxAge)
     app.use(express.urlencoded());
     app.use(express.json());
     app.use(session({
@@ -14,6 +15,7 @@ function config(app){
         }
     }));
     app.use(cors());
+    app.use(cookieParser())
 };
 
 module.exports = {

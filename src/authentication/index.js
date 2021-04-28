@@ -1,8 +1,17 @@
 const jwt = require('jsonwebtoken');
 const secret = process.env.SECRET_TOKEN || "core-chat";
-const expiresIn = process.env.EXPIRESIN || '1d';
+const expiresIn = process.env.TOKEN_EXPIRESLN || '60';
 
+function genarateToken(data){
+    const token = jwt.sign({account: data.toString()} , secret, {expiresIn});
+    return token;
+}
 async function authenticate(req, res, next){
+    authenticateSession(req, res, next);
+    return;
+}
+
+async function authenticateSession(req, res, next){
     if(!req.session.account) {
         res.status(401).send();
         res.end();
@@ -11,7 +20,7 @@ async function authenticate(req, res, next){
     next();
 }
 async function authenticateToken(req, res, next){
-    const {token} = {...req.body, ...req.query, ...req.params}
+    const {token} = {...req.body, ...req.query, ...req.params, ...req.cookies}
     const decode = await jwt.verify(token, secret);
     if(!decode) {
         res.status(401).send();
@@ -28,10 +37,7 @@ function getAuth(req){
 function setAuth(req, key){
     req.session.account = key;
 }
-function genarateToken(data){
-    const token = jwt.sign({account: data.toString()} , secret, {expiresIn});
-    return token;
-}
+
 function clearAuth(req){
     req.session.account = "";
 }

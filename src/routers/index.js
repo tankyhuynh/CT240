@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const {authenticate} = require('../authentication');
 
 
 const usersRouter = require('./users.router');
@@ -10,12 +11,12 @@ const requestsRouter = require('./requests.router');
 const roomsRouter = require("./rooms.router");
 const imagesRouter = require('./images.router');
 
-router.use('/images', imagesRouter);
+router.use('/images',authenticate, imagesRouter);
 router.use('/users', usersRouter);
-router.use('/accounts', accountsRouter);
-router.use('/profiles', profilesRouter);
-router.use('/friends', friendsRouter);
-router.use('/requests', requestsRouter);
-router.use('/rooms', roomsRouter);
+router.use('/accounts',authenticate, accountsRouter);
+router.use('/profiles',authenticate, profilesRouter);
+router.use('/friends', authenticate,friendsRouter);
+router.use('/requests',authenticate, requestsRouter);
+router.use('/rooms',authenticate, roomsRouter);
 
 module.exports = router;
