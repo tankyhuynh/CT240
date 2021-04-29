@@ -6,6 +6,7 @@ import { BehaviorSubject } from "rxjs";
 import { Subject } from "rxjs";
 
 import { environment } from '../../environments/environment';
+import { ProfileService } from "../personal-information/profile.service";
 import { SharingService } from "../sharing.service";
 import { AuthData } from "./auth.model";
 import { UserData } from "./user.model";
@@ -20,12 +21,7 @@ export class AutheService {
   private authStatusListener = new Subject<boolean>();
   private isAuthenticated = false;
   private userId: string;
-
-  private username: string;
-
-  getUsername(){
-    return this.username;
-  }
+  private userData: UserData;
 
   getUserId(){
     return this.userId;
@@ -44,10 +40,15 @@ export class AutheService {
     return this.isAuthenticated;
   }
 
-  constructor(private http: HttpClient, private router: Router){}
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private profileService: ProfileService){};
 
-  createUser(name: string, phone: string, password: string) {
-    const authData: UserData = {name: name, phone: phone, password: password };
+
+
+  createUser(name: string, phone: string, password: string, avatar: string) {
+    const authData: UserData = {name: name, phone: phone, password: password, avatar: avatar };
     this.http
       .post(BACKEND_URL + "register", authData)
       .subscribe(() => {
@@ -62,29 +63,30 @@ export class AutheService {
 
     const authData: AuthData = {phone: mobilePhone, password: password};
     this.http
-          .post<{token: string, expiresIn: number, userId: string, phone: string}>(BACKEND_URL + "login", authData)
+          .post<{token: string, expiresIn: number, _id: string}>(BACKEND_URL + "login", authData)
             .subscribe(response => {
-              console.log("Success");
-              const token = "asdasd";
+              const token = response.token;
               console.log(response);
-              this.token = "asdasdas";
-              if ( true ) {
-                console.log("In iff");
-                const expiresInDuration =  response.expiresIn;
+              if ( token ) {
+                const expiresInDuration =  3600;
                 this.setAuthTimer(expiresInDuration);
                 this.isAuthenticated = true;
-                this.userId = response.userId;
+                this.userId = response._id;
 
                 this.authStatusListener.next(true);
                 const now = new Date();
                 const expirationDate = new Date(now.getTime() + (expiresInDuration * 1000));
-                this.saveDataToLocalStorage(token, expirationDate, response.userId, mobilePhone);
-                console.log(expirationDate);
-                console.log(".......");
+
+
+                this.userData = this.profileService.getOneById(this.userId);
+                console.log("UserData in auth service");
+                console.log(this.userId);
+                console.log(this.userData);
+
+                this.saveDataToLocalStorage(token, expirationDate, this.userId, this.userData);
                 this.router.navigate(['/']);
               }
             }, err => {
-              console.log("Errrr");
               this.router.navigate(['/auth/login']);
             });
   }
@@ -96,23 +98,21 @@ export class AutheService {
     this.authStatusListener.next(false);
     clearTimeout(this.tokenTimer);
     this.clearLocalStorage();
-    // this.email = null;
     this.router.navigate(['/auth/login']);
-    // this.sharingService.changeMessage([['msg1', '/chat/chat1'], ['msg2', '/chat/chat2']]);
   }
 
-  private saveDataToLocalStorage(token: string, expiration: Date, userId: string, email: string){
+  private saveDataToLocalStorage(token: string, expiration: Date, userId: string, userData: UserData){
     localStorage.setItem('token', token);
     localStorage.setItem('expiration', expiration.toISOString());
     localStorage.setItem('userId', userId);
-    localStorage.setItem('email', email);
+    localStorage.setItem('userData', JSON.stringify(userData));
   }
 
   private clearLocalStorage(){
     localStorage.removeItem('token');
     localStorage.removeItem('expiration');
     localStorage.removeItem('userId');
-    localStorage.removeItem('email');
+    localStorage.removeItem('userData');
   }
 
   private setAuthTimer(duration: number){
@@ -137,7 +137,7 @@ export class AutheService {
     if ( expiredIn > 0 ) {
       this.token = authInformation.token;
       this.userId = authInformation.userId;
-
+      // this.userData = authInformation.userData;
 
       this.isAuthenticated = true;
       this.setAuthTimer( expiredIn/1000 );
@@ -150,7 +150,9 @@ export class AutheService {
     const token = localStorage.getItem('token');
     const expirationDate = localStorage.getItem('expiration');
     const userId = localStorage.getItem('userId');
-    const email = localStorage.getItem('email');
+    // const userData = JSON.parse(localStorage.getItem('userData'));
+
+
     if ( !token || !expirationDate ) {
       return;
     }
@@ -158,7 +160,7 @@ export class AutheService {
       token: token,
       expirationDate: new Date(expirationDate),
       userId: userId,
-      email: email
+      // userData: userData
     }
   }
 

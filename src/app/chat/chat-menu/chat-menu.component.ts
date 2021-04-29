@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { SharingService } from 'src/app/sharing.service';
 
 @Component({
@@ -7,7 +7,7 @@ import { SharingService } from 'src/app/sharing.service';
   styleUrls: ['./chat-menu.component.css'],
 })
 export class ChatMenuComponent implements OnInit {
-  imgPath = 'http://localhost:3000/images/img.jpg';
+  @Input() imgPath = 'http://localhost:3000/images/img.jpg';
 
   users = ['user1', 'user2', 'user3'];
 

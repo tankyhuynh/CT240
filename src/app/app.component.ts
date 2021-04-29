@@ -2,6 +2,8 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 
 import { Subscription } from 'rxjs';
 import { AutheService } from './auth/auth.service';
+import { UserData } from './auth/user.model';
+import { ProfileService } from './personal-information/profile.service';
 import { SharingService } from './sharing.service';
 
 
@@ -15,13 +17,16 @@ import { SharingService } from './sharing.service';
 export class AppComponent implements OnInit {
 
   isUserAuthenticated = false;
+  currentUserId: string;
+  currentUser: UserData;
 
   private authListenerSub: Subscription;
-  // private itemListenerSub: Subscription;
-  // @Output() itemsInAppComponent = [['app1', 'url1'], ['app2', 'url2']];
-  // @Output() menuClass = 'base_class';
 
-  constructor(private authService: AutheService, private sharingData: SharingService){};
+  constructor(
+      private profileService: ProfileService,
+      private authService: AutheService,
+      private sharingData: SharingService
+      ){};
 
   ngOnInit(){
 
@@ -38,8 +43,16 @@ export class AppComponent implements OnInit {
     this.authListenerSub = this.authService
                   .getAuthStatusListener()
                   .subscribe(isAuth => {
+                    if (isAuth) {
+                      this.currentUser = this.profileService.getCurrentUserLogin();
+                      console.log("Current UserLogin in App Root");
+                      console.log(this.authService.getUserId());
+                      console.log(this.currentUser);
+                    }
                     this.isUserAuthenticated = isAuth;
                   });
+
+
   }
 
 }

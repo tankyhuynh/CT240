@@ -1,18 +1,5 @@
-<!-- <div class="container-fluid">
-  <div class="row">
-    <app-header style="width: 100%"></app-header>
-  </div>
-  <div class="row justify-content-center">
-    <div class="col-4 menu" *ngIf="isUserAuthenticated">
-      <app-menu class="align_center" [(items)]="itemsInAppComponent" [(menuClass)]="menuClass">App Menu</app-menu>
-    </div>
-    <di class="col-8 content">
-      <router-outlet></router-outlet>
-    </di  v>
-  </div>
-</div> -->
 
 <div class="container-fluid">
-  <app-header class="row"></app-header>
+  <app-header [currentUser]="currentUser" [isUserAuthenticated]="isUserAuthenticated" class="row"></app-header>
   <router-outlet class="row"></router-outlet>
 </div>

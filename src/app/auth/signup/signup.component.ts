@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { repeatWhen } from 'rxjs/operators';
 import { AutheService } from '../auth.service';
+import { mimeType } from './mime-type.validator';
 
 
 @Component({
@@ -17,6 +18,8 @@ export class SignupComponent implements OnInit, OnDestroy {
   private authStatusSub: Subscription;
 
   form: FormGroup;
+
+  imageURL: string;
 
   constructor(public authService: AutheService) { }
 
@@ -37,6 +40,10 @@ export class SignupComponent implements OnInit, OnDestroy {
     'repassword': new FormControl(null, {
       validators: [Validators.required]
     }),
+    'avatar': new FormControl("https://images.pexels.com/photos/4397900/pexels-photo-4397900.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940", {
+      validators: [Validators.required],
+      asyncValidators: [mimeType]
+    })
   });
   }
 
@@ -51,8 +58,24 @@ export class SignupComponent implements OnInit, OnDestroy {
       return ;
     }
     this.authService
-          .createUser(this.form.value.name, this.form.value.phone, this.form.value.password);
+          .createUser(
+            this.form.value.name,
+            this.form.value.phone,
+            this.form.value.password,
+            this.form.value.avatar );
 
+  }
+
+  onFilePicked(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
+    this.form.patchValue({image: file});
+    this.form.get('avatar').updateValueAndValidity();
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imageURL = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   ngOnDestroy(){

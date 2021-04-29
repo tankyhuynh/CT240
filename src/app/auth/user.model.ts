@@ -1,5 +1,6 @@
 export interface UserData {
   name: string,
   phone: string,
-  password: string
+  password: string,
+  avatar: string
 }

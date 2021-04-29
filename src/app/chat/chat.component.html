@@ -1,11 +1,11 @@
 <div class="row">
   <div class="col-md-4 col-12 menu">
-    <app-chat-menu></app-chat-menu>
+    <app-chat-menu [imgPath]="tmpImgPath"></app-chat-menu>
   </div>
 
-  <div class="col-md-8 col-12 content">
-    <app-chat-roomchat
-      [username]="currentUser"
+  <div class="col-md-8 col-12 content" *ngIf="userId">
+    <app-chat-roomchat [imgPath]="tmpImgPath"
+      [username]="userId"
       [chatroom]="chatroom"
     ></app-chat-roomchat>
   </div>

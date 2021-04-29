@@ -6,7 +6,6 @@ import { ContactRoutingModule } from "./contact-routing.module";
 import { ContactComponent } from "./contact.component";
 import { MenuModule } from "../menu/menu.module";
 import { SearchModule } from "../search/search.module";
-import { AddfriendModule } from "../add-friend/add-friend.module";
 import { ContactMenuComponent } from "./contact-menu/contact-menu.component";
 import { ContactContentModule } from "./contact-content/contact-content.module";
 import { ContactMenuModule } from "./contact-menu/contact-menu.module";
@@ -24,7 +23,6 @@ import { ContactMenuModule } from "./contact-menu/contact-menu.module";
     ContactRoutingModule,
     MenuModule,
     SearchModule,
-    AddfriendModule,
     ContactContentModule,
     ContactMenuModule
   ]

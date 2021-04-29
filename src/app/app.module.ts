@@ -13,7 +13,6 @@ import { HeaderComponent } from './header/header.component';
 
 
 import { AuthInterceptor } from './auth/auth-interceptor';
-import { ChatComponent } from './chat/chat.component';
 ;
 import { PersonalInformationComponent } from './personal-information/personal-information.component';
 import { ErrInterceptor } from './err-interceptor';
@@ -23,9 +22,9 @@ import { AngularMaterialModule } from './angular-material.module';
 
 import { MenuModule } from './menu/menu.module';
 import { SearchModule } from './search/search.module';
-import { AddfriendModule } from './add-friend/add-friend.module';
-import { AddGroupComponent } from './add-group/add-group.component';
+import { HomeComponent } from './home/home.component';
 
+import { ProfileService } from './personal-information/profile.service'
 
 @NgModule({
   declarations: [
@@ -33,7 +32,7 @@ import { AddGroupComponent } from './add-group/add-group.component';
     HeaderComponent,
     PersonalInformationComponent,
     ErrorComponent,
-    AddGroupComponent
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -44,12 +43,12 @@ import { AddGroupComponent } from './add-group/add-group.component';
     BrowserAnimationsModule,
     HttpClientModule,
     MenuModule,
-    SearchModule,
-    AddfriendModule
+    SearchModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: ErrInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: ErrInterceptor, multi: true},
+    ProfileService
   ],
   bootstrap: [AppComponent],
   entryComponents: [ErrorComponent]

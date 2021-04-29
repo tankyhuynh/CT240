@@ -1,9 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
 import { Subscription } from 'rxjs';
+
 import { AutheService } from '../auth/auth.service';
 import { SharingService } from '../sharing.service';
+
+import { UserData } from '../auth/user.model'
+import { ProfileService } from '../personal-information/profile.service';
 
 @Component({
   selector: 'app-header',
@@ -11,12 +14,13 @@ import { SharingService } from '../sharing.service';
   styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  isUserAuthenticated = false;
+  @Input() isUserAuthenticated = false;
   menuMobile = false;
 
   private authListenerSub: Subscription;
 
-  username: string;
+  @Input() currentUser: UserData;
+  tmpImgPath = "https://images.pexels.com/photos/4397900/pexels-photo-4397900.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260";
 
   items = [
     ['Tin nhắn', 'chat'],
@@ -24,21 +28,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
     ['Chỉnh sửa', 'personal-information'],
   ];
 
-  imgPath = 'http://localhost:3000/images/img.jpg';
-
   constructor(
     private authService: AutheService,
     private router: Router,
-    private sharingService: SharingService
+    private sharingService: SharingService,
+    public profileService: ProfileService
   ) {}
 
   ngOnInit() {
     this.isUserAuthenticated = this.authService.getIsAuthenticated();
 
+    this.profileService.currentUserObservable.subscribe(
+      (currentUser) => this.currentUser = currentUser
+    );
+    console.log(this.currentUser);
+
     this.authListenerSub = this.authService
       .getAuthStatusListener()
       .subscribe((isAuth) => {
-        this.username = this.authService.getUsername();
         this.isUserAuthenticated = isAuth;
       });
   }

@@ -11,7 +11,7 @@ import { ChatRoomModel } from './chatroom.model';
 export class ChatRoomchatComponent implements OnInit {
   valShowMessContent = false;
 
-  imgPath = 'http://localhost:3000/images/img.jpg';
+  @Input() imgPath = 'http://localhost:3000/images/img.jpg';
   @Input() username: string;
 
   @Input() chatroom: ChatRoomModel;

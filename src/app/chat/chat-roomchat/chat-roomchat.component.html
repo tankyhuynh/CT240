@@ -7,27 +7,8 @@
   <app-chat-roomchat-body [chatroom]="chatroom"></app-chat-roomchat-body>
   <!-- end ChatRoom Body -->
 
-  <div class="row chat-box__send align-items-center">
-    <div class="col-md-11 col-10">
-      <textarea
-        class="chat-box__send--text"
-        name=""
-        id=""
-        rows="2"
-        placeholder="Tin nhắn mới"
-      ></textarea>
-    </div>
-    <div class="col-md-1 col-2">
-      <div class="row justify-content-center">
-        <button class="chat-box__send--btn">
-          <i class="fab fa-telegram-plane"></i>
-        </button>
-      </div>
-      <div class="row justify-content-center">
-        <span class="chat-box__send--btn">
-          <i class="fas fa-paperclip"></i>
-        </span>
-      </div>
-    </div>
-  </div>
+  <!-- ChatRoom Send -->
+  <app-chat-roomchat-send></app-chat-roomchat-send>
+  <!-- end ChatRoom Send -->
+
 </div>

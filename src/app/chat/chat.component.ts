@@ -9,6 +9,7 @@ import {
   Input,
 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { UserData } from '../auth/user.model';
 import { SharingService } from '../sharing.service';
 import { ChatService } from './chat.service';
 
@@ -18,10 +19,11 @@ import { ChatService } from './chat.service';
   styleUrls: ['./chat.component.css'],
 })
 export class ChatComponent implements OnInit, AfterViewChecked {
-  imgPath = 'http://localhost:3000/images/img.jpg';
+  tmpImgPath = "https://images.pexels.com/photos/7457830/pexels-photo-7457830.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500";
 
   users = ['User 1', 'User 2', 'User 3', 'User 4'];
-  currentUser: string;
+  userId: string;
+  currentUser: UserData;
 
   chatroom = {
     receive: {
@@ -51,8 +53,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      if (paramMap.has('username')) {
-        this.currentUser = paramMap.get('username');
+      if (paramMap.has('userId')) {
+        this.userId = paramMap.get('userId');
       }
     });
     // this.chatroom = this.chatService.fetchRoomByUsername(this.currentUser);

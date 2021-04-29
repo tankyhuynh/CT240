@@ -43,6 +43,7 @@
             type="password"
             name="password"
             formControlName="password"
+            #pass
             placeholder="Mật khẩu"
           />
           <mat-error *ngIf="form.get('password').invalid">
@@ -56,15 +57,25 @@
             type="password"
             name="repassword"
             formControlName="repassword"
+            #confirmPass
             placeholder="Xác nhận mật khẩu"
           />
-          <!-- <mat-error>
+          <mat-error *ngIf="pass.value !== confirmPass.value">
             Mật khẩu không khớp
-          </mat-error> -->
+          </mat-error>
+        </div>
+
+        <div>
+          <button type="button" mat-button (click)="filePicker.click()">Choose Avatar</button>
+          <input type="file" #filePicker (change)="onFilePicked($event)">
+        </div>
+
+        <div class="imagePreview" *ngIf="imageURL !== '' && imageURL && form.get('avatar').valid">
+          <img style="width: 100px;height: auto;" [src]="imageURL" [alt]="form.value.title">
         </div>
 
         <div class="row justify-content-end">
-          <button type="submit" class="form-submit">Đăng ký</button>
+          <button [disabled]="pass.value !== confirmPass.value" type="submit" class="form-submit">Đăng ký</button>
         </div>
       </form>
     </div>
