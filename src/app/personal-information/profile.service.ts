@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { elementEventFullName } from "@angular/compiler/src/view_compiler/view_compiler";
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
@@ -20,9 +20,11 @@ export class ProfileService {
   private userSource = new BehaviorSubject<UserData>(null);
   currentUserObservable = this.userSource.asObservable();
 
-  changeUser(user: UserData) {
-    this.userSource.next(user);
+  private userStatusListener = new Subject<UserData>();
+  getUserStatusListener(){
+    return this.userStatusListener.asObservable();
   }
+
 
   getCurrentUserLogin(){
     return this.currentUserLogin;
@@ -32,21 +34,24 @@ export class ProfileService {
   constructor(private http: HttpClient, private router: Router){};
 
   getOneById(id: string) {
+    let reponseUser: UserData;
     this.http
       .get<{name: string, avatar: string}>(BACKEND_URL + id)
       .subscribe((response) => {
-        console.log("Response in profile service: ");
+        console.log("In profile service");
         console.log(response);
-        this.currentUserLogin = {
+        reponseUser = {
           name: response.name,
           avatar: response.avatar,
           password: "",
           phone: ""
         };
+        this.currentUserLogin = reponseUser;
+        this.userStatusListener.next(this.currentUserLogin);
+
       }, error => {
         console.log(error);
       });
-      return this.currentUserLogin;
 
   }
 

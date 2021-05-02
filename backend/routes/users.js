@@ -11,7 +11,7 @@ route.post("/register", UserController.createUser);
 
 route.post("/login", UserController.userLogin);
 
-route.get("" , UserController.getUser);
+route.get("" , UserController.getUsers);
 
 
 module.exports  = route;

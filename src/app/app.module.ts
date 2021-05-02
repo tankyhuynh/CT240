@@ -25,6 +25,9 @@ import { SearchModule } from './search/search.module';
 import { HomeComponent } from './home/home.component';
 
 import { ProfileService } from './personal-information/profile.service'
+import { SharingService } from './sharing.service';
+import { SocketService } from './socket/socket.service';
+import { ReloginComponent } from './relogin/relogin.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +35,8 @@ import { ProfileService } from './personal-information/profile.service'
     HeaderComponent,
     PersonalInformationComponent,
     ErrorComponent,
-    HomeComponent
+    HomeComponent,
+    ReloginComponent
   ],
   imports: [
     BrowserModule,
@@ -48,7 +52,9 @@ import { ProfileService } from './personal-information/profile.service'
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrInterceptor, multi: true},
-    ProfileService
+    ProfileService,
+    SharingService,
+    SocketService
   ],
   bootstrap: [AppComponent],
   entryComponents: [ErrorComponent]

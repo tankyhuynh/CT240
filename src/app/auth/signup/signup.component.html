@@ -65,15 +65,6 @@
           </mat-error>
         </div>
 
-        <div>
-          <button type="button" mat-button (click)="filePicker.click()">Choose Avatar</button>
-          <input type="file" #filePicker (change)="onFilePicked($event)">
-        </div>
-
-        <div class="imagePreview" *ngIf="imageURL !== '' && imageURL && form.get('avatar').valid">
-          <img style="width: 100px;height: auto;" [src]="imageURL" [alt]="form.value.title">
-        </div>
-
         <div class="row justify-content-end">
           <button [disabled]="pass.value !== confirmPass.value" type="submit" class="form-submit">Đăng ký</button>
         </div>

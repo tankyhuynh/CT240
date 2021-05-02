@@ -18,8 +18,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   menuMobile = false;
 
   private authListenerSub: Subscription;
+  private userListenerSub: Subscription;
 
-  @Input() currentUser: UserData;
+  currentUser: UserData;
+  userDataInLocalStorage: UserData;
   tmpImgPath = "https://images.pexels.com/photos/4397900/pexels-photo-4397900.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260";
 
   items = [
@@ -38,27 +40,33 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.isUserAuthenticated = this.authService.getIsAuthenticated();
 
-    this.profileService.currentUserObservable.subscribe(
-      (currentUser) => this.currentUser = currentUser
-    );
-    console.log(this.currentUser);
+    if ( localStorage.getItem('userData') ) {
+      this.userDataInLocalStorage = JSON.parse(localStorage.getItem('userData'))
+    }
 
     this.authListenerSub = this.authService
       .getAuthStatusListener()
       .subscribe((isAuth) => {
         this.isUserAuthenticated = isAuth;
       });
+
+    this.userListenerSub = this.profileService
+                      .getUserStatusListener()
+                      .subscribe( userData => {
+                        this.currentUser = userData;
+                        localStorage.setItem('userData', JSON.stringify(userData));
+                      });
   }
 
   onClick() {
     this.router.navigate(['/']);
   }
 
+  onTestAuthBackend(){
+    this.profileService.getOneById(this.authService.getUserId());
+  }
+
   onLogout() {
-    this.sharingService.changeMenuItems([
-      ['msg1', '/chat/chat1'],
-      ['msg2', '/chat/chat2'],
-    ]);
     this.authService.logout();
   }
 

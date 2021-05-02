@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { SharingService } from 'src/app/sharing.service';
+import { ContactListFriendService } from './contact-list-friend.service';
+import { ListFriendModel } from './list-friend.model';
 
 @Component({
   selector: 'app-list-friends',
@@ -9,14 +11,23 @@ import { SharingService } from 'src/app/sharing.service';
 export class ListFriendsComponent implements OnInit {
   valHideContactContent = false;
 
-  imgPath = 'http://localhost:3000/images/img.jpg';
+  private listFriends: ListFriendModel[];
 
-  constructor(private hideContent: SharingService) {}
+  constructor(
+    private hideContent: SharingService,
+    private listFriendService: ContactListFriendService) {}
 
   ngOnInit(): void {
     this.hideContent.showContentMobile.subscribe(
       (hide) => (this.valHideContactContent = hide)
     );
+      this.listFriendService
+            .getAll()
+            .subscribe(response => {
+              this.listFriends = response.listFriend;
+              console.log("In ListFriend Component work!!!");
+              console.log(this.listFriends);
+            });
   }
 
   contactContent() {

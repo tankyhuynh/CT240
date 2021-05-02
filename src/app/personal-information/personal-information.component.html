@@ -8,11 +8,11 @@
         <input
           type="text"
           class="add-friend__input edit-input"
-          placeholder="Họ và tên"
           name="name"
           id="edit-name"
-          value="Chương Quân"
-          disabled
+          [value]="userData?.name"
+          [disabled]="isDiable"
+          #username
           matInput
         />
       </div>
@@ -22,8 +22,10 @@
           type="submit"
           class="add-friend__card--icon"
           id="save-edit-user"
+          (click)="changeDiableStatus()"
         >
-          <i class="fas fa-edit"></i> Chỉnh sửa
+          <i class="fas fa-edit" ></i> Chỉnh sửa
+
         </button>
       </div>
     </form>
@@ -34,23 +36,14 @@
     </div>
 
     <form action="">
-      <div class="row justify-content-center align-items-center">
-        <input
-          type="password"
-          class="add-friend__input"
-          placeholder="Mật khẩu cũ"
-          name="password"
-          id="edit-password"
-          matInput
-        />
-      </div>
+
       <div class="row error" id="edit-password-err"></div>
 
       <div class="row justify-content-center">
         <input
           type="password"
           class="add-friend__input"
-          placeholder="Mật khẩu mới"
+          [placeholder]="defaultPlaceHolderText[0]"
           name="new-password"
           id="edit-new-password"
           matInput
@@ -63,7 +56,7 @@
           matInput
           type="password"
           class="add-friend__input"
-          placeholder="Xác nhận mật khẩu"
+          [placeholder]="defaultPlaceHolderText[1]"
           name="re-password"
           id="edit-re-password"
         />
@@ -75,6 +68,7 @@
           type="submit"
           class="add-friend__card--icon"
           id="save-change-password"
+          [disabled]="isDiable"
         >
           <i class="fas fa-save"></i> Lưu
         </button>

@@ -1,10 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
 
+
 import { Subscription } from 'rxjs';
 import { AutheService } from './auth/auth.service';
 import { UserData } from './auth/user.model';
 import { ProfileService } from './personal-information/profile.service';
 import { SharingService } from './sharing.service';
+import { SocketModel } from './socket/socket.model';
+import { SocketService } from './socket/socket.service';
 
 
 
@@ -12,7 +15,9 @@ import { SharingService } from './sharing.service';
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [SharingService]
+  providers: [
+    SharingService,
+    SocketService]
 })
 export class AppComponent implements OnInit {
 
@@ -21,11 +26,15 @@ export class AppComponent implements OnInit {
   currentUser: UserData;
 
   private authListenerSub: Subscription;
+  private userListenerSub: Subscription;
+
+  private socketData: SocketModel;
 
   constructor(
       private profileService: ProfileService,
       private authService: AutheService,
-      private sharingData: SharingService
+      private sharingData: SharingService,
+      private socketService: SocketService
       ){};
 
   ngOnInit(){
@@ -43,16 +52,13 @@ export class AppComponent implements OnInit {
     this.authListenerSub = this.authService
                   .getAuthStatusListener()
                   .subscribe(isAuth => {
-                    if (isAuth) {
-                      this.currentUser = this.profileService.getCurrentUserLogin();
-                      console.log("Current UserLogin in App Root");
-                      console.log(this.authService.getUserId());
-                      console.log(this.currentUser);
-                    }
                     this.isUserAuthenticated = isAuth;
                   });
 
+  }
 
+  sendMessage(data){
+    this.socketService.sendMessage(data);
   }
 
 }

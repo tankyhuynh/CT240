@@ -42,14 +42,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     private sharingService: SharingService,
     private route: ActivatedRoute,
     private chatService: ChatService
-  ) {
-    const items = [
-      ['msg1', ''],
-      ['msg2', ''],
-    ];
-    this.sharingService.changeMenuItems(items);
-    sharingService.changeMenuClass('message');
-  }
+  ) {}
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {

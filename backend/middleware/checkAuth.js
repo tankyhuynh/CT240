@@ -4,11 +4,11 @@ module.exports = (req, res, next) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
     const decodeToken = jwt.verify(token, process.env.JWT_KEY);
-    req.userData = {mobilePhone: decodeToken.mobilePhone, userId: decodeToken.userId};
+    req.userData = {mobilePhone: decodeToken.mobilePhone, _id: decodeToken._id};
     next();
   } catch (error) {
     res.status(401).json({
-      message: "You are not autheticated"
+      message: "You are not authenticated"
     });
   }
 

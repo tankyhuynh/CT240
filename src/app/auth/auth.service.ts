@@ -19,9 +19,11 @@ export class AutheService {
   private token: string;
   private tokenTimer: any;
   private authStatusListener = new Subject<boolean>();
+  private reloginStatusListener = new Subject<boolean>();
   private isAuthenticated = false;
   private userId: string;
   private userData: UserData;
+
 
   getUserId(){
     return this.userId;
@@ -29,6 +31,10 @@ export class AutheService {
 
   getToken(){
     return this.token;
+  }
+
+  getReloginStatusListener(){
+    return this.reloginStatusListener.asObservable();
   }
 
   getAuthStatusListener(){
@@ -43,7 +49,8 @@ export class AutheService {
   constructor(
     private http: HttpClient,
     private router: Router,
-    private profileService: ProfileService){};
+    private profileService: ProfileService,
+    private sharingService: SharingService){};
 
 
 
@@ -59,15 +66,31 @@ export class AutheService {
       });
   }
 
+  confirmLogin(phone: string, password: string){
+    const authData: AuthData = {phone: phone, password: password};
+    this.http
+          .post<{_id: string, token: string, expiresIn: number}>(BACKEND_URL + "login", authData)
+            .subscribe(response => {
+              this.token = response.token;
+              console.log(response);
+              if ( this.token ) {
+                this.sharingService.changeReloginStatus(true);
+                // this.router.navigate(['/']);
+              }
+            }, err => {
+               // this.router.navigate(['/']);
+            });
+  }
+
   login(mobilePhone: string, password: string){
 
     const authData: AuthData = {phone: mobilePhone, password: password};
     this.http
-          .post<{token: string, expiresIn: number, _id: string}>(BACKEND_URL + "login", authData)
+          .post<{_id: string, token: string, expiresIn: number}>(BACKEND_URL + "login", authData)
             .subscribe(response => {
-              const token = response.token;
+              this.token = response.token;
               console.log(response);
-              if ( token ) {
+              if ( this.token ) {
                 const expiresInDuration =  3600;
                 this.setAuthTimer(expiresInDuration);
                 this.isAuthenticated = true;
@@ -77,18 +100,17 @@ export class AutheService {
                 const now = new Date();
                 const expirationDate = new Date(now.getTime() + (expiresInDuration * 1000));
 
+                this.profileService.getOneById(this.userId);
 
-                this.userData = this.profileService.getOneById(this.userId);
-                console.log("UserData in auth service");
-                console.log(this.userId);
-                console.log(this.userData);
+                this.saveDataToLocalStorage(this.token, expirationDate, this.userId, this.userData);
 
-                this.saveDataToLocalStorage(token, expirationDate, this.userId, this.userData);
                 this.router.navigate(['/']);
+
               }
             }, err => {
               this.router.navigate(['/auth/login']);
             });
+            return false;
   }
 
   logout(){
@@ -113,6 +135,7 @@ export class AutheService {
     localStorage.removeItem('expiration');
     localStorage.removeItem('userId');
     localStorage.removeItem('userData');
+
   }
 
   private setAuthTimer(duration: number){
@@ -150,7 +173,10 @@ export class AutheService {
     const token = localStorage.getItem('token');
     const expirationDate = localStorage.getItem('expiration');
     const userId = localStorage.getItem('userId');
-    // const userData = JSON.parse(localStorage.getItem('userData'));
+    let userData;
+    // if(localStorage.getItem('userData')){
+    //    userData= JSON.parse(localStorage.getItem('userData'));
+    // }
 
 
     if ( !token || !expirationDate ) {

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { UserData } from './auth/user.model';
 
 @Injectable()
 export class SharingService {
@@ -14,7 +15,21 @@ export class SharingService {
   private showSource = new BehaviorSubject<boolean>(true);
   showContentMobile = this.showSource.asObservable();
 
+  private userDataSource = new BehaviorSubject<UserData>(null);
+  currentUserData = this.userDataSource.asObservable();
+
+  private reloginSource = new BehaviorSubject<boolean>(false);
+  currentReloginStatus = this.reloginSource.asObservable();
+
   constructor() {}
+
+  changeReloginStatus(isRelogin: boolean) {
+    this.reloginSource.next(isRelogin);
+  }
+
+  changeUserData(userData: UserData) {
+    this.userDataSource.next(userData);
+  }
 
   changeMenuItems(message: string[][]) {
     this.menuItemsSource.next(message);

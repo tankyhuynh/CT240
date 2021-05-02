@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, NgForm, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { ProfileService } from 'src/app/personal-information/profile.service';
 import { AutheService } from '../auth.service';
 
 @Component({
@@ -15,7 +16,9 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   form: FormGroup;
 
-  constructor(public authSevice: AutheService) { }
+  constructor(
+    public authSevice: AutheService,
+    public profileService: ProfileService) { }
 
   ngOnInit(): void {
     this.authStatusSub = this.authSevice.getAuthStatusListener()
@@ -38,6 +41,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
     this.authSevice.login(this.form.value.phone, this.form.value.password);
+
   }
 
   ngOnDestroy(){

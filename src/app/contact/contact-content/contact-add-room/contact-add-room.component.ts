@@ -2,14 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { SharingService } from 'src/app/sharing.service';
 
 @Component({
-  selector: 'app-list-add-friends',
-  templateUrl: './list-add-friends.component.html',
+  selector: 'app-contact-add-group',
+  templateUrl: './contact-add-room.component.html',
   styleUrls: ['../contact-content.component.css'],
 })
-export class ListAddFriendsComponent implements OnInit {
+export class ContactAddGroupComponent implements OnInit {
   valHideContactContent = false;
-
-  imgPath = 'http://localhost:3000/images/img.jpg';
 
   constructor(private hideContent: SharingService) {}
 

@@ -46,13 +46,13 @@ exports.userLogin = (req, res, next) => {
             });
           }
           const token = jwt.sign({
-                            phone: fetchedUser.phone,userId: fetchedUser._id},
+                            phone: fetchedUser.phone,_id: fetchedUser._id},
                             process.env.JWT_KEY,
                             {expiresIn: "30m"});
           res.status(200).json({
             token: token,
             expiresIn: 3600,
-            userId: fetchedUser._id,
+            _id: fetchedUser._id,
             phone: fetchedUser.phone
           });
         })
@@ -63,7 +63,7 @@ exports.userLogin = (req, res, next) => {
         });
 }
 
-exports.getUser = (req, res, next) => {
+exports.getUsers = (req, res, next) => {
 
   const postQuery = User.find();
   let fetchedUsers;

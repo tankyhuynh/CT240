@@ -1,0 +1,37 @@
+
+<div class="container-fluid">
+  <div class="row justify-content-center">
+    <div class="form-log-res">
+      <form
+        [formGroup]="form"
+        (submit)="onLogin()"
+      >
+        <div class="row justify-content-center">
+          <input
+            class="form-input"
+            matInput
+            type="text"
+            name="mobilePhone"
+            formControlName="phone"
+            placeholder="Số điện thoại"
+          />
+        </div>
+        <div class="row justify-content-center">
+          <input
+            class="form-input"
+            matInput
+            type="password"
+            name="password"
+            formControlName="password"
+            placeholder="Mật khẩu"
+          />
+        </div>
+
+        <div class="row justify-content-end" mat-dialog-actions>
+          <button (click)="onCancel()" #closeButton type="submit" class="form-submit">Hủy</button>
+          <button (click)="onLogin()" type="submit" class="form-submit">Đăng nhập</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
