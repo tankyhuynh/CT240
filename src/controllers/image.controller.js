@@ -8,10 +8,9 @@ function upload(req, res){
             sendReject(res, "upload failure");
             return;
         }
-        sendSuccess(res, {url: req.file.path.split(/[\/\\]/).join("\/")});
+        sendSuccess(res, {url: (process.env.SERVER_DOMAIN || "") +  req.file.path.split(/[\/\\]/).join("\/")});
         return;
     });
-
 }
 
 module.exports = {

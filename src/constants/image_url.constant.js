@@ -1,3 +1,3 @@
 module.exports = {
-    avatar_url_default: "/public/images/defaultAvatar.png"
+    avatar_url_default: (process.env.SERVER_DOMAIN || "") + "/public/images/defaultAvatar.png"
 }

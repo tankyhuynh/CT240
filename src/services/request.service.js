@@ -4,7 +4,6 @@ const FriendService = require('./friend.service');
 
 async function create(sender, receiver, introduce){
     if(await FriendService.isFriend(sender, receiver)) return null;
-
     let request = await RequestModel.findOne({sender, receiver}).lean();
     if(!request){
         request = new RequestModel({sender, receiver, introduce});
@@ -18,11 +17,11 @@ async function getWithId(_id, actor){
     return request;
 }
 async function getSended(sender){
-    const requests = await RequestModel.find({sender});
+    const requests = await RequestModel.find({sender}).populate("sender").populate("receiver").lean();
     return requests;
 }
 async function getReceived(receiver){
-    const requests = await RequestModel.find({receiver});
+    const requests = await RequestModel.find({receiver}).populate("sender").populate("receiver").lean();
     return requests;
 }
 async function removeWithId(_id, actor){

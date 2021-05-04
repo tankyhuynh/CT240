@@ -52,7 +52,7 @@ async function update(req, res){
     return;
 }
 function getUrl(id){
-    return rootUrl + `/friends/${id}`;
+    return (process.env.SERVER_DOMAIN || "") +  rootUrl + `/friends/${id}`;
 }
 module.exports = {
     get,

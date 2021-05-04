@@ -24,7 +24,7 @@ async function get(req, res){
 async function getOne(req, res){
     let {id} = merger(req);
     let auth = getAuth(req);
-    sendReject(res, "Router deleted!");
+    sendReject(res, {error:"Router deleted!"});
     return;
 }
 
@@ -42,7 +42,7 @@ async function remove(req, res){
 }
 
 function getUrl(page){
-    return rootUrl + `/friends?page=${page}`
+    return (process.env.SERVER_DOMAIN || "") + rootUrl + `/friends?page=${page}`
 }
 module.exports = {
     get, 

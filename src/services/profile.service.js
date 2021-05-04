@@ -17,7 +17,12 @@ async function createWithAccountId(_id, name){
 
 // get a profile with id
 async function getWithId(_id){
-    const profile = await ProfileModel.findOne({_id});
+    let profile;
+    try {
+        profile = await ProfileModel.findOne({_id}); 
+    } catch {
+        return null;
+    }
     return profile;
 }
 
