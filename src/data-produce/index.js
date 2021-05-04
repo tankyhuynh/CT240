@@ -1,6 +1,6 @@
 function request(data, lprops){
     lprops.forEach(el=> {
-        if(!data[el])  throw new Error("Data incorrect!")});
+        if(data[el]===undefined || data[el] === "" || data[el] === null)  throw new Error("Data incorrect!")});
     return data;
 }
 function merger(req){

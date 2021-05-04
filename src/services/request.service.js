@@ -29,6 +29,7 @@ async function removeWithId(_id, actor){
     await RequestModel.deleteOne({_id, sender: actor});
     return true;
 }
+
 async function replyRequest(_id, accept, receiver){
     // only receiver can reply
     const request = await RequestModel.findOneAndDelete({_id, receiver});

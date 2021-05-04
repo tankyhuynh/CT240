@@ -27,7 +27,6 @@ async function getOne(req, res){
 async function create(req, res){
     let data;
     try {
-        console.log(merger(req));
         data = request(merger(req), ["receiver", "introduce"]);
         console.log(data);
     } catch {
