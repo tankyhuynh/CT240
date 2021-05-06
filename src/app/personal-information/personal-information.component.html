@@ -1,71 +1,74 @@
 <div class="row justify-content-center setting">
-
-  <!-- Chỉnh tên -->
-  <div class="col-md-5 col-12 setting-content align-self-start">
-    <div class="row justify-content-between">
-      <span> <i class="fas fa-cog"></i> Chỉnh sửa thông tin: #{{ userId }} </span>
-    </div>
-    <form action="" method="POST">
-      <div class="row justify-content-center">
-        <input
-          type="text"
-          class="add-friend__input edit-input"
-          name="name"
-          id="edit-name"
-          [value]="userData?.name"
-          [disabled]="isDiable"
-          #username
-          matInput
-        />
-      </div>
-      <div class="row error" id="edit-name-err"></div>
-      <div class="row justify-content-end">
-        <button
-          type="submit"
-          class="add-friend__card--icon"
-          id="save-edit-user"
-          (click)="changeDiableStatus()"
-        >
-          <i class="fas fa-edit" ></i> Chỉnh sửa
-
-        </button>
-      </div>
-    </form>
-  </div>
-
-
-  <!-- Chỉnh avatar  -->
-  <div class="col-md-5 col-12 setting-content align-self-start">
-    <div class="row justify-content-between">
-      <span> <i class="fas fa-cog"></i> Đỗi avatar </span>
-    </div>
-
-      <form (submit)="updateAvatar()" class="row justify-content-center">
-        <div>
-          <button type="button" mat-button (click)="filePicker.click()">Pick Image</button>
-          <input type="file" #filePicker (change)="onFilePicked($event)">
+  <div class="col-md-5 col-12">
+    <div class="row">
+      <!-- Chỉnh tên -->
+      <div class="col-md-11 col-12 setting-content align-self-start">
+        <div class="row justify-content-between">
+          <span>
+            <i class="fas fa-cog"></i> Chỉnh sửa thông tin: #{{ userId }}
+          </span>
         </div>
-
-        <div class="imagePreview" *ngIf="imageURL !== '' && imageURL && form.get('image').valid">
-          <img [src]="imageURL" >
+        <form action="" method="POST">
+          <div class="row justify-content-center">
+            <input
+              type="text"
+              class="add-friend__input edit-input"
+              name="name"
+              id="edit-name"
+              [value]="userData?.name"
+              [disabled]="isDiable"
+              #username
+              matInput
+            />
+          </div>
+          <div class="row error" id="edit-name-err"></div>
+          <div class="row justify-content-end">
+            <button
+              type="submit"
+              class="add-friend__card--icon"
+              id="save-edit-user"
+              (click)="changeDiableStatus()"
+            >
+              <i class="fas fa-edit"></i> Chỉnh sửa
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <!-- Chỉnh avatar  -->
+      <div class="col-md-11 col-12 setting-content align-self-start">
+        <div class="row justify-content-between">
+          <span> <i class="fas fa-cog"></i> Đỗi avatar </span>
         </div>
+        <form (submit)="updateAvatar()" class="row justify-content-center">
+          <div class="col">
+            <div class="row m-3">
+              <input type="file" #filePicker (change)="onFilePicked($event)" />
+            </div>
 
-        <br> <br>
-        <button mat-button>Change avatar</button>
-
-      </form>
-
+            <div
+              class="imagePreview row justify-content-center"
+              *ngIf="imageURL !== '' && imageURL && form.get('image').valid"
+            >
+              <img [src]="imageURL" />
+            </div>
+            <div class="row justify-content-center">
+              <button class="add-friend__card--icon">Change avatar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
-
 
   <!-- Đổi mật khẩu -->
-  <div class="col-md-5 col-12 setting-content align-self-center">
+  <div class="col-md-5 col-12 setting-content align-self-start">
     <div class="row justify-content-between">
       <span> <i class="fas fa-key"></i> Đổi mật khẩu: </span>
     </div>
 
     <form action="">
-
       <div class="row error" id="edit-password-err"></div>
 
       <div class="row justify-content-center">

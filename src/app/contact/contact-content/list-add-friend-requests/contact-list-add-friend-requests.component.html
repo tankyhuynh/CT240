@@ -4,8 +4,6 @@
     <app-contact-menu></app-contact-menu>
   </div>
   <div class="col-md-8 content" [ngClass]="{ hide: valHideContactContent }">
-
-
     <div class="col" id="list-add-friends">
       <div
         class="row list-contacts__title align-items-center justify-content-between"
@@ -24,35 +22,62 @@
       <div class="row list-contacts__tbl">
         <div class="col">
           <div class="row">
-
-
-            <div class="list-contacts__card" *ngFor="let friendRequest of listAddFriendRequests">
+            <div
+              class="list-contacts__card"
+              *ngFor="let friendRequest of listAddFriendRequests"
+            >
               <div>
-                <img [src]="'http://localhost:3000' + friendRequest.sender?.avatar" alt="" class="img-fluid card__img" />
+                <img
+                  [src]="'http://localhost:3000' + friendRequest.sender?.avatar"
+                  alt=""
+                  class="img-fluid card__img"
+                />
               </div>
               <div class="row justify-content-center">
-                <span *ngIf="currentUserId !== friendRequest.sender._id" class="card__title">
+                <span
+                  *ngIf="currentUserId !== friendRequest.sender._id"
+                  class="card__title"
+                >
                   {{ friendRequest.sender?.name }}
                 </span>
-                <span *ngIf="currentUserId === friendRequest.sender._id" class="card__title">
+                <span
+                  *ngIf="currentUserId === friendRequest.sender._id"
+                  class="card__title"
+                >
                   {{ friendRequest.receiver?.name }}
                 </span>
               </div>
               <div class="row justify-content-center">
-                <span *ngIf="currentUserId !== friendRequest.sender._id" class="card__icon" (click)="isAcceptFriendRequest(friendRequest._id, true)"> Đồng ý </span>
-                <span class="card__icon" (click)="isAcceptFriendRequest(friendRequest._id, false)"> Xóa </span>
+                <span class="card__introduce">
+                  <i
+                    >{{ friendRequest.introduce }} sajhdfgjasgf
+                    jsagdfjhsagfjhasgjhfgsajhfg jhsag fjhsgjgdjhgsjhgjagj</i
+                  >
+                </span>
+              </div>
+              <div class="row justify-content-center">
+                <span
+                  *ngIf="currentUserId !== friendRequest.sender._id"
+                  class="card__icon"
+                  (click)="isAcceptFriendRequest(friendRequest._id, true)"
+                >
+                  Đồng ý
+                </span>
+                <span
+                  class="card__icon"
+                  (click)="isAcceptFriendRequest(friendRequest._id, false)"
+                >
+                  Xóa
+                </span>
               </div>
             </div>
 
-            <p *ngIf="listAddFriendRequests.length <= 0"> Hiện tại bạn không có lời mời kết bạn </p>
-
-
+            <p class="" *ngIf="listAddFriendRequests.length <= 0">
+              Hiện tại bạn không có lời mời kết bạn
+            </p>
           </div>
         </div>
       </div>
     </div>
-
-
   </div>
 </div>
-

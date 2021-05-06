@@ -1,6 +1,6 @@
 <div class="row justify-content-center">
   <div class="col-md-4 menu">
-    <app-search ></app-search>
+    <app-search></app-search>
     <app-contact-menu></app-contact-menu>
   </div>
   <div class="col-md-8 content" [ngClass]="{ hide: valHideContactContent }">
@@ -30,9 +30,9 @@
               (keyup)="searchFriend(friendId.value)"
               id="add-friend-ip"
             />
-            <button type="submit" class="add-friend__submit">
+            <span class="add-friend__submit">
               <i class="fas fa-search"></i>
-            </button>
+            </span>
           </div>
         </form>
         <br />
@@ -55,11 +55,18 @@
               <span class="add-friend__card--title"> {{ friend?.phone }} </span>
             </div>
             <div class="row justify-content-center">
-              <div>
-                <input #introduction class="add-friend__card--icon" placeholder="Lời nhắn">
-              </div>
-              <span class="add-friend__card--icon" (click)= "addFriend(friendId.value, introduction.value)"> Gửi lời mời </span>
-              <span class="add-friend__card--icon"> Hủy </span>
+              <input
+                type="text"
+                #introduction
+                class="add-friend__introduction"
+                placeholder="Nhập lời chào..."
+              />
+              <span
+                class="add-friend__card--icon"
+                (click)="addFriend(friendId.value, introduction.value)"
+              >
+                Gửi lời mời
+              </span>
             </div>
           </div>
         </div>

@@ -1,11 +1,17 @@
+.labelAvatar {
+  margin: 0.5rem 1rem;
+  cursor: pointer;
+}
+
 .imagePreview {
-  height: 15rem;
-  margin: 1rem 0;
+  text-align: center;
 }
 
 .imagePreview img {
-  /* width: 200px; */
-  height: 100%;
+  width: 7.5rem;
+  height: 7.5rem;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .setting {
