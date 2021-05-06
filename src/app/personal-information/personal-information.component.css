@@ -1,3 +1,13 @@
+.imagePreview {
+  height: 15rem;
+  margin: 1rem 0;
+}
+
+.imagePreview img {
+  /* width: 200px; */
+  height: 100%;
+}
+
 .setting {
   margin: 1rem;
   border-radius: 20px;

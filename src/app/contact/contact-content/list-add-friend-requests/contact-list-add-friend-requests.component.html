@@ -4,6 +4,8 @@
     <app-contact-menu></app-contact-menu>
   </div>
   <div class="col-md-8 content" [ngClass]="{ hide: valHideContactContent }">
+
+
     <div class="col" id="list-add-friends">
       <div
         class="row list-contacts__title align-items-center justify-content-between"
@@ -22,173 +24,35 @@
       <div class="row list-contacts__tbl">
         <div class="col">
           <div class="row">
-            <div class="list-contacts__card">
+
+
+            <div class="list-contacts__card" *ngFor="let friendRequest of listAddFriendRequests">
               <div>
-                <img src="" alt="" class="img-fluid card__img" />
+                <img [src]="'http://localhost:3000' + friendRequest.sender?.avatar" alt="" class="img-fluid card__img" />
               </div>
               <div class="row justify-content-center">
-                <span class="card__title">
-                  Tên bạn bèsdfas sadjf à jshad fjhsa
+                <span *ngIf="currentUserId !== friendRequest.sender._id" class="card__title">
+                  {{ friendRequest.sender?.name }}
+                </span>
+                <span *ngIf="currentUserId === friendRequest.sender._id" class="card__title">
+                  {{ friendRequest.receiver?.name }}
                 </span>
               </div>
               <div class="row justify-content-center">
-                <span class="card__icon"> Đồng ý </span>
-                <span class="card__icon"> Xóa </span>
+                <span *ngIf="currentUserId !== friendRequest.sender._id" class="card__icon" (click)="isAcceptFriendRequest(friendRequest._id, true)"> Đồng ý </span>
+                <span class="card__icon" (click)="isAcceptFriendRequest(friendRequest._id, false)"> Xóa </span>
               </div>
             </div>
-            <div class="list-contacts__card">
-              <div>
-                <img src="" alt="" class="img-fluid card__img" />
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__title">
-                  Tên bạn bèsdfas sadjf à jshad fjhsa
-                </span>
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__icon"> Đồng ý </span>
-                <span class="card__icon"> Xóa </span>
-              </div>
-            </div>
-            <div class="list-contacts__card">
-              <div>
-                <img src="" alt="" class="img-fluid card__img" />
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__title">
-                  Tên bạn bèsdfas sadjf à jshad fjhsa
-                </span>
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__icon"> Đồng ý </span>
-                <span class="card__icon"> Xóa </span>
-              </div>
-            </div>
-            <div class="list-contacts__card">
-              <div>
-                <img src="" alt="" class="img-fluid card__img" />
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__title">
-                  Tên bạn bèsdfas sadjf à jshad fjhsa
-                </span>
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__icon"> Đồng ý </span>
-                <span class="card__icon"> Xóa </span>
-              </div>
-            </div>
-            <div class="list-contacts__card">
-              <div>
-                <img src="" alt="" class="img-fluid card__img" />
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__title">
-                  Tên bạn bèsdfas sadjf à jshad fjhsa
-                </span>
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__icon"> Đồng ý </span>
-                <span class="card__icon"> Xóa </span>
-              </div>
-            </div>
-            <div class="list-contacts__card">
-              <div>
-                <img src="" alt="" class="img-fluid card__img" />
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__title">
-                  Tên bạn bèsdfas sadjf à jshad fjhsa
-                </span>
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__icon"> Đồng ý </span>
-                <span class="card__icon"> Xóa </span>
-              </div>
-            </div>
-            <div class="list-contacts__card">
-              <div>
-                <img src="" alt="" class="img-fluid card__img" />
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__title">
-                  Tên bạn bèsdfas sadjf à jshad fjhsa
-                </span>
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__icon"> Đồng ý </span>
-                <span class="card__icon"> Xóa </span>
-              </div>
-            </div>
-            <div class="list-contacts__card">
-              <div>
-                <img src="" alt="" class="img-fluid card__img" />
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__title">
-                  Tên bạn bèsdfas sadjf à jshad fjhsa
-                </span>
-              </div>
-              <div class="row justify-content-center">
-                <span class="card__icon"> Đồng ý </span>
-                <span class="card__icon"> Xóa </span>
-              </div>
-            </div>
+
+            <p *ngIf="listAddFriendRequests.length <= 0"> Hiện tại bạn không có lời mời kết bạn </p>
+
+
           </div>
         </div>
       </div>
     </div>
+
+
   </div>
 </div>
 
-<!-- <div class="overlay" [ngClass]="{ show: valShowAddFriendsContent }"></div>
-<div class="row justify-content-center">
-  <div class="add-friend" [ngClass]="{ show: valShowAddFriendsContent }">
-    <div class="row justify-content-between">
-      <span> <i class="fas fa-user-plus"></i> Thêm bạn bè </span>
-      <span (click)="addFriendsContent()">
-        <i class="fas fa-times" style="font-size: 1.2rem; cursor: pointer"></i>
-      </span>
-    </div>
-    <hr />
-    <form action="">
-      <div class="row justify-content-center">
-        <input
-          type="text"
-          class="add-friend__input"
-          placeholder="Số điện thoại hoặc ID"
-          name="add-friend-ip"
-          id="add-friend-ip"
-        />
-        <button type="submit" class="add-friend__submit">
-          <i class="fas fa-search"></i>
-        </button>
-      </div>
-    </form>
-    <br />
-    <div class="row add-friends__card" id="add-friends__card">
-      <div class="col">
-        <div class="row justify-content-center">
-          <img
-            src="{{ imgPath }}"
-            alt=""
-            class="img-fluid add-friend__card--img"
-          />
-        </div>
-        <div class="row justify-content-center">
-          <span class="add-friend__card--title"> #212 </span>
-        </div>
-        <div class="row justify-content-center">
-          <span class="add-friend__card--title"> Tên bạn bè </span>
-        </div>
-        <div class="row justify-content-center">
-          <span class="add-friend__card--title"> 0924668320 </span>
-        </div>
-        <div class="row justify-content-center">
-          <span class="add-friend__card--icon"> Gửi lời mời </span>
-          <span class="add-friend__card--icon"> Hủy </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->

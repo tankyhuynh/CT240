@@ -6,38 +6,37 @@ import { map } from 'rxjs/operators';
 import { Router } from '@angular/router'
 
 import { environment } from "../../../../environments/environment";
-import { ListFriendModel } from './list-friend.model';
+import { FriendModel } from './friend.model';
 
 const BACKEND_URL = environment.apiUrl + "/friends/";
 
 @Injectable({providedIn: 'root'})
 export class ContactListFriendService {
 
-  private listFriends: ListFriendModel;
+  private listFriends: FriendModel[];
 
   constructor(private http: HttpClient, private router: Router){};
 
   getAll() {
     return this.http
-      .get<{
-        listFriend: ListFriendModel[]
-      }>(BACKEND_URL);
+      .get
+      (BACKEND_URL);
 
   }
 
   getOneById(userId: string) {
     return this.http
       .get<{
-        listAddFriend: ListFriendModel[]
+        listAddFriend: FriendModel[]
       }>(BACKEND_URL + userId);
   }
 
-  saveOne(friend: ListFriendModel) {
+  saveOne(friend: FriendModel) {
     return this.http
       .post(BACKEND_URL, friend);
   }
 
-  update(id: string, friend: ListFriendModel){
+  update(id: string, friend: FriendModel){
     this.http
           .put(BACKEND_URL + id, friend);
   }

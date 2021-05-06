@@ -41,6 +41,7 @@ export class LoginComponent implements OnInit, OnDestroy {
       return;
     }
     this.authSevice.login(this.form.value.phone, this.form.value.password);
+    localStorage.setItem("phone", this.form.value.phone);
 
   }
 

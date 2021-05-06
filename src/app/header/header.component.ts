@@ -50,10 +50,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.isUserAuthenticated = isAuth;
       });
 
+
     this.userListenerSub = this.profileService
                       .getUserStatusListener()
                       .subscribe( userData => {
                         this.currentUser = userData;
+                        console.log("userData: ");
+                        console.log(this.currentUser);
                         localStorage.setItem('userData', JSON.stringify(userData));
                       });
   }

@@ -24,14 +24,17 @@
           </span>
         </div>
         <hr />
-        <form action="">
+        <form
+          [formGroup]="form"
+          (submit)="onAddRoom()"
+        >
           <label for="">Tên nhóm:</label>
           <div class="row justify-content-center">
             <input
               type="text"
               class="add-groups__input"
               placeholder="Nhập tên nhóm"
-              name="groups-name"
+              formControlName="name"
               id="groups-name"
             />
           </div>
@@ -40,33 +43,21 @@
           </label>
           <div class="row list-friends-add-groups">
             <div class="col">
-              <div class="row align-items-center list-friends-add-groups__item">
+
+              <div *ngFor="let friend of friends" class="row align-items-center list-friends-add-groups__item">
                 <input
                   class="input-checkbox"
                   type="checkbox"
                   name="add-groups"
+                  formControlName="members"
+                  [value]="friend._id"
+                  (change)="checkBoxClick($event)"
                 />
                 <img src="" alt="" class="img-fluid item__img" />
-                <span class="item__name">Chương quân</span>
+                <span class="item__name">{{ friend?.name }}</span>
               </div>
-              <div class="row align-items-center list-friends-add-groups__item">
-                <input
-                  class="input-checkbox"
-                  type="checkbox"
-                  name="add-groups"
-                />
-                <img src="" alt="" class="img-fluid item__img" />
-                <span class="item__name">Chương quân</span>
-              </div>
-              <div class="row align-items-center list-friends-add-groups__item">
-                <input
-                  class="input-checkbox"
-                  type="checkbox"
-                  name="add-groups"
-                />
-                <img src="" alt="" class="img-fluid item__img" />
-                <span class="item__name">Chương quân</span>
-              </div>
+
+
             </div>
           </div>
           <div class="row justify-content-end">

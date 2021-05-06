@@ -12,7 +12,7 @@ import { ContactListRoomService } from './contact-list-rooms.service';
 export class ListGroupsComponent implements OnInit {
   valHideContactContent = false;
 
-  private rooms: ContactListRoomModel[];
+  rooms: ContactListRoomModel[] = [];
 
   constructor(
     private hideContent: SharingService,
@@ -24,9 +24,8 @@ export class ListGroupsComponent implements OnInit {
     );
     this.roomService
           .getAll()
-          .subscribe(response => {
-            this.rooms = response.rooms;
-            console.log('List rooms service work!!');
+          .subscribe( (response:any) => {
+            this.rooms = response.data.data;
             console.log(this.rooms);
           });
   }

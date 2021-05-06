@@ -6,7 +6,6 @@ import { Router } from '@angular/router'
 
 import { environment } from "../../../../environments/environment";
 import { ListAddFriendRequestModel } from './contact-list-add-friend-requests.model';
-import { ListFriendModel } from '../list-friends/list-friend.model';
 
 const BACKEND_URL = environment.apiUrl + "/requests/";
 
@@ -19,8 +18,7 @@ export class ContactListAddFriendService {
 
   getAll() {
     return this.http
-      .get<{
-        listAddFriend: ListAddFriendRequestModel[]
+      .get<{friendRequests: []
       }>(BACKEND_URL);
   }
 
@@ -44,6 +42,17 @@ export class ContactListAddFriendService {
   delete(id: string){
     return this.http
             .delete(BACKEND_URL + id);
+  }
+
+  isAcceptFriendRequest(id: string, isAccept: boolean){
+    return this.http
+          .put(BACKEND_URL + id,
+                {accept: isAccept});
+  }
+
+  deleteFriendRequest(id: string){
+    return this.http
+                .delete(BACKEND_URL + id);
   }
 
 }

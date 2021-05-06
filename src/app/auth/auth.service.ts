@@ -69,10 +69,10 @@ export class AutheService {
   confirmLogin(phone: string, password: string){
     const authData: AuthData = {phone: phone, password: password};
     this.http
-          .post<{_id: string, token: string, expiresIn: number}>(BACKEND_URL + "login", authData)
+          .post<{data: {_id: string, token: string, expiresIn: number}}>(BACKEND_URL + "login", authData)
             .subscribe(response => {
-              this.token = response.token;
-              console.log(response);
+              this.token = response.data.token;
+              console.log(response.data);
               if ( this.token ) {
                 this.sharingService.changeReloginStatus(true);
                 // this.router.navigate(['/']);
@@ -86,15 +86,14 @@ export class AutheService {
 
     const authData: AuthData = {phone: mobilePhone, password: password};
     this.http
-          .post<{_id: string, token: string, expiresIn: number}>(BACKEND_URL + "login", authData)
+          .post<{data: {_id: string, token: string, expiresIn: number}}>(BACKEND_URL + "login", authData)
             .subscribe(response => {
-              this.token = response.token;
-              console.log(response);
+              this.token = response.data.token;
               if ( this.token ) {
                 const expiresInDuration =  3600;
                 this.setAuthTimer(expiresInDuration);
                 this.isAuthenticated = true;
-                this.userId = response._id;
+                this.userId = response.data._id;
 
                 this.authStatusListener.next(true);
                 const now = new Date();
@@ -131,11 +130,7 @@ export class AutheService {
   }
 
   private clearLocalStorage(){
-    localStorage.removeItem('token');
-    localStorage.removeItem('expiration');
-    localStorage.removeItem('userId');
-    localStorage.removeItem('userData');
-
+    localStorage.clear();
   }
 
   private setAuthTimer(duration: number){
@@ -147,10 +142,6 @@ export class AutheService {
 
   autoAuthUser(){
     const authInformation = this.getLocalStorageData();
-
-    console.log("Auto Auth");
-    console.log(authInformation);
-
     if (!authInformation) {
       return;
     }
@@ -160,7 +151,6 @@ export class AutheService {
     if ( expiredIn > 0 ) {
       this.token = authInformation.token;
       this.userId = authInformation.userId;
-      // this.userData = authInformation.userData;
 
       this.isAuthenticated = true;
       this.setAuthTimer( expiredIn/1000 );
@@ -174,10 +164,6 @@ export class AutheService {
     const expirationDate = localStorage.getItem('expiration');
     const userId = localStorage.getItem('userId');
     let userData;
-    // if(localStorage.getItem('userData')){
-    //    userData= JSON.parse(localStorage.getItem('userData'));
-    // }
-
 
     if ( !token || !expirationDate ) {
       return;
@@ -185,8 +171,7 @@ export class AutheService {
     return {
       token: token,
       expirationDate: new Date(expirationDate),
-      userId: userId,
-      // userData: userData
+      userId: userId
     }
   }
 

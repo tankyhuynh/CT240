@@ -19,9 +19,7 @@ export class ContactListRoomService {
 
   getAll() {
     return this.http
-      .get<{
-        rooms: ContactListRoomModel[]
-      }>(BACKEND_URL);
+      .get(BACKEND_URL);
 
   }
 

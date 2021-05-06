@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { UserData } from 'src/app/auth/user.model';
 import { SharingService } from 'src/app/sharing.service';
 
 @Component({
@@ -7,8 +8,8 @@ import { SharingService } from 'src/app/sharing.service';
   styleUrls: ['./chat-roomchat-header.component.css'],
 })
 export class ChatRoomchatHeaderComponent implements OnInit {
-  imgPath = 'http://localhost:3000/images/img.jpg';
-  @Input() username: string;
+  @Input() imgPath: string;
+  @Input() currentUser: UserData;
 
   show: boolean = false;
 

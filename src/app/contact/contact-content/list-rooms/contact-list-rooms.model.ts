@@ -3,5 +3,6 @@ export interface ContactListRoomModel {
   config: {},
   members: {},
   create_at: Date,
-  admin: []
+  admin: [],
+  avatar: string
 }

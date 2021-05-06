@@ -33,16 +33,20 @@ export class ProfileService {
 
   constructor(private http: HttpClient, private router: Router){};
 
+  findProfileOf(id: string){
+    return this.http.get(BACKEND_URL+ id);
+  }
+
   getOneById(id: string) {
     let reponseUser: UserData;
-    this.http
-      .get<{name: string, avatar: string}>(BACKEND_URL + id)
+    return this.http
+      .get<{data: {name: string, avatar: string}}>(BACKEND_URL + id)
       .subscribe((response) => {
         console.log("In profile service");
         console.log(response);
         reponseUser = {
-          name: response.name,
-          avatar: response.avatar,
+          name: response.data.name,
+          avatar: response.data.avatar,
           password: "",
           phone: ""
         };
@@ -52,6 +56,17 @@ export class ProfileService {
       }, error => {
         console.log(error);
       });
+
+  }
+
+
+  updateAvatar(id: string, name: string, image: File){
+    console.log('image in profile service');
+    console.log(image);
+    return this.http
+          .put(BACKEND_URL,
+                 {name: name,
+                  avatar: image});
 
   }
 

@@ -1,4 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ContactListFriendService } from 'src/app/contact/contact-content/list-friends/contact-list-friend.service';
+import { FriendModel } from 'src/app/contact/contact-content/list-friends/friend.model';
 import { SharingService } from 'src/app/sharing.service';
 
 @Component({
@@ -7,20 +9,27 @@ import { SharingService } from 'src/app/sharing.service';
   styleUrls: ['./chat-menu.component.css'],
 })
 export class ChatMenuComponent implements OnInit {
-  @Input() imgPath = 'http://localhost:3000/images/img.jpg';
+  @Input() imgPath: string;
 
-  users = ['user1', 'user2', 'user3'];
+  @Input() friends: FriendModel[];
 
   show: boolean = false;
 
-  constructor(private showContent: SharingService) {}
+  constructor(
+    private showContent: SharingService,
+    private listFriendService: ContactListFriendService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+
+  }
 
   onClickShowContent() {
     this.showContent.showContentMobile.subscribe(
       (isShow) => (this.show = isShow)
     );
     this.showContent.changeShowValue(!this.show);
+
+
+
   }
 }

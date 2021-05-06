@@ -30,8 +30,6 @@ export class ReloginComponent implements OnInit {
   ngOnInit(): void {
 
     this.form = new FormGroup({
-      'phone': new FormControl(null, {
-        validators: [Validators.required]}),
       'password': new FormControl(null, {
         validators: [Validators.required]
       })
@@ -45,7 +43,8 @@ export class ReloginComponent implements OnInit {
     if (this.form.invalid) {
       return;
     }
-    this.authSevice.confirmLogin(this.form.value.phone, this.form.value.password);
+    const phone = localStorage.getItem('phone');
+    this.authSevice.confirmLogin(phone, this.form.value.password);
 
     this.sharingService.currentReloginStatus.subscribe(isRelogin => {
       this.isLoginSuccess = isRelogin;

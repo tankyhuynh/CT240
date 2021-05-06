@@ -1,7 +1,9 @@
 <div class="row justify-content-center setting">
+
+  <!-- Chỉnh tên -->
   <div class="col-md-5 col-12 setting-content align-self-start">
     <div class="row justify-content-between">
-      <span> <i class="fas fa-cog"></i> Chỉnh sửa thông tin: </span>
+      <span> <i class="fas fa-cog"></i> Chỉnh sửa thông tin: #{{ userId }} </span>
     </div>
     <form action="" method="POST">
       <div class="row justify-content-center">
@@ -30,6 +32,33 @@
       </div>
     </form>
   </div>
+
+
+  <!-- Chỉnh avatar  -->
+  <div class="col-md-5 col-12 setting-content align-self-start">
+    <div class="row justify-content-between">
+      <span> <i class="fas fa-cog"></i> Đỗi avatar </span>
+    </div>
+
+      <form (submit)="updateAvatar()" class="row justify-content-center">
+        <div>
+          <button type="button" mat-button (click)="filePicker.click()">Pick Image</button>
+          <input type="file" #filePicker (change)="onFilePicked($event)">
+        </div>
+
+        <div class="imagePreview" *ngIf="imageURL !== '' && imageURL && form.get('image').valid">
+          <img [src]="imageURL" >
+        </div>
+
+        <br> <br>
+        <button mat-button>Change avatar</button>
+
+      </form>
+
+  </div>
+
+
+  <!-- Đổi mật khẩu -->
   <div class="col-md-5 col-12 setting-content align-self-center">
     <div class="row justify-content-between">
       <span> <i class="fas fa-key"></i> Đổi mật khẩu: </span>

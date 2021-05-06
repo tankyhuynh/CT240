@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http'
-import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { Router } from '@angular/router'
 
 import { environment } from "../../../../environments/environment";
 import { ContactAddFriendModel } from './contact-add-friend.model';
 
-const BACKEND_URL = environment.apiUrl + "/friends/";
+// Chỗ này lấy tạm path của profiles, cần path friends
+const BACKEND_URL_PROFILE = environment.apiUrl + "/profiles/";
+const BACKEND_URL = environment.apiUrl + "/requests/";
 
 @Injectable({providedIn: 'root'})
 export class ContactAddFriendService {
@@ -17,9 +17,20 @@ export class ContactAddFriendService {
 
   constructor(private http: HttpClient, private router: Router){};
 
-  saveOne(friend: ContactAddFriendModel) {
+  getOneById(friendId: string){
     return this.http
-      .post(BACKEND_URL, friend);
+          .get<{data:{_id: string,
+              name: string,
+              phone: string,
+              avatar: string}}>
+          (BACKEND_URL_PROFILE + friendId);
+  }
+
+  saveOne(friendId: string, introduce: string) {
+    return this.http
+      .post(BACKEND_URL,
+             {receiver: friendId,
+              introduce: introduce});
   }
 
   update(id: string, friend: ContactAddFriendModel){

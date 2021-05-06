@@ -5,6 +5,8 @@ import { UserData } from '../auth/user.model'
 import { MatDialog } from '@angular/material/dialog';
 import { LoginComponent } from '../auth/login/login.component';
 import { ReloginComponent } from '../relogin/relogin.component';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { mimeType } from '../auth/signup/mime-type.validator';
 
 @Component({
   selector: 'app-personal-information',
@@ -14,8 +16,12 @@ import { ReloginComponent } from '../relogin/relogin.component';
 })
 export class PersonalInformationComponent implements OnInit {
 
+  userId: string = localStorage.getItem('userId');
   userData: UserData;
   isDiable: boolean = true;
+
+  imageURL: string;
+  form: FormGroup;
 
   @ViewChild("username") username: ElementRef<any>;
   defaultPlaceHolderText = ["Mật khẩu mới", "Xác nhận mật khẩu"];
@@ -29,6 +35,14 @@ export class PersonalInformationComponent implements OnInit {
     console.log(this.userData);
     const dialogRef = this.dialog.open(ReloginComponent);
 
+    this.form = new FormGroup({
+      'image': new FormControl(null, {
+        validators: [Validators.required],
+        asyncValidators: [mimeType]
+      })
+
+    });
+
   }
 
   changeDiableStatus(){
@@ -38,6 +52,30 @@ export class PersonalInformationComponent implements OnInit {
       // this.defaultPlaceHolderText[0] = this.defaultPlaceHolderText[1] = "";
     }
     else this.defaultPlaceHolderText = ["Mật khẩu mới", "Xác nhận mật khẩu"];
+  }
+
+
+  onFilePicked(event: Event) {
+    const file = (event.target as HTMLInputElement).files[0];
+    this.form.patchValue({image: file});
+    this.form.get('image').updateValueAndValidity();
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.imageURL = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  updateAvatar(){
+
+    console.log("image");
+    console.log(this.form.value.image);
+    this.profileService
+          .updateAvatar(this.userId, this.userData.name, this.form.value.image)
+          .subscribe( (reponse:any) => {
+            console.log(reponse);
+          });
   }
 
 }
