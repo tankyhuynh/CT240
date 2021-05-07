@@ -58,6 +58,7 @@ export class ListAddFriendsComponent implements OnInit {
           .subscribe( response => {
             console.log(response);
           });
+  this.route.navigate(['/contact/content/list-add-friends']);
   }
 
   contactContent() {

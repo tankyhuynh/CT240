@@ -12,9 +12,12 @@ export class SocketService {
   private url = 'http://localhost:3000';
   private socket;
 
+  private token: string = localStorage.getItem('token');
+
   constructor() {
-    this.socket = io(this.url);
+    this.socket = io(this.url, {auth: {token: this.token}});
     console.log(this.socket);
+    console.log(`token ${this.token}`);
   }
 
 

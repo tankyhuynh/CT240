@@ -28,6 +28,8 @@ import { ProfileService } from './personal-information/profile.service'
 import { SharingService } from './sharing.service';
 import { SocketService } from './socket/socket.service';
 import { ReloginComponent } from './relogin/relogin.component';
+import { DeleteRoomComponent } from './contact/contact-content/delete-room/delete-room.component';
+import { DeleteMemberComponent } from './contact/contact-content/delete-member/delete-member.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +38,9 @@ import { ReloginComponent } from './relogin/relogin.component';
     PersonalInformationComponent,
     ErrorComponent,
     HomeComponent,
-    ReloginComponent
+    ReloginComponent,
+    DeleteRoomComponent,
+    DeleteMemberComponent
   ],
   imports: [
     BrowserModule,

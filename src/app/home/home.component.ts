@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SocketService } from '../socket/socket.service';
 
 @Component({
   selector: 'app-home',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private socketService: SocketService
+  ) {}
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  sendMessage(data){
+    this.socketService.sendMessage(data);
   }
 
 }

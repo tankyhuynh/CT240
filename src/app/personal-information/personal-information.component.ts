@@ -33,10 +33,10 @@ export class PersonalInformationComponent implements OnInit {
   ngOnInit(): void {
     this.userData = JSON.parse(localStorage.getItem('userData'))
     console.log(this.userData);
-    const dialogRef = this.dialog.open(ReloginComponent);
+    const dialogRef = this.dialog.open(ReloginComponent, {disableClose: true});
 
     this.form = new FormGroup({
-      'image': new FormControl(null, {
+      'avatar': new FormControl(null, {
         validators: [Validators.required],
         asyncValidators: [mimeType]
       })
@@ -57,8 +57,8 @@ export class PersonalInformationComponent implements OnInit {
 
   onFilePicked(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
-    this.form.patchValue({image: file});
-    this.form.get('image').updateValueAndValidity();
+    this.form.patchValue({avatar: file});
+    this.form.get('avatar').updateValueAndValidity();
 
     const reader = new FileReader();
     reader.onload = () => {
@@ -69,10 +69,10 @@ export class PersonalInformationComponent implements OnInit {
 
   updateAvatar(){
 
-    console.log("image");
-    console.log(this.form.value.image);
+    console.log("avatar");
+    console.log(this.form.value.avatar);
     this.profileService
-          .updateAvatar(this.userId, this.userData.name, this.form.value.image)
+          .updateAvatar(this.userId, this.userData.name, this.form.value.avatar)
           .subscribe( (reponse:any) => {
             console.log(reponse);
           });

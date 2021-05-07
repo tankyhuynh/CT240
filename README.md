@@ -1,4 +1,26 @@
-#MEANChat
+# MEANChat
+## Đề tài: Webchat
+  - NodeJS: api
+  - CRUD
+  - Save db
+
+## Công nghệ:
+  - NodeJS/ Express
+  - Angular
+  - Socket IO
+  - MongoDB
+  - CORS
+  - dotenv
+
+## Thiết kế:
+  + Router - Controller - Service - Model
+  + Document
+  + Content-path: /api/v1
+
+
+### Note
+- Tuần 12: Nộp SRS
+- Tuần 16: Nộp Project
 
 ## Backend 
 ### cannot delete own of addfriend request

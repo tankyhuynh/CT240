@@ -61,12 +61,12 @@ export class ProfileService {
 
 
   updateAvatar(id: string, name: string, image: File){
+    const formData = new FormData();
+    formData.append("avatar", image, "hello");
     console.log('image in profile service');
     console.log(image);
     return this.http
-          .put(BACKEND_URL,
-                 {name: name,
-                  avatar: image});
+          .put(BACKEND_URL, formData);
 
   }
 

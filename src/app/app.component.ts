@@ -16,8 +16,7 @@ import { SocketService } from './socket/socket.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   providers: [
-    SharingService,
-    SocketService]
+    SharingService]
 })
 export class AppComponent implements OnInit {
 
@@ -57,8 +56,6 @@ export class AppComponent implements OnInit {
 
   }
 
-  sendMessage(data){
-    this.socketService.sendMessage(data);
-  }
+
 
 }
