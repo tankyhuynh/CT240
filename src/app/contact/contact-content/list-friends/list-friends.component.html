@@ -22,10 +22,13 @@
       <div class="row list-contacts__tbl">
         <div class="col">
           <div class="row">
-
             <div class="list-contacts__card" *ngFor="let friend of listFriends">
               <div>
-                <img [src]="'http://localhost:3000' + friend?.avatar" alt="" class="img-fluid card__img" />
+                <img
+                  [src]="'http://localhost:3000' + friend?.avatar"
+                  alt=""
+                  class="img-fluid card__img"
+                />
               </div>
               <div class="row justify-content-center">
                 <span class="card__title">
@@ -33,13 +36,12 @@
                 </span>
               </div>
               <div>
-                <span [routerLink]="['/chat', friend._id]" class="card__icon"> Nhắn tin </span>
-                <span class="card__icon">
-                  <i class="fas fa-ellipsis-h"></i>
+                <span [routerLink]="['/chat', friend._id]" class="card__icon">
+                  Nhắn tin
                 </span>
+                <span class="card__icon"> Xóa bạn </span>
               </div>
             </div>
-
           </div>
         </div>
       </div>

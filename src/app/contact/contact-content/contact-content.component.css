@@ -368,6 +368,14 @@
   margin-left: 0.2rem;
 }
 
+/* Case List Room Chat */
+.add-member,
+.delete-member,
+.delete-room {
+  width: 35vw;
+  padding: 0 2.5rem;
+}
+
 /* Tabs Responsive */
 @media only screen and (max-width: 480px) {
   .content {
@@ -440,5 +448,18 @@
 
   .add-groups__input {
     width: 70%;
+  }
+
+  /* List Room Case */
+  .add-member,
+  .delete-member,
+  .delete-room {
+    width: 100vw;
+    padding: 0 1.5rem;
+  }
+
+  /* Item */
+  .item__name {
+    max-width: 6.5rem;
   }
 }

@@ -9,14 +9,8 @@ mat-spinner {
 }
 
 .form-log-res {
-  margin-top: 3rem;
-  width: 32.5rem;
   padding: 2rem;
   text-align: center;
-  background-color: var(--color-2);
-  border: 1px solid var(--color-1);
-  border-radius: 20px;
-  box-shadow: 2px 2px 5px -1px var(--color-1);
 }
 
 .form-title {

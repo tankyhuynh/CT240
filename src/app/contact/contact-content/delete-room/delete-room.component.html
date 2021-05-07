@@ -1,1 +1,36 @@
-<p>delete-room works!</p>
+<div class="row justify-content-center">
+  <div class="delete-room">
+    <div class="row justify-content-between align-items-center">
+      <span>
+        <i class="fas fa-sign-out-alt"></i>
+        Rời nhóm:
+      </span>
+      <span class="icon-close" mat-dialog-close>
+        <i class="fas fa-times" style="font-size: 1.2rem; cursor: pointer"></i>
+      </span>
+    </div>
+    <hr />
+    <form>
+      <label>
+        <span>Chọn quản trị viên mới:</span>
+      </label>
+      <div class="row list-friends-add-groups">
+        <div class="col">
+          <div class="row align-items-center list-friends-add-groups__item">
+            <input
+              class="input-checkbox"
+              type="radio"
+              name="add-groups"
+              formControlName="members"
+            />
+            <img src="" alt="" class="img-fluid item__img" />
+            <span class="item__name">friend?.name </span>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-end">
+        <button class="sb-add-groups" type="submit">Rời nhóm</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-delete-member',
-  templateUrl: './delete-member.component.html',
+  selector: 'app-add-member',
+  templateUrl: './add-member.component.html',
   styleUrls: ['../contact-content.component.css'],
 })
-export class DeleteMemberComponent implements OnInit {
+export class AddMemberComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {}

@@ -65,6 +65,8 @@ li {
 input[type="text"]:focus,
 input[type="submit"],
 input[type="password"]:focus,
+input[type="checkbox"]:focus,
+input[type="radio"]:focus,
 textarea:focus,
 button:focus,
 span:focus {
@@ -80,4 +82,8 @@ span:focus {
   right: 0;
   z-index: 2;
   background-color: rgba(0, 0, 0, 0.3);
+}
+
+.overlay.show {
+  display: inline;
 }

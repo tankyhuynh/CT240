@@ -22,31 +22,47 @@
       <div class="row list-contacts__tbl">
         <div class="col">
           <div class="row">
-
             <div class="list-contacts__card" *ngFor="let room of rooms">
               <div>
-                <img [src]="'http://localhost:3000' + (room?.avatar || '/public/images/defaultAvatar.png')" alt="" class="img-fluid card__img" />
+                <img
+                  [src]="
+                    'http://localhost:3000' +
+                    (room?.avatar || '/public/images/defaultAvatar.png')
+                  "
+                  alt=""
+                  class="img-fluid card__img"
+                />
               </div>
               <div class="row justify-content-center">
                 <span class="card__title">
                   {{ room?.name }}
                 </span>
               </div>
-              <div>
+              <div style="display: none">
                 <span class="card__icon"> Nhắn tin </span>
-                <span class="card__icon">
-                  <i class="fas fa-ellipsis-h"></i>
+                <span class="card__icon"> Rời nhóm </span>
+              </div>
+              <div>
+                <span class="card__icon" (click)="addMember()">
+                  <i class="fas fa-user-plus"></i>
+                </span>
+                <span class="card__icon" (click)="deleteMember()">
+                  <i class="fas fa-user-minus"></i>
+                </span>
+                <span class="card__icon" (click)="deleteRoom()">
+                  <i class="fas fa-sign-out-alt"></i>
                 </span>
               </div>
             </div>
-            <p *ngIf="rooms.length <= 0"> Hiện tại bạn không có nhóm chat </p>
-
+            <p *ngIf="rooms.length <= 0">Hiện tại bạn không có nhóm chat</p>
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+<!-- Delete Member -->
+<!-- <app-delete-member></app-delete-member> -->
 <!-- <div class="overlay" [ngClass]="{ show: valShowAddFriendsContent }"></div>
 <div class="row justify-content-center">
   <div class="add-groups" [ngClass]="{ show: valShowAddFriendsContent }">
