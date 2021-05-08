@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 import { io } from 'socket.io-client';
+import { AutheService } from '../auth/auth.service';
+import { MessageModel } from '../chat/chat-roomchat/chat-roomchat-message.model';
 
 
 @Injectable({
@@ -12,17 +15,33 @@ export class SocketService {
   private url = 'http://localhost:3000';
   private socket;
 
-  private token: string = localStorage.getItem('token');
+  newMessage: MessageModel;
 
-  constructor() {
-    this.socket = io(this.url, {auth: {token: this.token}});
-    console.log(this.socket);
-    console.log(`token ${this.token}`);
+  constructor(private authService: AutheService) {}
+
+  setUpConnnection(){
+    const token = this.authService.getToken();
+    this.socket = io(this.url, {auth: {token: token}});
+
   }
 
+  public getMessages = () => {
+    return Observable.create((observer) => {
+            this.socket.on('message:receive', (message) => {
+                observer.next(message);
+            });
+    });
+}
 
-  sendMessage(data) {
-    this.socket.emit('message:send', data);
+  sendMessage(room: string, data: string) {
+    this.socket.emit('message:send', {room: room, data: data});
+    this.socket.on('message:receive', (data) => {
+      this.newMessage = data;
+      console.log(this.newMessage);
+    });
     this.message = '';
   }
+
+
+
 }

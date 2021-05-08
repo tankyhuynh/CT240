@@ -1,0 +1,42 @@
+<div class="row justify-content-center">
+  <div class="add-member">
+    <div class="row justify-content-between align-items-center">
+      <span>
+        <i [class]="data.className"></i>
+        {{ data.title }}
+      </span>
+      <span class="icon-close" mat-dialog-close>
+        <i class="fas fa-times" style="font-size: 1.2rem; cursor: pointer"></i>
+      </span>
+    </div>
+    <hr />
+    <form
+      [formGroup]="form"
+      (submit)="onSubmit()"
+    >
+      <label>
+        <span>{{ data.subTitle }}</span>
+      </label>
+
+      <div class="row list-friends-add-groups" *ngFor="let friend of data.friends">
+        <div class="col">
+          <div class="row align-items-center list-friends-add-group s__item">
+            <input
+              class="input-checkbox"
+              type="checkbox"
+              name="add-groups"
+
+            />
+            <img [src]="'http://localhost:3000' + friend?.avatar" alt="" class="img-fluid item__img" />
+            <span class="item__name">{{ friend.name }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="row justify-content-end">
+        <button *ngIf="data.type === 'add' " class="sb-add-groups" type="submit">Thêm</button>
+        <button *ngIf="data.type === 'delete' " class="sb-add-groups" type="submit">Xoá</button>
+        <button *ngIf="data.type === 'leave' " class="sb-add-groups" type="submit">Rời nhóm</button>
+      </div>
+    </form>
+  </div>
+</div>

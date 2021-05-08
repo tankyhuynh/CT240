@@ -4,9 +4,9 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { ContactListRoomModel } from './contact-list-rooms.model';
 import { ContactListRoomService } from './contact-list-rooms.service';
-import { AddMemberComponent } from '../add-member/add-member.component';
-import { DeleteMemberComponent } from '../delete-member/delete-member.component';
-import { DeleteRoomComponent } from '../delete-room/delete-room.component';
+import { ContactListFriendService } from '../list-friends/contact-list-friend.service';
+import { FriendModel } from '../list-friends/friend.model';
+import { ListRoomOptionsComponent } from '../list-rooms-options/list-room-options.component';
 
 @Component({
   selector: 'app-list-groups',
@@ -18,10 +18,12 @@ export class ListGroupsComponent implements OnInit {
   valHideContactContent = false;
 
   rooms: ContactListRoomModel[] = [];
+  friends: FriendModel[] = [];
 
   constructor(
     private hideContent: SharingService,
     private roomService: ContactListRoomService,
+    private friendService: ContactListFriendService,
     private dialog: MatDialog
   ) {}
 
@@ -43,14 +45,47 @@ export class ListGroupsComponent implements OnInit {
   }
 
   addMember() {
-    const dialogRef = this.dialog.open(AddMemberComponent);
+    this.getAllFriends();
+    const dialogRef = this.dialog.open(ListRoomOptionsComponent, {
+      data: {
+        type: "add",
+        className: "fas fa-user-plus",
+        title: "Thêm thành viên",
+        subTitle: "Chọn bạn bè thêm vào nhóm",
+        friends: this.friends}} );
   }
 
   deleteMember() {
-    const dialogRef = this.dialog.open(DeleteMemberComponent);
+    this.getAllFriends();
+    const dialogRef = this.dialog.open(ListRoomOptionsComponent, {
+      data: {
+        type: "delete",
+        className: "fas fa-users-cog",
+        title: "Xóa thành viên",
+        subTitle: "Thành viên trong nhóm",
+        friends: this.friends}} );
   }
 
   deleteRoom() {
-    const dialogRef = this.dialog.open(DeleteRoomComponent, {});
+    this.getAllFriends();
+    const dialogRef = this.dialog.open(ListRoomOptionsComponent, {
+      data: {
+        type: "leave",
+        className: "fas fa-sign-out-alt",
+        title: "Rời nhóm",
+        subTitle: "Chọn quản trị viên",
+        friends: this.friends}} );
   }
+
+  getAllFriends(){
+    let friends: FriendModel[];
+    this.friendService
+    .getAll()
+    .subscribe( (response:any) => {
+      friends = response.data.data;
+      console.log(friends);
+      this.friends = friends;
+    });
+  }
+
 }

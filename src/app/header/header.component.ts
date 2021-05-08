@@ -7,6 +7,7 @@ import { SharingService } from '../sharing.service';
 
 import { UserData } from '../auth/user.model'
 import { ProfileService } from '../personal-information/profile.service';
+import { ProfileModel } from '../personal-information/profile.model';
 
 @Component({
   selector: 'app-header',
@@ -20,8 +21,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private authListenerSub: Subscription;
   private userListenerSub: Subscription;
 
-  currentUser: UserData;
-  userDataInLocalStorage: UserData;
+  currentUser: ProfileModel;
+  userDataInLocalStorage: ProfileModel;
   tmpImgPath = "https://images.pexels.com/photos/4397900/pexels-photo-4397900.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260";
 
   items = [

@@ -4,6 +4,7 @@ import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angu
 import { Subscription } from 'rxjs';
 import { AutheService } from './auth/auth.service';
 import { UserData } from './auth/user.model';
+import { ProfileModel } from './personal-information/profile.model';
 import { ProfileService } from './personal-information/profile.service';
 import { SharingService } from './sharing.service';
 import { SocketModel } from './socket/socket.model';

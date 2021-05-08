@@ -8,6 +8,7 @@ import { Subject } from "rxjs";
 import { environment } from '../../environments/environment';
 import { UserData } from "../auth/user.model";
 import { SharingService } from "../sharing.service";
+import { ProfileModel } from "./profile.model";
 
 
 const BACKEND_URL = environment.apiUrl + "/profiles/";
@@ -15,12 +16,12 @@ const BACKEND_URL = environment.apiUrl + "/profiles/";
 @Injectable()
 export class ProfileService {
 
-  private currentUserLogin: UserData;
+  private currentUserLogin: ProfileModel;
 
   private userSource = new BehaviorSubject<UserData>(null);
   currentUserObservable = this.userSource.asObservable();
 
-  private userStatusListener = new Subject<UserData>();
+  private userStatusListener = new Subject<ProfileModel>();
   getUserStatusListener(){
     return this.userStatusListener.asObservable();
   }
@@ -33,22 +34,25 @@ export class ProfileService {
 
   constructor(private http: HttpClient, private router: Router){};
 
+  getProfile(){
+    return this.http
+            .get(BACKEND_URL);
+  }
+
   findProfileOf(id: string){
     return this.http.get(BACKEND_URL+ id);
   }
 
   getOneById(id: string) {
-    let reponseUser: UserData;
+    let reponseUser: ProfileModel;
     return this.http
-      .get<{data: {name: string, avatar: string}}>(BACKEND_URL + id)
+      .get<{data: ProfileModel}>(BACKEND_URL + id)
       .subscribe((response) => {
         console.log("In profile service");
         console.log(response);
         reponseUser = {
           name: response.data.name,
           avatar: response.data.avatar,
-          password: "",
-          phone: ""
         };
         this.currentUserLogin = reponseUser;
         this.userStatusListener.next(this.currentUserLogin);

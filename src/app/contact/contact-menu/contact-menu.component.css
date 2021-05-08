@@ -1,5 +1,10 @@
 /* Contact */
 
+.active {
+  background-color: var(--color-1);
+  transition: all 750ms;
+}
+
 .tabs-contact__item {
   width: 80%;
   padding: 0.75rem 2.5rem;

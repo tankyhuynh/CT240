@@ -3,16 +3,17 @@
   <div class="col">
     <div
       class="row tabs-card__item align-items-center"
-      *ngFor="let friend of friends"
-      [routerLink]="['/chat', friend._id]"
+      *ngFor="let room of rooms"
+      [routerLink]="['/chat', room._id]"
+      routerLinkActive="active"
       (click)="onClickShowContent()"
     >
       <div class="col-md-3 col-4">
-        <img [src]="'http://localhost:3000' + friend?.avatar" alt="" class="img-fluid card__img" />
+        <img [src]="'http://localhost:3000' + room?.avatar" alt="" class="img-fluid card__img" />
       </div>
       <div class="col-md-9 col-8">
         <div class="row">
-          <span class="card__title">{{ friend.name }}</span>
+          <span class="card__title">{{ room.name }}</span>
         </div>
         <div class="row">
           <i class="card__desc"> Tin nhắn mới nhâtshdfjgasjgfsjhbdjb </i>

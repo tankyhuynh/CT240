@@ -1,4 +1,10 @@
 /* Tabs list */
+
+.active {
+  background-color: var(--color-1);
+  transition: all 750ms;
+}
+
 .tabs-list {
   height: 72.5vh;
   max-height: 72.5vh;

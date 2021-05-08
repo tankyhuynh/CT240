@@ -1,6 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { UserData } from 'src/app/auth/user.model';
+import { RoomModel } from 'src/app/contact/contact-content/contact-add-room/contact-add-room.model';
 import { SharingService } from 'src/app/sharing.service';
+import { MessageModel } from './chat-roomchat-message.model';
 
 import { ChatRoomModel } from './chatroom.model';
 
@@ -12,11 +14,11 @@ import { ChatRoomModel } from './chatroom.model';
 export class ChatRoomchatComponent implements OnInit {
   valShowMessContent = false;
 
+  @Input() messages: MessageModel[] = [];
+
   @Input()  tmpImgPath = "https://images.pexels.com/photos/7457830/pexels-photo-7457830.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500";
 
-  @Input() currentChatUser: UserData;
-
-  @Input() chatroom: ChatRoomModel;
+  @Input() chatroom: RoomModel;
   constructor(private showContent: SharingService) {}
 
   ngOnInit(): void {

@@ -230,6 +230,11 @@
   border-radius: 20px;
 }
 
+.add-friends__card.hide {
+  display: none;
+  transition: all 750ms;
+}
+
 .add-friend__card--img {
   margin: 1rem 0;
   width: 5rem;
@@ -388,6 +393,7 @@
     padding: 0 !important;
     background-color: var(--color-1);
   }
+
   .content.hide {
     display: none;
     transition: all 750ms;

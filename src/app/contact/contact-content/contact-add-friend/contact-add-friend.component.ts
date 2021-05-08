@@ -1,3 +1,4 @@
+import { error } from '@angular/compiler/src/util';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
@@ -15,6 +16,8 @@ import { ContactAddFriendService } from './contact-addfriend.service';
 })
 export class ContactAddFriendComponent implements OnInit {
   valHideContactContent = false;
+
+  hideFriend: boolean = true;
 
   friend: FriendModel;
 
@@ -39,16 +42,29 @@ export class ContactAddFriendComponent implements OnInit {
     try {
       this.addFriendService
           .getOneById(friendId)
-          .subscribe(response => {
-            this.friend = {
-              _id: response.data._id,
-              name: response.data.name,
-              phone: response.data.phone,
-              avatar: response.data.avatar
-            };
-            console.log(response);
-            console.log(this.friend);
-          });
+          .subscribe( (response:any) => {
+
+            if( response.data ){
+              this.hideFriend = false;
+              this.friend = {
+                _id: response.data._id,
+                name: response.data.name,
+                phone: response.data.phone,
+                avatar: response.data.avatar
+              };
+
+              console.log(`valHideContactContent: ${this.hideFriend}`)
+              console.log(response);
+              console.log(this.friend);
+            }
+            else{
+              this.hideFriend = true;
+              console.log(`valHideContactContent: ${this.hideFriend}`)
+            }
+          }),
+          (error) => {
+            console.log("Dont find user");
+          };
     } catch (error) {
 
     }

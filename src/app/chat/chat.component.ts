@@ -10,10 +10,16 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { UserData } from '../auth/user.model';
+import { RoomModel } from '../contact/contact-content/contact-add-room/contact-add-room.model';
+import { ContactAddRoomService } from '../contact/contact-content/contact-add-room/contact-add-room.service';
 import { ContactListFriendService } from '../contact/contact-content/list-friends/contact-list-friend.service';
 import { FriendModel } from '../contact/contact-content/list-friends/friend.model';
+import { ContactListRoomService } from '../contact/contact-content/list-rooms/contact-list-rooms.service';
+import { ProfileModel } from '../personal-information/profile.model';
 import { ProfileService } from '../personal-information/profile.service';
 import { SharingService } from '../sharing.service';
+import { SocketService } from '../socket/socket.service';
+import { MessageModel } from './chat-roomchat/chat-roomchat-message.model';
 import { ChatService } from './chat.service';
 
 @Component({
@@ -25,52 +31,66 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   tmpImgPath = "https://images.pexels.com/photos/7457830/pexels-photo-7457830.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500";
 
   friends: FriendModel[];
-  currentChatUser: UserData;
-  currentUser: UserData;
+  currentRoom: RoomModel;
 
-  chatroom = {
-    receive: {
-      content:
-        'Để sử dụng được cái này, ta bắt buộc phải thêm display: -webkit-box, thuộc tính -webkit-line-clamp sẽ quyết định số dòng tối đa được hiển thị. Tuy nhiên, cách làm này có 1 nhược điểm là không thể sử dụng padding, nó sẽ dẫn đến việc hiển thị 1 phần của dòng tiếp theo như này',
-      time: 'Chương Quân 22:15',
-    },
-    send: {
-      content:
-        'shadgf s fdasfdj gasjhdf sajh gfjas fjsa dfsa fjhsag jhfgsajfgjhas fdjhadfjhs jhfdasjhsadfjhsadjhf áh',
-      time: 'Chương Quân 22:20',
-    },
-  };
+  rooms: RoomModel[] = [];
+  messages: MessageModel[] = [];
+  currentUserId: string = localStorage.getItem('userId');
+
+  profiles: ProfileModel[] = [];
 
   constructor(
     private sharingService: SharingService,
     private route: ActivatedRoute,
     private chatService: ChatService,
     private listFriendService: ContactListFriendService,
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private socketService: SocketService,
+    private roomService: ContactListRoomService
   ) {}
 
   ngOnInit(): void {
 
-    this.listFriendService
-    .getAll()
-    .subscribe( (response:any) => {
-      this.friends = response.data.data;
-      console.log(this.friends);
-    });
+    this.socketService.setUpConnnection();
+
+    // this.listFriendService
+    // .getAll()
+    // .subscribe( (response:any) => {
+    //   this.friends = response.data.data;
+    //   console.log(this.friends);
+    // });
+
+    this.roomService
+          .getAll()
+          .subscribe( (response:any) => {
+            this.rooms = response.data.data;
+            console.log('Chat componet get all rooms');
+            console.log(this.rooms);
+          });
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      if (paramMap.has('userId')) {
-        const userId = paramMap.get('userId');
-        this.profileService
-              .findProfileOf(userId)
+      if (paramMap.has('roomId')) {
+        const roomId = paramMap.get('roomId');
+        this.roomService
+              .getOneById(roomId)
               .subscribe( (response:any) => {
-                this.currentChatUser = response.data;
-                console.log(this.currentChatUser);
+                this.currentRoom = response.data;
+                console.log('get roomId: ');
+                console.log(this.currentRoom);
               });
+
+        this.roomService
+              .getAllMessageByIdRoom(roomId)
+              .subscribe( (response:any) => {
+                console.log("get all messages in chat");
+                this.messages = response.data;
+                console.log(this.messages);
+              } );
       }
     });
 
   }
+
 
   ngAfterViewChecked() {}
 }

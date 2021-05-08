@@ -12,6 +12,8 @@ const BACKEND_URL = environment.apiUrl + "/chat/";
 @Injectable({providedIn: 'root'})
 export class ChatService {
 
+  constructor(private http: HttpClient, private router: Router){};
+
   addRoom(){
 
   }

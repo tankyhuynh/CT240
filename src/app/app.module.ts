@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { from } from 'rxjs';
-
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import {
   HttpClientModule,
@@ -30,9 +28,6 @@ import { ProfileService } from './personal-information/profile.service';
 import { SharingService } from './sharing.service';
 import { SocketService } from './socket/socket.service';
 import { ReloginComponent } from './relogin/relogin.component';
-import { DeleteRoomComponent } from './contact/contact-content/delete-room/delete-room.component';
-import { DeleteMemberComponent } from './contact/contact-content/delete-member/delete-member.component';
-import { AddMemberComponent } from './contact/contact-content/add-member/add-member.component';
 
 @NgModule({
   declarations: [
@@ -41,8 +36,7 @@ import { AddMemberComponent } from './contact/contact-content/add-member/add-mem
     PersonalInformationComponent,
     ErrorComponent,
     HomeComponent,
-    ReloginComponent,
-    AddMemberComponent,
+    ReloginComponent
   ],
   imports: [
     BrowserModule,

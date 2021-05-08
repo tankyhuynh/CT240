@@ -12,7 +12,7 @@ const routes: Routes = [
   {path: 'auth', loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)},
   {path: 'menu', component: MenuComponent},
   {path: 'chat', loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule), canActivate: [AuthGuard] },
-  {path: 'chat/:userId', component: ChatComponent, canActivate: [AuthGuard] },
+  {path: 'chat/:roomId', component: ChatComponent, canActivate: [AuthGuard] },
   {path: 'contact', loadChildren: () => import('./contact/contact.module').then(m => m.ContactModule), canActivate: [AuthGuard] },
   {path: 'personal-information', component: PersonalInformationComponent, canActivate: [AuthGuard] },
 ];

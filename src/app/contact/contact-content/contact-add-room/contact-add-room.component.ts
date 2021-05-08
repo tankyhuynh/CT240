@@ -64,8 +64,10 @@ export class ContactAddGroupComponent implements OnInit {
       return;
     }
     const room:RoomModel = {
+      _id: "",
       name: this.form.value.name,
-      members: this.members
+      members: this.members,
+      avatar: ""
     }
     this.roomService
           .saveOne(room)

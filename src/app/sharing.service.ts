@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { UserData } from './auth/user.model';
+import { MessageModel } from './chat/chat-roomchat/chat-roomchat-message.model';
 
 @Injectable()
 export class SharingService {
@@ -21,7 +22,14 @@ export class SharingService {
   private reloginSource = new BehaviorSubject<boolean>(false);
   currentReloginStatus = this.reloginSource.asObservable();
 
+  private messageSource = new BehaviorSubject<MessageModel[]>(null);
+  currentMessageStatus = this.messageSource.asObservable();
+
   constructor() {}
+
+  changeMessage(messages: MessageModel[]) {
+    this.messageSource.next(messages);
+  }
 
   changeReloginStatus(isRelogin: boolean) {
     this.reloginSource.next(isRelogin);

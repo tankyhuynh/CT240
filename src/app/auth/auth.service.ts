@@ -103,7 +103,7 @@ export class AutheService {
 
                 this.saveDataToLocalStorage(this.token, expirationDate, this.userId, this.userData);
 
-                this.router.navigate(['/']);
+                this.router.navigate(['/chat']);
 
               }
             }, err => {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ContactContentRoutingModule } from './contact-content-routing.module';
 
@@ -13,8 +13,8 @@ import { AngularMaterialModule } from 'src/app/angular-material.module';
 import { SearchModule } from 'src/app/search/search.module';
 import { ContactContentComponent } from './contact-content.component';
 import { ContactMenuModule } from '../contact-menu/contact-menu.module';
-import { DeleteMemberComponent } from './delete-member/delete-member.component';
-import { DeleteRoomComponent } from './delete-room/delete-room.component';
+import { ListRoomOptionsComponent } from './list-rooms-options/list-room-options.component';
+
 
 @NgModule({
   declarations: [
@@ -24,8 +24,8 @@ import { DeleteRoomComponent } from './delete-room/delete-room.component';
     ListAddFriendsComponent,
     ListFriendsComponent,
     ListGroupsComponent,
-    DeleteMemberComponent,
-    DeleteRoomComponent,
+    ListRoomOptionsComponent
+
   ],
   imports: [
     CommonModule,

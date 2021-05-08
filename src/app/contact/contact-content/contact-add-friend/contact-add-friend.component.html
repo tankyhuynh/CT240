@@ -3,7 +3,8 @@
     <app-search></app-search>
     <app-contact-menu></app-contact-menu>
   </div>
-  <div class="col-md-8 content" [ngClass]="{ hide: valHideContactContent }">
+
+  <div class="col-md-8 content" [ngClass]=" {'hide': valHideContactContent} " >
     <div class="row justify-content-center">
       <div class="add-friend">
         <div class="row justify-content-between align-items-center">
@@ -36,7 +37,7 @@
           </div>
         </form>
         <br />
-        <div class="row add-friends__card" id="add-friends__card">
+        <div class="row add-friends__card" [ngClass]="{ 'hide' : hideFriend }" id="add-friends__card" >
           <div class="col">
             <div class="row justify-content-center">
               <img

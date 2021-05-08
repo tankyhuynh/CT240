@@ -2,15 +2,14 @@
   <div class="col-md-11 col-10">
     <textarea
       class="chat-box__send--text"
-      name=""
-      id=""
       rows="2"
+      #message
       placeholder="Tin nhắn mới"
     ></textarea>
   </div>
   <div class="col-md-1 col-2">
     <div class="row justify-content-center">
-      <button class="chat-box__send--btn">
+      <button (click)="sendMessage(message.value)" class="chat-box__send--btn">
         <i class="fab fa-telegram-plane"></i>
       </button>
     </div>

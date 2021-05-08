@@ -9,13 +9,11 @@ import { SocketService } from '../socket/socket.service';
 export class HomeComponent implements OnInit {
 
   constructor(
-    private socketService: SocketService
+
   ) {}
 
   ngOnInit(): void {}
 
-  sendMessage(data){
-    this.socketService.sendMessage(data);
-  }
+
 
 }

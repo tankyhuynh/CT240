@@ -16,7 +16,7 @@ mongoose.set('useCreateIndex', true);
 mongoose.set('useUnifiedTopology', true);
 mongoose.connect("mongodb+srv://tanky:"
                   + process.env.MONGO_ATLAT_PASSWORD
-                  +"@tankydbs.3zvgh.mongodb.net/myFirstDatabase?retryWrites=true")
+                  +"@tankydbs.3zvgh.mongodb.net/meanchat?retryWrites=true")
         .then( () => {
           console.log("Connected to MongoDB server");
         })

@@ -1,4 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { RoomModel } from 'src/app/contact/contact-content/contact-add-room/contact-add-room.model';
+import { ContactListRoomService } from 'src/app/contact/contact-content/list-rooms/contact-list-rooms.service';
+import { SharingService } from 'src/app/sharing.service';
+import { SocketService } from 'src/app/socket/socket.service';
+import { MessageModel } from '../chat-roomchat-message.model';
 
 import { ChatRoomModel } from '../chatroom.model'
 
@@ -9,11 +14,24 @@ import { ChatRoomModel } from '../chatroom.model'
 })
 export class ChatRoomchatBodyComponent implements OnInit {
 
-  @Input() chatroom: ChatRoomModel;
+  @Input() chatroom: RoomModel;
+  @Input() messages: MessageModel[] = [];
+  currentUserId: string = localStorage.getItem('userId');
 
-  constructor() { }
+  constructor(
+    private roomService: ContactListRoomService,
+    private sharingService: SharingService,
+    private socketService: SocketService
+  ) { }
 
   ngOnInit(): void {
+    this.socketService
+      .getMessages()
+      .subscribe((message: MessageModel) => {
+        this.messages.push(message);
+        console.log('ngOnInit() chat room');
+        console.log(this.messages);
+      });
   }
 
 }

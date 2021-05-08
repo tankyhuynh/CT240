@@ -20,6 +20,11 @@ export class ContactListRoomService {
     return this.http.get(BACKEND_URL);
   }
 
+  getAllMessageByIdRoom(id: string){
+    return this.http
+          .get(BACKEND_URL+ id + "/messages") ;
+  }
+
   getOneById(roomId: string) {
     return this.http.get<{
       rooms: ContactListRoomModel[];
