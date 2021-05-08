@@ -11,6 +11,7 @@ async function create(name, members){
     let room;
     if(members.length == 2) {
         room = await RoomModel.findOne({"members.user": {$all: [members[0], members[1]]}});
+        console.log(`Room with 2 members ${members[0]} and ${members[1]} is exist!`);
         if(!room){} else { return room};
     }
     members = members.map(id=> ({user: id}));
