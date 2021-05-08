@@ -8,8 +8,13 @@ async function create(name, members){
     if(members.length<2) return null;
     // first members is admin
     const admin = [members[0]];
+    let room;
+    if(members.length == 2) {
+        room = await RoomModel.findOne({"members.user": {$all: [members[0], members[1]]}});
+        if(!room){} else { return room};
+    }
     members = members.map(id=> ({user: id}));
-    const room = new RoomModel({name, members, admin});
+    room = new RoomModel({name, members, admin});
     await room.save();
     return room;
 }
