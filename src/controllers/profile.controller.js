@@ -35,7 +35,10 @@ async function getOne(req, res){
 }
 async function update(req, res){
     let name = req.body.name;
-    let avatar = req.body.avatar;
+    // let avatar = req.body.avatar;
+    let avatarUrl = (process.env.SERVER_DOMAIN || "") +  req.file.path.split(/[\/\\]/).join("\/");
+    let avatar = avatarUrl;
+    
     let id = getAuth(req);
     let data = {};
     if(!name){} else {

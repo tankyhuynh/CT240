@@ -49,7 +49,10 @@ async function getName(actor, doc){
 }
 
 async function getWithMember(member_id){
-    const rooms = await RoomModel.find({"members.user": {$in: member_id}}).sort({created_at: 1}).select({members: 0}).lean();
+    let rooms = await RoomModel.find({"members.user": {$in: member_id}}).sort({created_at: 1}).select({members: 0}).lean();
+    rooms = rooms.map(async (room)=>{
+        room.name = await getName(member_id, room);
+    });
     return rooms;
 }
 async function getMemberWithId(_id, actor){

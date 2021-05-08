@@ -21,14 +21,12 @@ async function authenticateSession(req, res, next){
 }
 async function authenticateToken(req, res, next){
     const {token} = {...req.body, ...req.query, ...req.params, ...req.cookies, ...req.headers}
-    console.log(token);
     let decode;
     try {
         decode = await jwt.verify(token, secret);
     } catch {
         decode = null;
     }
-    console.log(decode);
     if(!decode) {
         res.status(403).send();
         res.end();
