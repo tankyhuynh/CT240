@@ -5,16 +5,15 @@ mongoose.Promise = global.Promise;
 
 // Connect MongoDB at default port 27017.
 function config() {
-    mongoose.connect(`${process.env.DB_CONNECT_STR}`, {
-        useNewUrlParser: true,
-        useCreateIndex: true,
-    }, (err) => {
-        if (!err) {
-            console.log('MongoDB Connection Succeeded.')
-        } else {
-            console.log('Error in DB connection: ' + err)
-        }
-    });
+    mongoose.connect("mongodb+srv://tanky:"
+                  + "xRUyMI2PE5tsmSJX"
+                  +"@tankydbs.3zvgh.mongodb.net/meanchat?retryWrites=true")
+        .then( () => {
+          console.log("Connected to MongoDB server");
+        })
+        .catch( (err) => {
+          console.log("Fail to connect " + err);
+        });
 }
 
 module.exports = {
