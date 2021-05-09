@@ -64,7 +64,7 @@ async function getMembers(req, res){
     const auth = getAuth(req);
     const members = await RoomService.getMemberWithId(id, auth) || [];
     
-    const resData= members.map(el=>({_id: el, ref: ProfileController.getUrl(el)}));
+    const resData= members.map(el=>({...el, ref: ProfileController.getUrl(el)}));
     sendSuccess(res, resData);
 }
 async function addMember(req, res){

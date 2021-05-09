@@ -58,9 +58,13 @@ async function getWithMember(member_id){
     return rooms;
 }
 async function getMemberWithId(_id, actor){
-    const room = await getWithId(_id, actor);
+    const room = await RoomModel.findOne({_id}).populate("members.user").lean();
     if(!room) return null;
+    console.log(".. k>> o");
+    console.log(room);
     const members = room.members.map(member=>member.user);
+    console.log(".. ..");
+    console.log(members);
     return members;
 }
 async function addMember(_id, member, actor){
