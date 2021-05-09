@@ -1,3 +1,5 @@
+
+
 <div class="row">
   <div class="col-md-4 menu">
     <app-search></app-search>
@@ -19,7 +21,11 @@
           <span class="list-contacts__title--text"> Lời mời kết bạn </span>
         </div>
       </div>
-      <div class="row list-contacts__tbl">
+
+      <mat-spinner *ngIf="isLoading"></mat-spinner>
+
+
+      <div class="row list-contacts__tbl" >
         <div class="col">
           <div class="row">
             <div
@@ -77,6 +83,8 @@
           </div>
         </div>
       </div>
+
+
     </div>
   </div>
 </div>

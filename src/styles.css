@@ -87,3 +87,7 @@ span:focus {
 .overlay.show {
   display: inline;
 }
+
+.cursor_pointer {
+  cursor: pointer;
+ }

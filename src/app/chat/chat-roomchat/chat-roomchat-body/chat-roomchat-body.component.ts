@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { AfterViewChecked, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { RoomModel } from 'src/app/contact/contact-content/contact-add-room/contact-add-room.model';
 import { ContactListRoomService } from 'src/app/contact/contact-content/list-rooms/contact-list-rooms.service';
 import { SharingService } from 'src/app/sharing.service';
@@ -12,11 +12,13 @@ import { ChatRoomModel } from '../chatroom.model'
   templateUrl: './chat-roomchat-body.component.html',
   styleUrls: ['./chat-roomchat-body.component.css']
 })
-export class ChatRoomchatBodyComponent implements OnInit {
+export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
 
   @Input() chatroom: RoomModel;
   @Input() messages: MessageModel[] = [];
   currentUserId: string = localStorage.getItem('userId');
+
+  @ViewChild("scrollMe") myScroller: ElementRef<any>;
 
   constructor(
     private roomService: ContactListRoomService,
@@ -33,5 +35,20 @@ export class ChatRoomchatBodyComponent implements OnInit {
         console.log(this.messages);
       });
   }
+
+  ngAfterViewChecked(){
+    this.scrollToBottom();
+  }
+
+
+  scrollToBottom():void {
+    try {
+      this.myScroller.nativeElement.scrollTop = this.myScroller.nativeElement.scrollHeight;
+    } catch (error) {
+
+    }
+  }
+
+
 
 }

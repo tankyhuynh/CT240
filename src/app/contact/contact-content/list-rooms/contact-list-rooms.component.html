@@ -23,7 +23,7 @@
         <div class="col">
           <div class="row">
             <div class="list-contacts__card" *ngFor="let room of rooms">
-              <div>
+              <div class="cursor_pointer" [routerLink]="['/chat', room._id]">
                 <img
                   [src]="
                     'http://localhost:3000' +
@@ -32,12 +32,13 @@
                   alt=""
                   class="img-fluid card__img"
                 />
-              </div>
               <div class="row justify-content-center">
                 <span class="card__title">
                   {{ room?.name }}
                 </span>
               </div>
+            </div>
+
               <div style="display: none">
                 <span class="card__icon"> Nhắn tin </span>
                 <span class="card__icon"> Rời nhóm </span>

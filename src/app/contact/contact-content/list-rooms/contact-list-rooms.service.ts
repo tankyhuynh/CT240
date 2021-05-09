@@ -7,12 +7,13 @@ import { Router } from '@angular/router';
 
 import { environment } from '../../../../environments/environment';
 import { ContactListRoomModel } from './contact-list-rooms.model';
+import { RoomModel } from '../contact-add-room/contact-add-room.model';
 
 const BACKEND_URL = environment.apiUrl + '/rooms/';
 
 @Injectable({ providedIn: 'root' })
 export class ContactListRoomService {
-  private rooms: ContactListRoomModel;
+  private rooms: RoomModel;
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -31,11 +32,15 @@ export class ContactListRoomService {
     }>(BACKEND_URL + roomId);
   }
 
-  saveOne(room: ContactListRoomModel) {
-    return this.http.post(BACKEND_URL, room);
+  saveOne(name:string, members: string[]) {
+    return this.http
+                .post(
+                  BACKEND_URL,
+                  {name: name,
+                  members: members});
   }
 
-  update(id: string, room: ContactListRoomModel) {
+  update(id: string, room: RoomModel) {
     this.http.put(BACKEND_URL + id, room);
   }
 

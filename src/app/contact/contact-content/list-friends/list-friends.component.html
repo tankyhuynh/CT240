@@ -36,10 +36,10 @@
                 </span>
               </div>
               <div>
-                <span [routerLink]="['/chat', friend._id]" class="card__icon">
+                <span (click)="createNewRoomFor2Users(friend._id)" class="card__icon">
                   Nhắn tin
                 </span>
-                <span class="card__icon"> Xóa bạn </span>
+                <span class="card__icon" (click)="deleteFriend(friend._id)"> Xóa bạn </span>
               </div>
             </div>
           </div>
@@ -48,54 +48,3 @@
     </div>
   </div>
 </div>
-<!-- <div class="overlay" [ngClass]="{ show: valShowAddFriendsContent }"></div>
-<div class="row justify-content-center">
-  <div class="add-friend" [ngClass]="{ show: valShowAddFriendsContent }">
-    <div class="row justify-content-between">
-      <span> <i class="fas fa-user-plus"></i> Thêm bạn bè </span>
-      <span (click)="addFriendsContent()">
-        <i class="fas fa-times" style="font-size: 1.2rem; cursor: pointer"></i>
-      </span>
-    </div>
-    <hr />
-    <form action="">
-      <div class="row justify-content-center">
-        <input
-          type="text"
-          class="add-friend__input"
-          placeholder="Số điện thoại hoặc ID"
-          name="add-friend-ip"
-          id="add-friend-ip"
-        />
-        <button type="submit" class="add-friend__submit">
-          <i class="fas fa-search"></i>
-        </button>
-      </div>
-    </form>
-    <br />
-    <div class="row add-friends__card" id="add-friends__card">
-      <div class="col">
-        <div class="row justify-content-center">
-          <img
-            src="{{ imgPath }}"
-            alt=""
-            class="img-fluid add-friend__card--img"
-          />
-        </div>
-        <div class="row justify-content-center">
-          <span class="add-friend__card--title"> #212 </span>
-        </div>
-        <div class="row justify-content-center">
-          <span class="add-friend__card--title"> Tên bạn bè </span>
-        </div>
-        <div class="row justify-content-center">
-          <span class="add-friend__card--title"> 0924668320 </span>
-        </div>
-        <div class="row justify-content-center">
-          <span class="add-friend__card--icon"> Gửi lời mời </span>
-          <span class="add-friend__card--icon"> Hủy </span>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->

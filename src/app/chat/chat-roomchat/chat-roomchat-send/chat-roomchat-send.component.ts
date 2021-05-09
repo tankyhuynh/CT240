@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { SocketService } from 'src/app/socket/socket.service';
 
@@ -11,6 +11,8 @@ export class ChatRoomchatSendComponent implements OnInit {
 
   @Input() roomId: string;
 
+  @ViewChild("message") message: ElementRef<any>;
+
   constructor(
     private socketService: SocketService,
     private route: Router
@@ -21,6 +23,7 @@ export class ChatRoomchatSendComponent implements OnInit {
 
   sendMessage(data: string){
     this.socketService.sendMessage(this.roomId, data);
+    this.message.nativeElement.value = "";
   }
 
 }

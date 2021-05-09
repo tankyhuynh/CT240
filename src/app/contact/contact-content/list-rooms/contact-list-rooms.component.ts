@@ -7,6 +7,7 @@ import { ContactListRoomService } from './contact-list-rooms.service';
 import { ContactListFriendService } from '../list-friends/contact-list-friend.service';
 import { FriendModel } from '../list-friends/friend.model';
 import { ListRoomOptionsComponent } from '../list-rooms-options/list-room-options.component';
+import { RoomModel } from '../contact-add-room/contact-add-room.model';
 
 @Component({
   selector: 'app-list-groups',
@@ -17,7 +18,7 @@ import { ListRoomOptionsComponent } from '../list-rooms-options/list-room-option
 export class ListGroupsComponent implements OnInit {
   valHideContactContent = false;
 
-  rooms: ContactListRoomModel[] = [];
+  rooms: RoomModel[] = [];
   friends: FriendModel[] = [];
 
   constructor(

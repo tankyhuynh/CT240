@@ -14,6 +14,9 @@ import { SuccessComponent } from 'src/app/success/success.component';
   providers: [ContactListAddFriendService]
 })
 export class ListAddFriendsComponent implements OnInit {
+
+  isLoading: boolean = false;
+
   valHideContactContent = false;
 
   listAddFriendRequests: ListAddFriendRequestModel[] = [];
@@ -29,36 +32,47 @@ export class ListAddFriendsComponent implements OnInit {
     this.hideContent.showContentMobile.subscribe(
       (hide) => (this.valHideContactContent = hide)
     );
-    this.listAddFriendRequestService
-          .getAll()
-          .subscribe( (response:any) => {
-            this.listAddFriendRequests = response.data;
-            console.log(response.data);
-          });
+
+    this.fetchAllData();
 
   }
 
+  fetchAllData(){
+    this.listAddFriendRequestService
+    .getAll()
+    .subscribe( (response:any) => {
+      this.listAddFriendRequests = response.data;
+      console.log(response.data);
+    });
+  }
+
   isAcceptFriendRequest(id: string, isAccept: boolean){
+    this.isLoading = true;
     this.listAddFriendRequestService
           .isAcceptFriendRequest(id, isAccept)
           .subscribe( (response:any) => {
             console.log(response);
+            this.fetchAllData();
+            this.isLoading = false;
           });
-    let data= {message: ""};
-    if (isAccept) {
-        data.message = "Chấp nhận lời mời kết bạn thành công"
-    }else data.message = "Bạn đã xóa lời mời kết bạn"
+    // let data= {message: ""};
+    // if (isAccept) {
+    //     data.message = "Chấp nhận lời mời kết bạn thành công"
+    // }else data.message = "Bạn đã xóa lời mời kết bạn"
 
-    this.dialog.open(SuccessComponent, {data: data});
+    // this.dialog.open(SuccessComponent, {data: data});
   }
 
   deleteFriendRequest(id: string){
+    this.isLoading = true;
     this.listAddFriendRequestService
           .deleteFriendRequest(id)
           .subscribe( response => {
             console.log(response);
+            this.fetchAllData();
+            this.isLoading = false;
           });
-  this.route.navigate(['/contact/content/list-add-friends']);
+  // this.route.navigate(['/contact/content/list-add-friends']);
   }
 
   contactContent() {

@@ -1,3 +1,4 @@
+import { error } from '@angular/compiler/src/util';
 import {
   AfterViewChecked,
   ElementRef,
@@ -30,7 +31,6 @@ import { ChatService } from './chat.service';
 export class ChatComponent implements OnInit, AfterViewChecked {
   tmpImgPath = "https://images.pexels.com/photos/7457830/pexels-photo-7457830.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500";
 
-  friends: FriendModel[];
   currentRoom: RoomModel;
 
   rooms: RoomModel[] = [];
@@ -60,6 +60,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
     //   console.log(this.friends);
     // });
 
+
     this.roomService
           .getAll()
           .subscribe( (response:any) => {
@@ -86,6 +87,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                 this.messages = response.data;
                 console.log(this.messages);
               } );
+
+
       }
     });
 

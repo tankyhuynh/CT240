@@ -1,25 +1,25 @@
 <div #scrollMe class="row chat-box__body" >
   <div class="col" >
     <div *ngFor="let message of messages">
-      <div class="row" >
-        <div class="mess mess-left" *ngIf="message.sender !==  currentUserId">
+      <div class="row" *ngIf="message.sender !==  currentUserId">
+        <div class="mess mess-left" >
           <span>
             {{ message.data }}
           </span>
         </div>
-        <div class="mess-sender" *ngIf="message.sender !==  currentUserId">
+        <div class="mess-sender">
           <span>
             {{ message.created_at | date:'medium' }}
           </span>
         </div>
       </div>
-      <div class="row justify-content-end" >
-        <div class="mess mess-right" *ngIf="message.sender ===  currentUserId">
+      <div class="row justify-content-end" *ngIf="message.sender ===  currentUserId">
+        <div class="mess mess-right" >
           <span>
             {{ message.data }}
           </span>
         </div>
-        <div class="mess-sender" style="text-align: end" *ngIf="message.sender ===  currentUserId">
+        <div class="mess-sender" style="text-align: end" >
           <span>
             {{ message.created_at | date:'medium' }}
           </span>

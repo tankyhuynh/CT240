@@ -1,5 +1,5 @@
 import { error } from '@angular/compiler/src/util';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -15,11 +15,15 @@ import { ContactAddFriendService } from './contact-addfriend.service';
   providers: [ContactAddFriendService]
 })
 export class ContactAddFriendComponent implements OnInit {
+
+  isLoading = false;
+
   valHideContactContent = false;
 
   hideFriend: boolean = true;
 
   friend: FriendModel;
+  @ViewChild("friendId") friendId: ElementRef<any>;
 
   constructor(
     private router: Router,
@@ -36,7 +40,9 @@ export class ContactAddFriendComponent implements OnInit {
   }
 
   searchFriend(friendId: string){
+    this.isLoading = true;
     if (!friendId) {
+      this.isLoading = false;
       return ;
     }
     try {
@@ -45,6 +51,7 @@ export class ContactAddFriendComponent implements OnInit {
           .subscribe( (response:any) => {
 
             if( response.data ){
+              this.isLoading = false;
               this.hideFriend = false;
               this.friend = {
                 _id: response.data._id,
@@ -74,12 +81,17 @@ export class ContactAddFriendComponent implements OnInit {
     if (!introduce) {
       introduce = "Hello";
     }
+    this.isLoading = true;
+    this.hideFriend = true;
     this.addFriendService
           .saveOne(friendId, introduce)
           .subscribe(response => {
             console.log(response);
+            this.isLoading = false;
+            this.friendId.nativeElement.value = "";
           });
-     this.dialog.open(SuccessComponent, {data: {title: "", message: "Add friend successed"}});
+
+    //  this.dialog.open(SuccessComponent, {data: {title: "", message: "Add friend successed"}});
 
   }
 

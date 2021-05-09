@@ -23,8 +23,9 @@
 - Tuần 16: Nộp Project
 
 ## Backend 
-### cannot delete own of addfriend request
 ### upload image error
+### sort message with created_date asc
+### image in room chat null
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.6.
 
