@@ -12,11 +12,16 @@ async function getMessageWithRoom(room,actor ,last ){
     
     if(!last){
         messages = await MessageModel.find({room}).sort({created_at: -1}).limit(step).lean();
+        messages = messages.sort((mg1, mg2)=>{
+            return (mg1.created_at < mg2.created_at)?-1:1;
+        });
         return messages;
     }
     const messageLast = await MessageModel.findOne({_id: last}).lean();
     if(!messageLast) return getMessageWithRoom(room, actor);
-    messages = await MessageModel.find({room, created_at: {$lt: messageLast.created_at} }).sort({created_at: -1}).limit(step).lean();
+    messages = messages.sort((mg1, mg2)=>{
+        return (mg1.created_at < mg2.created_at)?-1:1;
+    });
     return messages;
 }
 
