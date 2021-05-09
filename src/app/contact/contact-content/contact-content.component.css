@@ -395,7 +395,7 @@ mat-spinner {
     left: 0;
     right: 0;
     padding: 0 !important;
-    background-color: var(--color-1);
+    background-color: rgba(0, 0, 0, 0.32);
   }
 
   .content.hide {

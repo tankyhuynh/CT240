@@ -90,4 +90,13 @@ span:focus {
 
 .cursor_pointer {
   cursor: pointer;
- }
+}
+
+mat-spinner {
+  width: 4rem !important;
+}
+
+mat-spinner > svg {
+  text-align: center;
+  width: 4rem !important;
+}
