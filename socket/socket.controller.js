@@ -19,7 +19,7 @@ class Msg {
 
         const message = await MessageService.create(sender, room, data);
         if(!message) { socket.emit("message:send_error", "You can't send!")}
-        const members = await RoomService.getMemberWithId(room, sender) || [];
+        const members = await RoomService.getMemberIdWithId(room, sender) || [];
         members.forEach(member => {
             SocketController.sendTo(member, "message:receive", message);
         });

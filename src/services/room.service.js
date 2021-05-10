@@ -57,6 +57,13 @@ async function getWithMember(member_id){
 
     return rooms;
 }
+async function getMemberIdWithId(_id, actor) {
+    const room = await getWithId(_id, actor);
+    if(!room) return null;
+    const members = room.members.map(member=>member.user);
+    return members;
+}
+
 async function getMemberWithId(_id, actor){
     const room = await RoomModel.findOne({_id}).populate("members.user").lean();
     if(!room) return null;
@@ -118,6 +125,7 @@ module.exports = {
     getWithId,
     getWithMember,
     getMemberWithId,
+    getMemberIdWithId,
     addMember,
     removeMember,
     memberChecker,
