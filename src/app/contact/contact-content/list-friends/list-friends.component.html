@@ -25,7 +25,7 @@
             <div class="list-contacts__card" *ngFor="let friend of listFriends">
               <div>
                 <img
-                  [src]="'http://localhost:3000' + friend?.avatar"
+                  [src]="friend?.avatar"
                   alt=""
                   class="img-fluid card__img"
                 />

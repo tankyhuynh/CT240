@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
 import { HttpClient } from '@angular/common/http'
-import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { delay, map } from 'rxjs/operators';
 import { Router } from '@angular/router'
 
 import { environment } from "../../../../environments/environment";
@@ -17,10 +17,10 @@ export class ContactListFriendService {
 
   constructor(private http: HttpClient, private router: Router){};
 
-  getAll() {
+  getAll(): Observable<FriendModel[]> {
     return this.http
-      .get
-      (BACKEND_URL);
+      .get<FriendModel[]>
+      (BACKEND_URL).pipe(delay(1000));
 
   }
 

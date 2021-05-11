@@ -20,12 +20,12 @@
           <button
             (click)="onCancel()"
             #closeButton
-            type="submit"
+            type="button"
             class="form-submit"
           >
             Hủy
           </button>
-          <button (click)="onLogin()" type="submit" class="form-submit">
+          <button (keyup.enter)="onLogin()" (click)="onLogin()" type="submit" class="form-submit">
             Xác nhận
           </button>
         </div>

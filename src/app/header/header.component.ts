@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 
@@ -14,7 +14,7 @@ import { ProfileModel } from '../personal-information/profile.model';
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
 })
-export class HeaderComponent implements OnInit, OnDestroy {
+export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
   @Input() isUserAuthenticated = false;
   menuMobile = false;
 
@@ -37,6 +37,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private sharingService: SharingService,
     public profileService: ProfileService
   ) {}
+
+
+  ngOnChanges(){
+    console.log('Data in header changed');
+  }
 
   ngOnInit() {
     this.isUserAuthenticated = this.authService.getIsAuthenticated();

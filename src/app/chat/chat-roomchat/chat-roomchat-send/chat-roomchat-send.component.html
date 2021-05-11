@@ -4,6 +4,7 @@
       class="chat-box__send--text"
       rows="2"
       #message
+      (keyup.enter)="sendMessage(message.value)"
       placeholder="Tin nhắn mới"
     ></textarea>
   </div>

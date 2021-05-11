@@ -49,13 +49,16 @@ export class ProfileService {
       .get<{data: ProfileModel}>(BACKEND_URL + id)
       .subscribe((response) => {
         console.log("In profile service");
-        console.log(response);
+        console.log(response.data);
         reponseUser = {
           name: response.data.name,
           avatar: response.data.avatar,
         };
-        this.currentUserLogin = reponseUser;
-        this.userStatusListener.next(this.currentUserLogin);
+        // this.currentUserLogin = reponseUser;
+        // this.userStatusListener.next(this.currentUserLogin);
+        console.log("profile: ");
+        console.log(reponseUser);
+        this.changeUserProfileInLocalStorage(reponseUser);
 
       }, error => {
         console.log(error);
@@ -63,12 +66,17 @@ export class ProfileService {
 
   }
 
+  changeUserProfileInLocalStorage(profile: ProfileModel){
+    this.currentUserLogin = profile;
+    this.userStatusListener.next(this.currentUserLogin);
+  }
 
-  updateAvatar(id: string, name: string, image: File){
+
+  updateInfo(id: string, name: string, image: File){
     const formData = new FormData();
-    formData.append("avatar", image, "hello");
-    console.log('image in profile service');
-    console.log(image);
+    formData.append("name", name);
+    formData.append("avatar", image);
+    let reponseUser: ProfileModel;
     return this.http
           .put(BACKEND_URL, formData);
 

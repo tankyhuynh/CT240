@@ -21,6 +21,11 @@ export class ContactAddRoomService {
 
   }
 
+  addNewMembers(roomId: string, memberId: string){
+    return this.http
+                .post(BACKEND_URL + roomId + "/members", {_id: memberId});
+  }
+
   update(id: string, room: RoomModel){
     this.http
           .put(BACKEND_URL + id, room);

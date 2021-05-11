@@ -25,10 +25,7 @@
             <div class="list-contacts__card" *ngFor="let room of rooms">
               <div class="cursor_pointer" [routerLink]="['/chat', room._id]">
                 <img
-                  [src]="
-                    'http://localhost:3000' +
-                    (room?.avatar || '/public/images/defaultAvatar.png')
-                  "
+                  [src]="(room?.avatar || 'http://localhost:3000/public/images/pexels-cottonbro-4065895.jpg-1620614453299.jpg')"
                   alt=""
                   class="img-fluid card__img"
                 />
@@ -44,13 +41,13 @@
                 <span class="card__icon"> Rời nhóm </span>
               </div>
               <div>
-                <span title="Thêm thành viên" class="card__icon" (click)="addMember()">
+                <span title="Thêm thành viên" class="card__icon" (click)="addMember(room._id)">
                   <i class="fas fa-user-plus"></i>
                 </span>
-                <span title="Xóa thành viên" class="card__icon" (click)="deleteMember()">
+                <span title="Xóa thành viên" class="card__icon" (click)="deleteMember(room._id)">
                   <i class="fas fa-user-minus"></i>
                 </span>
-                <span title="Xóa nhóm" class="card__icon" (click)="deleteRoom()">
+                <span title="Xóa nhóm" class="card__icon" (click)="deleteRoom(room._id)">
                   <i class="fas fa-sign-out-alt"></i>
                 </span>
               </div>
@@ -62,58 +59,3 @@
     </div>
   </div>
 </div>
-<!-- Delete Member -->
-<!-- <app-delete-member></app-delete-member> -->
-<!-- <div class="overlay" [ngClass]="{ show: valShowAddFriendsContent }"></div>
-<div class="row justify-content-center">
-  <div class="add-groups" [ngClass]="{ show: valShowAddFriendsContent }">
-    <div class="row justify-content-between">
-      <span>
-        <i class="fas fa-users"></i>
-        <i class="fas fa-plus plus-add-group"></i>
-        Tạo nhóm
-      </span>
-      <span (click)="addFriendsContent()">
-        <i class="fas fa-times" style="font-size: 1.2rem; cursor: pointer"></i>
-      </span>
-    </div>
-    <hr />
-    <form action="">
-      <label for="">Tên nhóm:</label>
-      <div class="row justify-content-center">
-        <input
-          type="text"
-          class="add-groups__input"
-          placeholder="Nhập tên nhóm"
-          name="groups-name"
-          id="groups-name"
-        />
-      </div>
-      <label>
-        <span>Chọn bạn bè thêm vào nhóm:</span>
-      </label>
-      <div class="row list-friends-add-groups">
-        <div class="col">
-          <div class="row align-items-center list-friends-add-groups__item">
-            <input class="input-checkbox" type="checkbox" name="add-groups" />
-            <img src="{{ imgPath }}" alt="" class="img-fluid item__img" />
-            <span class="item__name">Chương quân</span>
-          </div>
-          <div class="row align-items-center list-friends-add-groups__item">
-            <input class="input-checkbox" type="checkbox" name="add-groups" />
-            <img src="{{ imgPath }}" alt="" class="img-fluid item__img" />
-            <span class="item__name">Chương quân</span>
-          </div>
-          <div class="row align-items-center list-friends-add-groups__item">
-            <input class="input-checkbox" type="checkbox" name="add-groups" />
-            <img src="{{ imgPath }}" alt="" class="img-fluid item__img" />
-            <span class="item__name">Chương quân</span>
-          </div>
-        </div>
-      </div>
-      <div class="row justify-content-end">
-        <button class="sb-add-groups" type="submit">Tạo nhóm</button>
-      </div>
-    </form>
-  </div>
-</div> -->

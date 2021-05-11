@@ -28,6 +28,7 @@ import { ProfileService } from './personal-information/profile.service';
 import { SharingService } from './sharing.service';
 import { SocketService } from './socket/socket.service';
 import { ReloginComponent } from './relogin/relogin.component';
+import { ListRoomOptionsComponent } from './contact/contact-content/list-rooms-options/list-room-options.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +58,6 @@ import { ReloginComponent } from './relogin/relogin.component';
     SocketService,
   ],
   bootstrap: [AppComponent],
-  entryComponents: [ErrorComponent],
+  entryComponents: [ErrorComponent, ListRoomOptionsComponent],
 })
 export class AppModule {}

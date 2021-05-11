@@ -18,24 +18,26 @@
         <span>{{ data.subTitle }}</span>
       </label>
 
-      <div class="row list-friends-add-groups" *ngFor="let friend of data.friends">
+      <div class="row list-friends-add-groups" >
         <div class="col">
-          <div class="row align-items-center list-friends-add-group s__item">
+          <div class="row align-items-center list-friends-add-groups__item" *ngFor="let friend of data.friends">
             <input
               class="input-checkbox"
               type="checkbox"
               name="add-groups"
-
+              formControlName="members"
+              [value]="friend._id"
+              (change)="checkBoxClick($event)"
             />
-            <img [src]="'http://localhost:3000' + friend?.avatar" alt="" class="img-fluid item__img" />
+            <img [src]="friend?.avatar" alt="" class="img-fluid item__img" />
             <span class="item__name">{{ friend.name }}</span>
           </div>
         </div>
       </div>
       <div class="row justify-content-end">
-        <button *ngIf="data.type === 'add' " class="sb-add-groups" type="submit">Thêm</button>
-        <button *ngIf="data.type === 'delete' " class="sb-add-groups" type="submit">Xoá</button>
-        <button *ngIf="data.type === 'leave' " class="sb-add-groups" type="submit">Rời nhóm</button>
+        <button *ngIf="data.type === 'add' " (click)="addMembers()" class="sb-add-groups" type="button">Thêm</button>
+        <button *ngIf="data.type === 'delete' " class="sb-add-groups" type="button">Xoá</button>
+        <button *ngIf="data.type === 'leave' " class="sb-add-groups" type="button">Rời nhóm</button>
       </div>
     </form>
   </div>

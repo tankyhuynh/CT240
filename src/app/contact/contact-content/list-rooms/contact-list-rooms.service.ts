@@ -32,6 +32,12 @@ export class ContactListRoomService {
     }>(BACKEND_URL + roomId);
   }
 
+  getMembersById(roomId: string) {
+    return this.http.get<{
+      rooms: ContactListRoomModel[];
+    }>(BACKEND_URL + roomId + "/members");
+  }
+
   saveOne(name:string, members: string[]) {
     return this.http
                 .post(

@@ -8,57 +8,79 @@
             <i class="fas fa-cog"></i> Chỉnh sửa thông tin: #{{ userId }}
           </span>
         </div>
-        <form action="" method="POST">
-          <div class="row justify-content-center">
-            <input
-              type="text"
-              class="add-friend__input edit-input"
-              name="name"
-              id="edit-name"
-              [value]="userData?.name"
-              [disabled]="isDiable"
-              #username
-              matInput
-            />
-          </div>
-          <div class="row error" id="edit-name-err"></div>
-          <div class="row justify-content-end">
-            <button
-              type="submit"
-              class="add-friend__card--icon"
-              id="save-edit-user"
-              (click)="changeDiableStatus()"
-            >
-              <i class="fas fa-edit"></i> Chỉnh sửa
-            </button>
-          </div>
+        <form
+          [formGroup]="form"
+          (submit)="updateInfo()" method="POST">
+              <div class="row justify-content-center">
+                <input
+                  type="text"
+                  class="add-friend__input edit-input"
+                  id="edit-name"
+                  [value]="profile?.name"
+                  #username
+                  formControlName="name"
+                  matInput
+                />
+              </div>
+
+              <div class="row justify-content-center">
+                <input
+                  type="text"
+                  class="add-friend__input edit-input"
+                  name="phone"
+                  [value]="phone"
+                  disabled
+                  matInput
+                />
+              </div>
+
+              <div class="row error" id="edit-name-err"></div>
+                  <div class="row m-3">
+                    <input [disabled]="isDiable" type="file" #filePicker (change)="onFilePicked($event)" />
+                  </div>
+                    <div
+                  class="imagePreview row justify-content-center"
+                  *ngIf="imageURL !== '' && imageURL && form.get('avatar').valid"
+                >
+                  <img [src]="imageURL" />
+                </div>
+              <div class="row justify-content-end">
+
+                <button
+                  *ngIf="isDiable"
+                  type="button"
+                  class="add-friend__card--icon"
+                  id="save-edit-user"
+                  (click)="changeDiableStatus()"
+                >
+                  <i class="fas fa-edit"  ></i> Chỉnh sửa
+                </button>
+
+                <button
+                  *ngIf="!isDiable"
+                  type="button"
+                  (click)="changeDiableStatus()"
+                  class="add-friend__card--icon"
+                  id="save-edit-user"
+                >
+                  <i class="fas fa-edit"></i> Cancel
+                </button>
+
+                <button
+                  *ngIf="!isDiable"
+                  type="submit"
+                  class="add-friend__card--icon"
+                  id="save-edit-user"
+                >
+                  <i class="fas fa-edit"></i> Save
+                </button>
+
+              </div>
         </form>
       </div>
     </div>
     <div class="row">
-      <!-- Chỉnh avatar  -->
-      <div class="col-md-11 col-12 setting-content align-self-start">
-        <div class="row justify-content-between">
-          <span> <i class="fas fa-cog"></i> Đỗi avatar </span>
-        </div>
-        <form enctype="multipart/form-data" (submit)="updateAvatar()" class="row justify-content-center">
-          <div class="col">
-            <div class="row m-3">
-              <input type="file" #filePicker (change)="onFilePicked($event)" />
-            </div>
 
-            <div
-              class="imagePreview row justify-content-center"
-              *ngIf="imageURL !== '' && imageURL && form.get('avatar').valid"
-            >
-              <img [src]="imageURL" />
-            </div>
-            <div class="row justify-content-center">
-              <button class="add-friend__card--icon">Change avatar</button>
-            </div>
-          </div>
-        </form>
-      </div>
     </div>
   </div>
 
@@ -75,8 +97,8 @@
         <input
           type="password"
           class="add-friend__input"
+          #password
           [placeholder]="defaultPlaceHolderText[0]"
-          name="new-password"
           id="edit-new-password"
           matInput
         />
@@ -88,8 +110,8 @@
           matInput
           type="password"
           class="add-friend__input"
+          #repassword
           [placeholder]="defaultPlaceHolderText[1]"
-          name="re-password"
           id="edit-re-password"
         />
       </div>
@@ -99,8 +121,9 @@
         <button
           type="submit"
           class="add-friend__card--icon"
+          (click)="changePassword()"
           id="save-change-password"
-          [disabled]="isDiable"
+          [disabled]=" password.value !== repassword.value  "
         >
           <i class="fas fa-save"></i> Lưu
         </button>
@@ -108,3 +131,6 @@
     </form>
   </div>
 </div>
+
+
+

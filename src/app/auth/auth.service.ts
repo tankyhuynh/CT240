@@ -6,6 +6,7 @@ import { BehaviorSubject } from "rxjs";
 import { Subject } from "rxjs";
 
 import { environment } from '../../environments/environment';
+import { ProfileModel } from "../personal-information/profile.model";
 import { ProfileService } from "../personal-information/profile.service";
 import { SharingService } from "../sharing.service";
 import { AuthData } from "./auth.model";
@@ -78,7 +79,7 @@ export class AutheService {
                 // this.router.navigate(['/']);
               }
             }, err => {
-               // this.router.navigate(['/']);
+              this.sharingService.changeReloginStatus(false);
             });
   }
 
@@ -101,7 +102,10 @@ export class AutheService {
 
                 this.profileService.getOneById(this.userId);
 
-                this.saveDataToLocalStorage(this.token, expirationDate, this.userId, this.userData);
+                this.saveDataToLocalStorage(this.token, expirationDate, this.userId, this.userData );
+
+                console.log("current profile login");
+                console.log(this.userData);
 
                 this.router.navigate(['/chat']);
 
@@ -122,7 +126,7 @@ export class AutheService {
     this.router.navigate(['/auth/login']);
   }
 
-  private saveDataToLocalStorage(token: string, expiration: Date, userId: string, userData: UserData){
+  private saveDataToLocalStorage(token: string, expiration: Date, userId: string, userData: ProfileModel){
     localStorage.setItem('token', token);
     localStorage.setItem('expiration', expiration.toISOString());
     localStorage.setItem('userId', userId);
