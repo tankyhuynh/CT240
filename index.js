@@ -4,6 +4,8 @@ const express = require('express');
 const path = require('path');
 const serverConfig = require('./configs/server.config');
 const app = serverConfig.config();
+
+app.use("/", express.static(path.join(__dirname, "public/angular")));
 app.use("/public", express.static(path.join(__dirname, "public")));
 
 const middleware = require('./configs/middleware.config');
