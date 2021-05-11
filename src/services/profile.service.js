@@ -30,11 +30,15 @@ async function getWithId(_id){
 async function getName(_id){
     return (await getWithId(_id)).name;
 }
+async function getAvatar(_id){
+    return (await getWithId(_id).avatar);
+}
 
 // update info
 async function update(_id, data){
-    await ProfileModel.updateOne({_id}, data);
-    return true;
+    let profile = null;
+    profile =  await ProfileModel.findOneAndUpdate({_id}, data);
+    return profile;
 }
 
 // 
@@ -47,10 +51,12 @@ async function updateName(_id, name){
     return true;
 }
 
+
 module.exports = {  
     createWithAccountId,
     getWithId,
     getName,
+    getAvatar,
     update,
     updateAvatar,
     updateName

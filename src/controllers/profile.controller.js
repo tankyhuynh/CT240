@@ -49,18 +49,18 @@ async function update(req, res){
     
     let id = getAuth(req);
     let data = {};
+    let pofile = null;
     if(!name){} else {
-        await ProfileService.updateName(id, name);
-            sendSuccess(res);
-            return;
+        profile = await ProfileService.update(id, {name});
     }
     if(!avatar) {} else {
-        await ProfileService.updateAvatar(id, avatar);
-        sendSuccess(res);
+        profile = await ProfileService.update(id, {avatar});
+    }
+    if(!name && !avatar ){
+        sendReject(res,"Nothing update!");
         return;
     }
-    sendReject(res,"Nothing update!");
-    return;
+    sendSuccess(res, profile);
 }
 function getUrl(id){
     return (process.env.SERVER_DOMAIN || "") +  rootUrl + `/friends/${id}`;

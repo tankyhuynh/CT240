@@ -1,9 +1,14 @@
 const mongoose = require('mongoose'); // Erase if already required
+const config = require("../constants/image_url.constant");
 
 // Declare the Schema of the Mongo model
 var roomSchema = new mongoose.Schema({
     name: String,
     config: {},
+    avatar: {
+        type: String,
+        default: config.avatar_url_default,
+    },
     members:{
         type: [
             {
@@ -26,7 +31,8 @@ var roomSchema = new mongoose.Schema({
     },
     admin: [{
         type: mongoose.SchemaTypes.ObjectId,
-    }]
+    }],
+    
 
 });
 

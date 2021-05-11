@@ -33,9 +33,21 @@ async function getWithId(_id, actor){
     }
     if(!room) return null;
     room.name = await getName(actor, room);
+    room.avatar = await getAvatar(actor, room);
     return room;
 }
 //warning
+async function getAvatar(actor, doc){
+    if(doc.members.length == 2){
+        if(doc.members[0].user == actor) {
+            return (await ProfileService.getAvatar(doc.members[1].user));
+        } 
+        if(doc.members[1].user == actor) {
+            return (await ProfileService.getAvatar(doc.members[0].user));
+        } 
+    }
+    return doc.avatar;
+}
 async function getName(actor, doc){
     if(doc.members.length == 2){
         if(doc.members[0].user == actor) {
@@ -52,6 +64,7 @@ async function getWithMember(member_id){
     let rooms = await RoomModel.find({"members.user": {$in: member_id}}).sort({created_at: 1}).lean();
     for(i=0; i<rooms.length; i++){
         rooms[i].name = await getName(member_id, rooms[i]);
+        rooms[i].name = await getAvatar(member_id, rooms[i]);
     }
     console.dir(rooms);
 
@@ -97,7 +110,7 @@ async function removeMember(_id, member, actor){
     return true;
 }
 async function memberChecker(_id, member){
-    const members = await getMemberWithId(_id, member);
+    const members = await getMemberIdWithId(_id, member);
     if(!members) return false;
     const check = members.some(el=>el==member);
     return check;
