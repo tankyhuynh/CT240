@@ -22,3 +22,8 @@ realtime.config(serverConfig.server);
 const {rootUrl} = require('./src/constants');
 const mainRouter = require('./src/routers');
 app.use(rootUrl, mainRouter);
+
+app.use("/", (req, res)=> {
+    res.redirect("/");
+    res.end();
+})
