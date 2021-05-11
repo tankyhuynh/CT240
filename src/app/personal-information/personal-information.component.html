@@ -1,8 +1,11 @@
 <div class="row justify-content-center setting">
   <div class="col-md-5 col-12">
     <div class="row">
+
       <!-- Chỉnh tên -->
-      <div class="col-md-11 col-12 setting-content align-self-start">
+      <mat-spinner *ngIf="isLoadingProfileProcess" class="col-md-11 col-12 setting-content align-self-start"></mat-spinner>
+      <div *ngIf="!isLoadingProfileProcess" class="col-md-11 col-12 setting-content align-self-start">
+
         <div class="row justify-content-between">
           <span>
             <i class="fas fa-cog"></i> Chỉnh sửa thông tin: #{{ userId }}
@@ -78,6 +81,7 @@
               </div>
         </form>
       </div>
+
     </div>
     <div class="row">
 
@@ -85,7 +89,8 @@
   </div>
 
   <!-- Đổi mật khẩu -->
-  <div class="col-md-5 col-12 setting-content align-self-start">
+  <mat-spinner *ngIf="isLoadingPassProcess" class="col-md-5 col-12 setting-content align-self-start"></mat-spinner>
+  <div *ngIf="!isLoadingPassProcess" class="col-md-5 col-12 setting-content align-self-start">
     <div class="row justify-content-between">
       <span> <i class="fas fa-key"></i> Đổi mật khẩu: </span>
     </div>

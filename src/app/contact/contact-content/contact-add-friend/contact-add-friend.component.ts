@@ -45,6 +45,12 @@ export class ContactAddFriendComponent implements OnInit {
       this.isLoading = false;
       return ;
     }
+
+    if(friendId.length === 10){
+      console.log("input 10 digits");
+      friendId= "?phone=" + friendId;
+    }
+
     try {
       this.addFriendService
           .getOneById(friendId)

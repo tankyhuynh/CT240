@@ -26,6 +26,8 @@ export class PersonalInformationComponent implements OnInit {
   profile: ProfileModel;
 
   isDiable: boolean = true;
+  isLoadingProfileProcess: boolean = false;
+  isLoadingPassProcess: boolean = false;
 
   imageURL: string;
   form: FormGroup;
@@ -51,19 +53,24 @@ export class PersonalInformationComponent implements OnInit {
               this.profile = response.data;
               console.log("profile: ");
               console.log(this.profile);
+
+              this.form = new FormGroup({
+                'name': new FormControl({value: response.data?.name, disabled: true}, {
+                  validators: [Validators.required]
+                }),
+                'avatar': new FormControl(null, {
+                  validators: [Validators.required],
+                  asyncValidators: [mimeType]
+                })
+
+              });
+
+
             });
 
 
-    this.form = new FormGroup({
-      'name': new FormControl({value: null, disabled: true}, {
-        validators: [Validators.required]
-      }),
-      'avatar': new FormControl(null, {
-        validators: [Validators.required],
-        asyncValidators: [mimeType]
-      })
 
-    });
+
   }
 
 
@@ -76,13 +83,17 @@ export class PersonalInformationComponent implements OnInit {
     else {
       this.defaultPlaceHolderText = ["Mật khẩu mới", "Xác nhận mật khẩu"];
 
-      this.form.patchValue({name: this.profile?.name});
-      this.form.get('name').updateValueAndValidity();
-
-      this.form.patchValue({avatar: null});
-      this.form.get('avatar').updateValueAndValidity();
+      this.resetForm(this.profile.name);
 
     }
+  }
+
+  resetForm(name: string){
+    this.form.patchValue({name: name});
+    this.form.get('name').updateValueAndValidity();
+
+    this.form.patchValue({avatar: null});
+    this.form.get('avatar').updateValueAndValidity();
   }
 
 
@@ -100,25 +111,32 @@ export class PersonalInformationComponent implements OnInit {
 
   updateInfo(){
     console.log("Updated info worked!!");
+    this.isLoadingProfileProcess = true;
     this.profileService
           .updateInfo(this.userId, this.form.value.name, this.form.value.avatar)
           .subscribe( (response:any) => {
             console.log(response);
+            this.isLoadingProfileProcess = false;
             const newProfile = {
               name: response.data.name,
               avatar: response.data.avatar
             }
             console.log(`name: ${newProfile.name}, avatar: ${newProfile.avatar}`);
             this.profileService.changeUserProfileInLocalStorage(newProfile);
+
+            this.resetForm(newProfile?.name);
+
           } );
   }
 
   changePassword(){
+    this.isLoadingPassProcess = true;
     this.accountService
           .changePassword(this.password.nativeElement.value)
           .subscribe( (response:any) => {
             console.log("Pass");
-            console.log(this.password.nativeElement.value);
+            this.isLoadingPassProcess = false;
+            console.log(this.password?.nativeElement?.value);
             console.log(response)
           });
   }
