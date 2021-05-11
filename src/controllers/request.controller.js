@@ -35,13 +35,13 @@ async function create(req, res){
         sendReject(res, "data emtry");
         return;
     }
-    const {receiver, introduce} = data;
+    let {receiver, introduce} = data;
     if(receiver.length <= 12) {
-        let receiverAccount = await AccountService.getWithPhone(receiver).lean();
-        console.log(receiverAccount);
-        if(!receiverProfile){
+        let receiverAccount = await AccountService.getWithPhone(receiver);
+        if(!receiverAccount){
             sendReject(res, "not found");
             res.end();
+            return;
         } else {
             receiver = receiverAccount._id;
         }

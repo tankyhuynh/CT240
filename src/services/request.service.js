@@ -29,7 +29,7 @@ async function getReceived(receiver){
 }
 async function removeWithId(_id, actor){
     // only sender can remove
-    await RequestModel.deleteOne({_id, sender: actor});
+    await RequestModel.deleteOne({_id, $or: [{sender: actor}, {receiver: actor}]});
     return true;
 }
 
