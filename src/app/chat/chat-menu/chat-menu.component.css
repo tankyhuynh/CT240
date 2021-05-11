@@ -54,6 +54,11 @@
   margin: 0.25rem 0;
   font-size: 1rem;
   color: var(--color-3);
+  width: 90%;
+  max-width: 85%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .tabs-card__item > div > div > i {

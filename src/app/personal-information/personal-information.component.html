@@ -1,141 +1,143 @@
 <div class="row justify-content-center setting">
   <div class="col-md-5 col-12">
-    <div class="row">
-
-      <!-- Chỉnh tên -->
-      <mat-spinner *ngIf="isLoadingProfileProcess" class="col-md-11 col-12 setting-content align-self-start"></mat-spinner>
-      <div *ngIf="!isLoadingProfileProcess" class="col-md-11 col-12 setting-content align-self-start">
-
+    <!-- Chỉnh tên -->
+    <div class="row justify-content-center">
+      <mat-spinner *ngIf="isLoadingProfileProcess"></mat-spinner>
+      <div
+        *ngIf="!isLoadingProfileProcess"
+        class="col-md-11 col-12 setting-content align-self-start"
+      >
         <div class="row justify-content-between">
           <span>
             <i class="fas fa-cog"></i> Chỉnh sửa thông tin: #{{ userId }}
           </span>
         </div>
-        <form
-          [formGroup]="form"
-          (submit)="updateInfo()" method="POST">
-              <div class="row justify-content-center">
-                <input
-                  type="text"
-                  class="add-friend__input edit-input"
-                  id="edit-name"
-                  [value]="profile?.name"
-                  #username
-                  formControlName="name"
-                  matInput
-                />
-              </div>
+        <form [formGroup]="form" (submit)="updateInfo()" method="POST">
+          <div class="row justify-content-center">
+            <input
+              type="text"
+              class="add-friend__input edit-input"
+              [value]="profile?.name"
+              #username
+              formControlName="name"
+              matInput
+            />
+          </div>
 
-              <div class="row justify-content-center">
-                <input
-                  type="text"
-                  class="add-friend__input edit-input"
-                  name="phone"
-                  [value]="phone"
-                  disabled
-                  matInput
-                />
-              </div>
+          <div class="row justify-content-center">
+            <input
+              type="text"
+              class="add-friend__input edit-input"
+              name="phone"
+              [value]="phone"
+              disabled
+              matInput
+            />
+          </div>
 
-              <div class="row error" id="edit-name-err"></div>
-                  <div class="row m-3">
-                    <input [disabled]="isDiable" type="file" #filePicker (change)="onFilePicked($event)" />
-                  </div>
-                    <div
-                  class="imagePreview row justify-content-center"
-                  *ngIf="imageURL !== '' && imageURL && form.get('avatar').valid"
-                >
-                  <img [src]="imageURL" />
-                </div>
-              <div class="row justify-content-end">
+          <div class="row error" id="edit-name-err"></div>
+          <div class="row m-3">
+            <input
+              [disabled]="isDiable"
+              type="file"
+              #filePicker
+              (change)="onFilePicked($event)"
+            />
+          </div>
+          <div
+            class="imagePreview row justify-content-center"
+            *ngIf="imageURL !== '' && imageURL && form.get('avatar').valid"
+          >
+            <img [src]="imageURL" />
+          </div>
+          <div class="row justify-content-end">
+            <button
+              *ngIf="isDiable"
+              type="button"
+              class="add-friend__card--icon"
+              id="save-edit-user"
+              (click)="changeDiableStatus()"
+            >
+              <i class="fas fa-edit"></i> Chỉnh sửa
+            </button>
 
-                <button
-                  *ngIf="isDiable"
-                  type="button"
-                  class="add-friend__card--icon"
-                  id="save-edit-user"
-                  (click)="changeDiableStatus()"
-                >
-                  <i class="fas fa-edit"  ></i> Chỉnh sửa
-                </button>
+            <button
+              *ngIf="!isDiable"
+              type="button"
+              (click)="changeDiableStatus()"
+              class="add-friend__card--icon"
+              id="save-edit-user"
+            >
+              Hủy
+            </button>
 
-                <button
-                  *ngIf="!isDiable"
-                  type="button"
-                  (click)="changeDiableStatus()"
-                  class="add-friend__card--icon"
-                  id="save-edit-user"
-                >
-                  <i class="fas fa-edit"></i> Cancel
-                </button>
-
-                <button
-                  *ngIf="!isDiable"
-                  type="submit"
-                  class="add-friend__card--icon"
-                  id="save-edit-user"
-                >
-                  <i class="fas fa-edit"></i> Save
-                </button>
-
-              </div>
+            <button
+              *ngIf="!isDiable"
+              type="submit"
+              class="add-friend__card--icon"
+              id="save-edit-user"
+            >
+              <i class="fas fa-save"></i> Lưu
+            </button>
+          </div>
         </form>
       </div>
-
-    </div>
-    <div class="row">
-
     </div>
   </div>
+  <div class="col-md-5 col-12">
+    <!-- Đổi mật khẩu -->
+    <div class="row justify-content-center">
+      <mat-spinner *ngIf="isLoadingPassProcess"></mat-spinner>
+      <div
+        *ngIf="!isLoadingPassProcess"
+        class="col-md-11 col-12 setting-content align-self-start"
+      >
+        <div class="row justify-content-between">
+          <span> <i class="fas fa-key"></i> Đổi mật khẩu: </span>
+        </div>
 
-  <!-- Đổi mật khẩu -->
-  <mat-spinner *ngIf="isLoadingPassProcess" class="col-md-5 col-12 setting-content align-self-start"></mat-spinner>
-  <div *ngIf="!isLoadingPassProcess" class="col-md-5 col-12 setting-content align-self-start">
-    <div class="row justify-content-between">
-      <span> <i class="fas fa-key"></i> Đổi mật khẩu: </span>
+        <form action="">
+          <div class="row error" id="edit-password-err"></div>
+
+          <div class="row justify-content-center">
+            <input
+              type="password"
+              class="add-friend__input"
+              #password
+              [placeholder]="defaultPlaceHolderText[0]"
+              id="edit-new-password"
+              matInput
+            />
+          </div>
+          <div class="row error" id="edit-new-password-err"></div>
+
+          <div class="row justify-content-center">
+            <input
+              matInput
+              type="password"
+              class="add-friend__input"
+              #repassword
+              [placeholder]="defaultPlaceHolderText[1]"
+              id="edit-re-password"
+            />
+          </div>
+          <div class="row error" id="edit-re-password-err"></div>
+
+          <div class="row justify-content-end">
+            <button
+              type="submit"
+              class="add-friend__card--icon"
+              (click)="changePassword()"
+              id="save-change-password"
+              [disabled]="
+                password.value !== repassword.value || password.value == ''
+              "
+            >
+              <i class="fas fa-save"></i> Lưu
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-
-    <form action="">
-      <div class="row error" id="edit-password-err"></div>
-
-      <div class="row justify-content-center">
-        <input
-          type="password"
-          class="add-friend__input"
-          #password
-          [placeholder]="defaultPlaceHolderText[0]"
-          id="edit-new-password"
-          matInput
-        />
-      </div>
-      <div class="row error" id="edit-new-password-err"></div>
-
-      <div class="row justify-content-center">
-        <input
-          matInput
-          type="password"
-          class="add-friend__input"
-          #repassword
-          [placeholder]="defaultPlaceHolderText[1]"
-          id="edit-re-password"
-        />
-      </div>
-      <div class="row error" id="edit-re-password-err"></div>
-
-      <div class="row justify-content-end">
-        <button
-          type="submit"
-          class="add-friend__card--icon"
-          (click)="changePassword()"
-          id="save-change-password"
-          [disabled]=" password.value !== repassword.value  "
-        >
-          <i class="fas fa-save"></i> Lưu
-        </button>
-      </div>
-    </form>
   </div>
 </div>
-
-
-

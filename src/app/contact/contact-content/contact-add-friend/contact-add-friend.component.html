@@ -27,8 +27,8 @@
               type="text"
               class="add-friend__input"
               placeholder="Số điện thoại hoặc ID"
-              #friendId
-              (keyup)="searchFriend(friendId.value)"
+              #friendPhone
+              (keyup)="searchFriend(friendPhone.value)"
               id="add-friend-ip"
             />
             <span class="add-friend__submit">
@@ -52,6 +52,7 @@
                 class="img-fluid add-friend__card--img"
               />
             </div>
+            <input type="hidden" #friendId value="{{ friend?._id }}" />
             <div class="row justify-content-center">
               <span class="add-friend__card--title"> {{ friend?._id }} </span>
             </div>
