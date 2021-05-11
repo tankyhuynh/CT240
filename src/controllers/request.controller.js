@@ -3,6 +3,7 @@ const {request, merger} = require('../data-produce');
 const {sendSuccess, sendReject} = require('../result');
 
 const RequestService = require('../services/request.service');
+const AccountService = require('../services/account.service');
 
 async function get(req, res){
     const auth = getAuth(req);
@@ -25,6 +26,7 @@ async function getOne(req, res){
     return;
 }
 async function create(req, res){
+    console.log("run run");
     let data;
     try {
         data = request(merger(req), ["receiver", "introduce"]);
@@ -34,9 +36,18 @@ async function create(req, res){
         return;
     }
     const {receiver, introduce} = data;
+    if(receiver.length <= 12) {
+        let receiverAccount = await AccountService.getWithPhone(receiver).lean();
+        console.log(receiverAccount);
+        if(!receiverProfile){
+            sendReject(res, "not found");
+            res.end();
+        } else {
+            receiver = receiverAccount._id;
+        }
+    }
     const sender = getAuth(req);
     const requestFriend = await RequestService.create(sender, receiver, introduce);
-    
     if(!requestFriend) {
         sendReject(res, "data emtry");
         return;
