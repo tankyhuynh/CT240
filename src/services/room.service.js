@@ -64,10 +64,9 @@ async function getWithMember(member_id){
     let rooms = await RoomModel.find({"members.user": {$in: member_id}}).sort({created_at: 1}).lean();
     for(i=0; i<rooms.length; i++){
         rooms[i].name = await getName(member_id, rooms[i]);
-        rooms[i].name = await getAvatar(member_id, rooms[i]);
+        rooms[i].avatar = await getAvatar(member_id, rooms[i]);
+        console.log(rooms[i]);
     }
-    console.dir(rooms);
-
     return rooms;
 }
 async function getMemberIdWithId(_id, actor) {

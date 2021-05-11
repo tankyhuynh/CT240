@@ -31,7 +31,7 @@ async function getName(_id){
     return (await getWithId(_id)).name;
 }
 async function getAvatar(_id){
-    return (await getWithId(_id).avatar);
+    return (await getWithId(_id)).avatar;
 }
 
 // update info

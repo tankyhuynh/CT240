@@ -4,7 +4,10 @@ const FriendService = require('./friend.service');
 
 async function create(sender, receiver, introduce){
     if(await FriendService.isFriend(sender, receiver)) return null;
-    let request = await RequestModel.findOne({sender, receiver}).lean();
+    let request 
+    try {
+        request = await RequestModel.findOne({sender, receiver}).lean();
+    } catch { request = null};
     if(!request){
         request = new RequestModel({sender, receiver, introduce});
         await request.save();

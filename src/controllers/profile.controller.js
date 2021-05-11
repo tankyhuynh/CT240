@@ -63,7 +63,7 @@ async function update(req, res){
     sendSuccess(res, profile);
 }
 function getUrl(id){
-    return (process.env.SERVER_DOMAIN || "") +  rootUrl + `/friends/${id}`;
+    return (process.env.SERVER_DOMAIN || "http://localhost:3000/") +  rootUrl + `/friends/${id}`;
 }
 module.exports = {
     get,

@@ -8,7 +8,7 @@ function upload(req, res){
             sendReject(res, "upload failure");
             return;
         }
-        sendSuccess(res, {url: (process.env.SERVER_DOMAIN || "") +  req.file.path.split(/[\/\\]/).join("\/")});
+        sendSuccess(res, {url: (process.env.SERVER_DOMAIN || "http://localhost:3000/") +  req.file.path.split(/[\/\\]/).join("\/")});
         return;
     });
 }

@@ -8,14 +8,13 @@ const ProfileController = require('./profile.controller');
 const MessageService = require('../services/message.service');
 
 function getUrl(roomId) {
-    return (process.env.SERVER_DOMAIN || "") + rootUrl+ `/rooms/${roomId}`;
+    return (process.env.SERVER_DOMAIN || "http://localhost:3000/") + rootUrl+ `/rooms/${roomId}`;
 }
 
 async function get(req, res){
     let {search, page} = merger(req);
     const auth = getAuth(req);
     const rooms = await RoomService.getWithMember(auth);
-    
     const resData = {
         data: rooms.map(el=>({...el, ref: getUrl(el._id)}))
     }
