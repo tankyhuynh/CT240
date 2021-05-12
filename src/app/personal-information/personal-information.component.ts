@@ -84,6 +84,7 @@ export class PersonalInformationComponent implements OnInit {
       this.defaultPlaceHolderText = ["Mật khẩu mới", "Xác nhận mật khẩu"];
 
       this.resetForm(this.profile.name);
+      this.form.get('name').disable();
 
     }
   }
@@ -125,6 +126,7 @@ export class PersonalInformationComponent implements OnInit {
             this.profileService.changeUserProfileInLocalStorage(newProfile);
 
             this.resetForm(newProfile?.name);
+            this.form.get('name').disable();
 
           } );
   }

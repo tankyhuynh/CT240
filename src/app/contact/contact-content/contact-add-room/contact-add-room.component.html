@@ -53,7 +53,7 @@
                   [value]="friend._id"
                   (change)="checkBoxClick($event)"
                 />
-                <img src="" alt="" class="img-fluid item__img" />
+                <img [src]="friend.avatar" alt="" class="img-fluid item__img" />
                 <span class="item__name">{{ friend?.name }}</span>
               </div>
 

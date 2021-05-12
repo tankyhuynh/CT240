@@ -7,12 +7,13 @@ import {
   ViewChild,
 } from '@angular/core';
 import { RoomModel } from 'src/app/contact/contact-content/contact-add-room/contact-add-room.model';
+import { FriendModel } from 'src/app/contact/contact-content/list-friends/friend.model';
 import { ContactListRoomService } from 'src/app/contact/contact-content/list-rooms/contact-list-rooms.service';
+import { ProfileService } from 'src/app/personal-information/profile.service';
 import { SharingService } from 'src/app/sharing.service';
 import { SocketService } from 'src/app/socket/socket.service';
 import { MessageModel } from '../chat-roomchat-message.model';
 
-import { ChatRoomModel } from '../chatroom.model';
 
 @Component({
   selector: 'app-chat-roomchat-body',
@@ -24,14 +25,18 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
   @Input() messages: MessageModel[] = [];
   currentUserId: string = localStorage.getItem('userId');
 
+  profileOfFriends: string[] = [];
+
   top: number;
+
 
   @ViewChild('scrollMe') myScroller: ElementRef<any>;
 
   constructor(
     private roomService: ContactListRoomService,
     private sharingService: SharingService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private profileService: ProfileService
   ) {}
 
   ngOnInit(): void {
@@ -41,6 +46,21 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
       console.log('ngOnInit() chat room');
       console.log(this.messages);
     });
+
+    this.roomService
+          .getMembersById(this.chatroom._id)
+          .subscribe( (response:any) => {
+            const responseData = response.data;
+            responseData.forEach(element => {
+              if ( element._id === this.currentUserId ) {
+                this.profileOfFriends[element._id] = "You";
+              }
+              else {
+                this.profileOfFriends[element._id] = element?.name;
+              }
+            });
+          } );
+
   }
 
   ngAfterViewChecked() {
@@ -56,4 +76,6 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
       }
     } catch (error) {}
   }
+
+
 }
