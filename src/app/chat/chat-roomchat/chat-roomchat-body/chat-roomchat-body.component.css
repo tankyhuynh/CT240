@@ -1,4 +1,13 @@
 /* Chat Box Body */
+.user__avatar {
+  width: 2rem;
+  height: 2rem;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--color-2);
+  cursor: pointer;
+}
+
 .chat-box__body {
   height: 55vh;
   max-height: 55vh;

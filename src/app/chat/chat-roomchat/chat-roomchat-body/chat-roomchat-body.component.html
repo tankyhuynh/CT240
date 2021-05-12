@@ -2,6 +2,9 @@
   <div class="col" >
     <div *ngFor="let message of messages">
       <div class="row" *ngIf="message.sender !==  currentUserId">
+        <img class="user__avatar"
+            [src]="profileOfFriends[message.sender]?.avatar"
+          />
         <div class="mess mess-left" >
           <span [title]="message.created_at | date:'medium'">
             {{ message.data }}
@@ -9,25 +12,29 @@
         </div>
         <div class="mess-sender">
           <span>
-            {{ profileOfFriends[message.sender] }}
+            {{ profileOfFriends[message.sender]?.name }}
           </span>
         </div>
       </div>
+
       <div class="row justify-content-end" *ngIf="message.sender ===  currentUserId">
         <div class="mess mess-right" >
           <span [title]="message.created_at | date:'medium'">
             {{ message.data }}
           </span>
+
         </div>
-        <div class="mess-sender" style="text-align: end" >
-          <span>
-            {{ profileOfFriends[message.sender] }}
-          </span>
-        </div>
+        <img class="user__avatar"
+          [src]="profileOfFriends[message.sender]?.avatar"
+        />
       </div>
+      <div class="mess-sender" style="text-align: end" >
+        <span>
+          {{ profileOfFriends[message.sender]?.name }}
+        </span>
+      </div>
+
     </div>
-
-
   </div>
 </div>
 

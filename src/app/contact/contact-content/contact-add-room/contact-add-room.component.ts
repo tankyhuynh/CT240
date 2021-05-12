@@ -67,7 +67,8 @@ export class ContactAddGroupComponent implements OnInit {
       _id: "",
       name: this.form.value.name,
       members: this.members,
-      avatar: ""
+      avatar: "",
+      admin: "" // ko biết chỗ này có lối ko
     }
     this.roomService
           .saveOne(room)

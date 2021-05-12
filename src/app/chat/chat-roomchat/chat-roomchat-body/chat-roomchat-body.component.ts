@@ -47,16 +47,23 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
       console.log(this.messages);
     });
 
+    console.log(`Admin of ${this.chatroom.name} : ${this.chatroom.admin} `);
+
     this.roomService
           .getMembersById(this.chatroom._id)
           .subscribe( (response:any) => {
             const responseData = response.data;
+            console.log("Response data: ");
+            console.log(responseData);
             responseData.forEach(element => {
+              console.log(`_id: ${element._id} name: ${element.name} avatar: ${element.avatar}`);
               if ( element._id === this.currentUserId ) {
-                this.profileOfFriends[element._id] = "You";
+                const tmpUser:any = element;
+                tmpUser.name = "You";
+                this.profileOfFriends[element._id] = tmpUser;
               }
               else {
-                this.profileOfFriends[element._id] = element?.name;
+                this.profileOfFriends[element._id] = element;
               }
             });
           } );

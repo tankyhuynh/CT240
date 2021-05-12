@@ -113,7 +113,7 @@ export class ListGroupsComponent implements OnInit {
 
   }
 
-  deleteRoom(idRoom: string) {
+  delete(idRoom: string) {
 
     this.roomService
           .getMembersById(idRoom)
