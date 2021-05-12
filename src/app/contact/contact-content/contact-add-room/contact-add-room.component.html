@@ -24,10 +24,7 @@
           </span>
         </div>
         <hr />
-        <form
-          [formGroup]="form"
-          (submit)="onAddRoom()"
-        >
+        <form [formGroup]="form" (submit)="onAddRoom()">
           <label for="">Tên nhóm:</label>
           <div class="row justify-content-center">
             <input
@@ -43,8 +40,10 @@
           </label>
           <div class="row list-friends-add-groups">
             <div class="col">
-
-              <div *ngFor="let friend of friends" class="row align-items-center list-friends-add-groups__item">
+              <div
+                *ngFor="let friend of friends"
+                class="row align-items-center list-friends-add-groups__item"
+              >
                 <input
                   class="input-checkbox"
                   type="checkbox"
@@ -53,11 +52,15 @@
                   [value]="friend._id"
                   (change)="checkBoxClick($event)"
                 />
-                <img [src]="friend.avatar" alt="" class="img-fluid item__img" />
+
+                <img
+                  src="{{ friend?.avatar }}"
+                  alt=""
+                  class="img-fluid item__img"
+                />
+
                 <span class="item__name">{{ friend?.name }}</span>
               </div>
-
-
             </div>
           </div>
           <div class="row justify-content-end">
