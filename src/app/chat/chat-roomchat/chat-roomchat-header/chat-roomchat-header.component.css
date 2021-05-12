@@ -39,4 +39,11 @@
     background-color: var(--color-2);
     transition: all 750ms;
   }
+
+  .chat-box__title {
+    height: 10vh;
+    background-color: var(--color-1);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
 }

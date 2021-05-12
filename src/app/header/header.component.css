@@ -79,6 +79,7 @@
 
 @media only screen and (max-width: 480px) {
   .header {
+    height: 10vh;
     padding: 0 1rem;
   }
 
@@ -87,7 +88,7 @@
     margin: 0;
     padding: 2.5rem 0;
     width: 100%;
-    top: 12.75vh;
+    top: 10.25vh;
     left: 0;
     right: 0;
     bottom: 0;
@@ -102,7 +103,7 @@
   }
   .user__case--item.log-res {
     width: 9.5rem;
-    margin: 1rem 0.5rem;
+    margin: 0rem 0.25rem;
   }
 
   .user__case--item {

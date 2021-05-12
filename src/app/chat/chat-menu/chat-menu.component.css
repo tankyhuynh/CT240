@@ -25,7 +25,6 @@
 /* Tabs Item */
 
 .tabs-card__item {
-  height: 5rem;
   width: 100%;
   margin: 0.5rem 0rem;
   padding: 0.5rem;
@@ -72,7 +71,7 @@
   color: var(--color-3);
 }
 
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 500px) {
   .tabs-card__item > div > img {
     width: 15vw;
     height: 15vw;

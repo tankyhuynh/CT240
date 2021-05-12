@@ -6,7 +6,12 @@
   <div class="col-md-8 content" [ngClass]="{ hide: valHideContactContent }">
     <div class="col">
       <div
-        class="row list-contacts__title align-items-center justify-content-between"
+        class="
+          row
+          list-contacts__title
+          align-items-center
+          justify-content-between
+        "
       >
         <div>
           <span
@@ -25,29 +30,46 @@
             <div class="list-contacts__card" *ngFor="let room of rooms">
               <div class="cursor_pointer" [routerLink]="['/chat', room._id]">
                 <img
-                  [src]="(room?.avatar || 'http://localhost:3000/public/images/pexels-cottonbro-4065895.jpg-1620614453299.jpg')"
+                  [src]="
+                    room?.avatar ||
+                    'http://localhost:3000/public/images/pexels-cottonbro-4065895.jpg-1620614453299.jpg'
+                  "
                   alt=""
                   class="img-fluid card__img"
                 />
-              <div class="row justify-content-center">
-                <span class="card__title">
-                  {{ room?.name }}
-                </span>
+                <div class="row justify-content-center">
+                  <span class="card__title">
+                    {{ room?.name }}
+                  </span>
+                </div>
               </div>
-            </div>
 
               <div style="display: none">
                 <span class="card__icon"> Nhắn tin </span>
                 <span class="card__icon"> Rời nhóm </span>
               </div>
               <div>
-                <span title="Thêm thành viên" class="card__icon" (click)="addMember(room._id)">
+                <span
+                  title="Thêm thành viên"
+                  class="card__icon"
+                  (click)="addMember(room._id)"
+                >
                   <i class="fas fa-user-plus"></i>
                 </span>
-                <span *ngif="room.admin === currentUserId" title="Xóa thành viên" class="card__icon" (click)="deleteMember(room._id)">
+                <span
+                  *ngIf="room.admin == currentUserId"
+                  title="Xóa thành viên"
+                  class="card__icon"
+                  (click)="deleteMember(room._id)"
+                >
                   <i class="fas fa-user-minus"></i>
                 </span>
-                <span *ngif="room.admin === currentUserId" title="Xoá nhóm" class="card__icon" (click)="delete(room._id)">
+                <span
+                  *ngIf="room.admin == currentUserId"
+                  title="Xoá nhóm"
+                  class="card__icon"
+                  (click)="delete(room._id)"
+                >
                   <i class="fas fa-sign-out-alt"></i>
                 </span>
               </div>
