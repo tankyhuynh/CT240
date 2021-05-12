@@ -35,6 +35,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   rooms: RoomModel[] = [];
   messages: MessageModel[] = [];
+  lastMessageOfRoom: string[] = [];
   currentUserId: string = localStorage.getItem('userId');
 
   profiles: ProfileModel[] = [];
@@ -65,8 +66,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           .getAll()
           .subscribe( (response:any) => {
             this.rooms = response.data.data;
-            console.log('Chat componet get all rooms');
-            console.log(this.rooms);
           });
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -85,7 +84,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
               .subscribe( (response:any) => {
                 console.log("get all messages in chat");
                 this.messages = response.data;
-                console.log(this.messages);
+
+                // Get last message of room
+                this.lastMessageOfRoom[roomId] = this.messages[this.messages.length-1];
+
               } );
 
 

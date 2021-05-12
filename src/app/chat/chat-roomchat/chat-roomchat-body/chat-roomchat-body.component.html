@@ -24,15 +24,13 @@
           </span>
 
         </div>
-        <img class="user__avatar"
-          [src]="profileOfFriends[message.sender]?.avatar"
-        />
+        <div class="mess-sender" style="text-align: end" >
+          <span>
+            {{ profileOfFriends[message.sender]?.name }}
+          </span>
+        </div>
       </div>
-      <div class="mess-sender" style="text-align: end" >
-        <span>
-          {{ profileOfFriends[message.sender]?.name }}
-        </span>
-      </div>
+
 
     </div>
   </div>

@@ -48,16 +48,12 @@ export class ProfileService {
     return this.http
       .get<{data: ProfileModel}>(BACKEND_URL + id)
       .subscribe((response) => {
-        console.log("In profile service");
-        console.log(response.data);
         reponseUser = {
           name: response.data.name,
           avatar: response.data.avatar,
         };
         // this.currentUserLogin = reponseUser;
         // this.userStatusListener.next(this.currentUserLogin);
-        console.log("profile: ");
-        console.log(reponseUser);
         this.changeUserProfileInLocalStorage(reponseUser);
 
       }, error => {

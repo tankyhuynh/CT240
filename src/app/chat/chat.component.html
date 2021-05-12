@@ -1,7 +1,7 @@
 <div class="row">
 
   <div class="col-md-4 col-12 menu">
-    <app-chat-menu [imgPath]="tmpImgPath" [rooms]="rooms"></app-chat-menu>
+    <app-chat-menu [tmp]="messages[messages.length-1]" [lastMessage]="lastMessageOfRoom" [imgPath]="tmpImgPath" [rooms]="rooms"></app-chat-menu>
   </div>
 
   <div class="col-md-8 col-12 content" *ngIf="currentRoom">

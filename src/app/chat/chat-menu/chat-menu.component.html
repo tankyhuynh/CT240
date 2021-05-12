@@ -16,7 +16,8 @@
           <span class="card__title">{{ room.name }}</span>
         </div>
         <div class="row">
-          <i class="card__desc"> Tin nhắn mới nhâtshdfjgasjgfsjhbdjb </i>
+          <i class="card__desc"> {{ lastMessage[room._id]?.data }} </i>
+          <!-- <i class="card__desc"> {{ tmp?.data }} </i> -->
         </div>
       </div>
     </div>

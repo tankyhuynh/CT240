@@ -61,8 +61,6 @@ export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
                       .getUserStatusListener()
                       .subscribe( userData => {
                         this.currentUser = userData;
-                        console.log("userData: ");
-                        console.log(this.currentUser);
                         localStorage.setItem('userData', JSON.stringify(userData));
                       });
   }

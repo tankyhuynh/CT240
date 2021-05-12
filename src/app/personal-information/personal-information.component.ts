@@ -51,8 +51,6 @@ export class PersonalInformationComponent implements OnInit {
             .getProfile()
             .subscribe( (response:any) => {
               this.profile = response.data;
-              console.log("profile: ");
-              console.log(this.profile);
 
               this.form = new FormGroup({
                 'name': new FormControl({value: response.data?.name, disabled: true}, {
@@ -116,13 +114,11 @@ export class PersonalInformationComponent implements OnInit {
     this.profileService
           .updateInfo(this.userId, this.form.value.name, this.form.value.avatar)
           .subscribe( (response:any) => {
-            console.log(response);
             this.isLoadingProfileProcess = false;
             const newProfile = {
               name: response.data.name,
               avatar: response.data.avatar
             }
-            console.log(`name: ${newProfile.name}, avatar: ${newProfile.avatar}`);
             this.profileService.changeUserProfileInLocalStorage(newProfile);
 
             this.resetForm(newProfile?.name);
@@ -136,10 +132,7 @@ export class PersonalInformationComponent implements OnInit {
     this.accountService
           .changePassword(this.password.nativeElement.value)
           .subscribe( (response:any) => {
-            console.log("Pass");
             this.isLoadingPassProcess = false;
-            console.log(this.password?.nativeElement?.value);
-            console.log(response)
           });
   }
 

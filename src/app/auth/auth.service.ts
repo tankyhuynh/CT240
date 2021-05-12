@@ -73,7 +73,6 @@ export class AutheService {
           .post<{data: {_id: string, token: string, expiresIn: number}}>(BACKEND_URL + "login", authData)
             .subscribe(response => {
               this.token = response.data.token;
-              console.log(response.data);
               if ( this.token ) {
                 this.sharingService.changeReloginStatus(true);
                 // this.router.navigate(['/']);
@@ -91,7 +90,7 @@ export class AutheService {
             .subscribe(response => {
               this.token = response.data.token;
               if ( this.token ) {
-                const expiresInDuration =  3600;
+                const expiresInDuration =  response.data.expiresIn;
                 this.setAuthTimer(expiresInDuration);
                 this.isAuthenticated = true;
                 this.userId = response.data._id;
@@ -103,9 +102,6 @@ export class AutheService {
                 this.profileService.getOneById(this.userId);
 
                 this.saveDataToLocalStorage(this.token, expirationDate, this.userId, this.userData );
-
-                console.log("current profile login");
-                console.log(this.userData);
 
                 this.router.navigate(['/chat']);
 

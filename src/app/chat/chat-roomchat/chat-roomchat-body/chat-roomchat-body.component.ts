@@ -43,20 +43,13 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
     this.top = 1;
     this.socketService.getMessages().subscribe((message: MessageModel) => {
       this.messages.push(message);
-      console.log('ngOnInit() chat room');
-      console.log(this.messages);
     });
-
-    console.log(`Admin of ${this.chatroom.name} : ${this.chatroom.admin} `);
 
     this.roomService
           .getMembersById(this.chatroom._id)
           .subscribe( (response:any) => {
             const responseData = response.data;
-            console.log("Response data: ");
-            console.log(responseData);
             responseData.forEach(element => {
-              console.log(`_id: ${element._id} name: ${element.name} avatar: ${element.avatar}`);
               if ( element._id === this.currentUserId ) {
                 const tmpUser:any = element;
                 tmpUser.name = "You";

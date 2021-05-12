@@ -33,7 +33,7 @@ export class SignupComponent implements OnInit, OnDestroy {
     'name': new FormControl(null, {
       validators: [Validators.required, Validators.minLength(3)]}),
     'phone': new FormControl(null, {
-      validators: [Validators.required]}),
+      validators: [Validators.required, Validators.minLength(10), Validators.maxLength(10)]}),
     'password': new FormControl(null, {
       validators: [Validators.required]
     }),
