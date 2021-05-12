@@ -31,8 +31,35 @@ class Msg {
 class SocketController {
     contructor(){
         SocketController.io = undefined;
-    };    
+    }; 
+    
+    /**
+     * @param {string} sender 
+     * @param {object} friend - friend info
+     */
+    static async newFriend(sender, friend){
+        await this.sendTo(sender,"friend:new", friend);
+    }
+    /**
+     * @param {string} receiver 
+     * @param {string} request 
+     */
+    static async newRequest(receiver, request){
+        await this.sendTo(receiver,"request:new", request);
+    }
+
+    /**
+     * 
+     * @param {Array<string>} members - list members
+     * @param {Object} data - info of room
+     */
+    static async newRoom(members, data){
+        members.foreach(async (member) => {
+            await this.sendTo(member, "room:new", data)
+        });
+    }
     static async sendTo(to, type, data){
+        console.log(`socket send ${to} with type ${type} `);
         SocketController.io.to(await SocketService.getSocket(to)).emit(type, data);
     }
     static async route(io){

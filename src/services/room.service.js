@@ -2,8 +2,14 @@
 
 const RoomModel = require('../models/room.model');
 const ProfileService = require('./profile.service');
+const SocketController = require('../../socket/socket.controller');
 
-
+/**
+ * 
+ * @param {string} name - name of room
+ * @param {Array<string>} members - list members id
+ * @returns room info
+ */
 async function create(name, members){
     if(members.length<2) return null;
     // first members is admin
@@ -17,6 +23,7 @@ async function create(name, members){
     members = members.map(id=> ({user: id}));
     room = new RoomModel({name, members, admin});
     await room.save();
+    SocketController.newRoom(members, room).then();
     return room;
 }
 
@@ -61,7 +68,7 @@ async function getName(actor, doc){
 }
 
 async function getWithMember(member_id){
-    let rooms = await RoomModel.find({"members.user": {$in: member_id}}).sort({created_at: 1}).lean();
+    let rooms = await RoomModel.find({"members.user": {$in: member_id}}).sort({messagelast_at: -1}).lean();
     for(i=0; i<rooms.length; i++){
         rooms[i].name = await getName(member_id, rooms[i]);
         rooms[i].avatar = await getAvatar(member_id, rooms[i]);
@@ -130,6 +137,10 @@ async function isAdmin(_id, user){
     if(!room) return false;
     return true;
 }
+async function updateMessageLast(_id){
+    await RoomModel.updateOne({_id}, {messagelast_at: Date.now()});
+}
+
 
 module.exports = {
     create,
@@ -143,5 +154,6 @@ module.exports = {
     memberChecker,
     remove,
     leave,
-
+    updateMessageLast,
+    
 }

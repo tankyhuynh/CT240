@@ -29,6 +29,7 @@ async function getWithName(user, search="", page=0){
 }
 
 
+const RoomService = require('./room.service');
 async function removeWithId(_id, user){
     // Only user can remove
     await FriendModel.deleteOne({_id, users: {$in: [user]}});

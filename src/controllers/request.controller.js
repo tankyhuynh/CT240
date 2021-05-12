@@ -26,7 +26,6 @@ async function getOne(req, res){
     return;
 }
 async function create(req, res){
-    console.log("run run");
     let data;
     try {
         data = request(merger(req), ["receiver", "introduce"]);
@@ -78,6 +77,7 @@ async function reply(req, res){
 }
 async function remove(req, res){
     let auth = getAuth(req);
+    console.log("Run in function")
     const work = await RequestService.removeWithId(req.params.id, auth);
     if(!work){
         sendReject(res);

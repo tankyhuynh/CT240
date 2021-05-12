@@ -1,6 +1,8 @@
 // check
 const RequestModel = require('../models/request.model');
 const FriendService = require('./friend.service');
+const RoomService = require('./room.service');
+const SocketController = require('../../socket/socket.controller');
 
 async function create(sender, receiver, introduce){
     if(await FriendService.isFriend(sender, receiver)) return null;
@@ -11,6 +13,7 @@ async function create(sender, receiver, introduce){
     if(!request){
         request = new RequestModel({sender, receiver, introduce});
         await request.save();
+        SocketController.newRequest(receiver, request).then(); // 1.0.1
     } 
     return request;
 }
@@ -33,15 +36,35 @@ async function removeWithId(_id, actor){
     return true;
 }
 
+// // v1.0.0
+// async function replyRequest(_id, accept, receiver){
+//     // only receiver can reply
+//     const request = await RequestModel.findOneAndDelete({_id, receiver});
+//     if(!request) return false;
+//     if(accept=='true' || accept ) {
+//         await FriendService.create(request.sender, request.receiver);
+//     }
+//     return true;
+// }
+
+// v1.0.1
+/**
+ * @param {String} _id
+ * @param {boolean} accept
+ * @param {string} receiver - id of receiver
+ * @returns boolean
+ */
 async function replyRequest(_id, accept, receiver){
     // only receiver can reply
     const request = await RequestModel.findOneAndDelete({_id, receiver});
     if(!request) return false;
     if(accept=='true' || accept ) {
         await FriendService.create(request.sender, request.receiver);
+        await RoomService.create("", [request.sender, request.receiver]);
     }
     return true;
 }
+
 
 
 module.exports = {

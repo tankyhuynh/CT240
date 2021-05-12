@@ -32,8 +32,7 @@ var roomSchema = new mongoose.Schema({
     admin: [{
         type: mongoose.SchemaTypes.ObjectId,
     }],
-    
-
+    messagelast_at: Date,
 });
 
 //Export the model

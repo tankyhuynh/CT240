@@ -39,7 +39,7 @@ async function update(req, res){
     let avatarUrl;
     let avatar;
     try {
-        avatarUrl = (process.env.SERVER_DOMAIN || "http://locahost:3000/") +  req.file.path.split(/[\/\\]/).join("\/");
+        avatarUrl = (process.env.SERVER_DOMAIN || "http://localhost:3000/") +  req.file.path.split(/[\/\\]/).join("\/");
         avatar = avatarUrl;
     } catch {
         avatarUrl = null;

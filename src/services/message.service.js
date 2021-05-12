@@ -29,6 +29,7 @@ async function create(sender, room, data){
     if(!await RoomService.memberChecker(room, sender)) return null;
     const message = new MessageModel({sender ,room,  data});
     await message.save();
+    RoomService.updateMessageLast(room).then();
     return message;
 }
 

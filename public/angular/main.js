@@ -227,8 +227,10 @@ __webpack_require__.r(__webpack_exports__);
 // The list of file replacements can be found in `angular.json`.
 const environment = {
     production: false,
-    apiUrl: "https://mean-you.herokuapp.com/api/v1",
-    serverDomain: "https://mean-you.herokuapp.com",
+    //   apiUrl: "https://mean-you.herokuapp.com/api/v1",
+    //   serverDomain: "https://mean-you.herokuapp.com",
+    apiUrl: "http://localhost:3000/api/v1",
+    serverDomain: "http://localhost:3000",
 };
 /*
  * For easier debugging in development mode, you can import the following file
@@ -316,6 +318,7 @@ class SocketService {
         this.getMessages = () => {
             return rxjs__WEBPACK_IMPORTED_MODULE_0__["Observable"].create((observer) => {
                 this.socket.on('message:receive', (message) => {
+                    console.log("message:receive");
                     observer.next(message);
                 });
             });
@@ -324,6 +327,17 @@ class SocketService {
     setUpConnnection() {
         const token = this.authService.getToken();
         this.socket = Object(socket_io_client__WEBPACK_IMPORTED_MODULE_1__["io"])(this.url, { auth: { token: token } });
+        // **
+        this.socket.on("room:new", (data) => {
+            console.log("room:new");
+        });
+        this.socket.on("request:new", (data) => {
+            console.log(".. request:new");
+        });
+        this.socket.on("friend:new", (data) => {
+            console.log(".. friend:new");
+        });
+        // **
     }
     sendMessage(room, data) {
         this.socket.emit('message:send', { room: room, data: data });
