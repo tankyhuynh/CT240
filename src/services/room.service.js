@@ -2,6 +2,7 @@
 
 const RoomModel = require('../models/room.model');
 const ProfileService = require('./profile.service');
+const MessageService = require('./message.service');
 const SocketController = require('../../socket/socket.controller');
 
 /**
@@ -13,9 +14,10 @@ const SocketController = require('../../socket/socket.controller');
 async function create(name, members){
     if(members.length<2) return null;
     // first members is admin
-    const admin = [members[0]];
+    let admin = [members[0]];
     let room;
     if(members.length == 2) {
+        admin = members;
         room = await RoomModel.findOne({"members.user": {$all: [members[0], members[1]]}});
         console.log(`<X> Error: Room with 2 members ${members[0]} and ${members[1]} is exist!`);
         if(!room){} else { return room};
@@ -68,13 +70,46 @@ async function getName(actor, doc){
 }
 
 async function getWithMember(member_id){
-    let rooms = await RoomModel.find({"members.user": {$in: member_id}}).sort({messagelast_at: -1}).lean();
+    let rooms = await RoomModel.find({"members.user": {$in: member_id}}).lean() || [];
     for(i=0; i<rooms.length; i++){
         rooms[i].name = await getName(member_id, rooms[i]);
         rooms[i].avatar = await getAvatar(member_id, rooms[i]);
     }
+    for(i=0; i<rooms.length; i++){
+        rooms[i].messagelast = (await MessageService.getDetailMessageLastOfRoom(rooms[i]._id, member_id)) || {};
+        rooms[i].messagelast_at = rooms[i].messagelast.created_at;
+    }
+    rooms = rooms.sort((a,b)=>{return a.messagelast_at > b.messagelast_at?-1:1})
     return rooms;
 }
+
+/**
+ * 
+ * @param {string} id id of room
+ * @param {string} actor user get
+ * @param {string} last last message was get
+ * @returns {Promise<Array<{}>>} list message
+ */
+async function getMessages(room, actor, last){
+    if(!await memberChecker(room, actor)) return null;
+    let messages = await MessageService.getMessageWithRoom(room, actor, last) || [];
+    return messages;
+}
+
+/**
+ * 
+ * @param {string} sender sender id
+ * @param {string} room room id
+ * @param {Object} data content
+ * @returns {Promise<>} message
+ */
+async function createMessage(sender, room, data){
+    if(!await memberChecker(room, sender)) return null;
+    let message = await MessageService.create(sender, room, data);
+    return message;
+}
+
+
 async function getMemberIdWithId(_id, actor) {
     const room = await getWithId(_id, actor);
     if(!room) return null;
@@ -88,6 +123,18 @@ async function getMemberWithId(_id, actor){
     const members = room.members.map(member=>member.user);
     return members;
 }
+/**
+ * Get all admin of a room
+ * @param {string} _id - Room id
+ * @param {string} actor - Actor 
+ * @returns {Promise<Array<string>>}
+ */
+async function getAdmin(_id, actor){
+    const room = await RoomModel.findOne({_id, "members.user": {$in: [actor]}}).lean();
+    let admin = room.admin || [];
+    return admin;
+}
+
 async function addMember(_id, member, actor){
     if(await memberChecker(_id, member)) return false;
     try {
@@ -132,8 +179,36 @@ async function isAdmin(_id, user){
     if(!room) return false;
     return true;
 }
-async function updateMessageLast(_id){
-    await RoomModel.updateOne({_id}, {messagelast_at: Date.now()});
+
+
+/**
+ * Add a member to admin - not test
+ * @param {string} _id
+ * @param {string} actor
+ * @param {string} newAdmin
+ */
+async function addAdmin(_id, actor, newAdmin){
+    let work;
+    if ((await getMemberIdWithId(_id, actor) || []).length == 2) return true;
+    try {
+       work =  await RoomModel.updateOne({_id,$and: [{admin: {$in: [actor]}}, {admin: {$nin: [newAdmin]}}], "members.user": {$in: [newAdmin]} }, {$push: {admin: [newAdmin]}});
+       console.log(work);
+    } catch { return false;}
+    return true;
+}
+/**
+ * remove admin of member - not test
+ * @param {string} _id
+ * @param {string} actor
+ * @param {string} adminRemove
+ */
+async function removeAdmin(_id, actor, adminRemove){
+    let work;
+    if ((await getMemberIdWithId(_id, actor) || []).length == 2) return true;
+    try {
+       work =  await RoomModel.updateOne({_id}, {$pull: {admin: adminRemove}});
+    } catch { return false;}
+    return true;
 }
 
 
@@ -149,6 +224,9 @@ module.exports = {
     memberChecker,
     remove,
     leave,
-    updateMessageLast,
-    
+    getAdmin,
+    addAdmin,
+    removeAdmin,
+    getMessages,
+    createMessage,
 }

@@ -1,6 +1,5 @@
 const {request} = require('../src/data-produce');
-const MessageService =  require('../src/services/message.service');
-const RoomService = require('../src/services/room.service')
+const {createMessage,getMemberIdWithId } = require('../src/services/room.service')
 const jwt = require('jsonwebtoken');
 const secret = process.env.SECRET_TOKEN || "core-chat";
 
@@ -18,9 +17,9 @@ class Msg {
         }
         const {room, data} = info;
 
-        const message = await MessageService.create(sender, room, data);
+        const message = await createMessage(sender, room, data);
         if(!message) { socket.emit("message:send_error", "You can't send!")}
-        const members = await RoomService.getMemberIdWithId(room, sender) || [];
+        const members = await getMemberIdWithId(room, sender) || [];
         members.forEach(member => {
             SocketController.sendTo(member, "message:receive", message);
         });

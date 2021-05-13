@@ -39,7 +39,7 @@ async function update(req, res){
     let avatarUrl;
     let avatar;
     try {
-        avatarUrl = (process.env.SERVER_DOMAIN || "http://localhost:3000/") +  req.file.path.split(/[\/\\]/).join("\/");
+        avatarUrl = (process.env.SERVER_DOMAIN || "http://localhost:3000") +"/" + req.file.path.split(/[\/\\]/).join("\/");
         avatar = avatarUrl;
     } catch {
         avatarUrl = null;
@@ -62,7 +62,7 @@ async function update(req, res){
     sendSuccess(res, profile);
 }
 function getUrl(id){
-    return (process.env.SERVER_DOMAIN || "http://localhost:3000/") +  rootUrl + `/friends/${id}`;
+    return (process.env.SERVER_DOMAIN || "http://localhost:3000") +  rootUrl + `/friends/${id}`;
 }
 module.exports = {
     get,

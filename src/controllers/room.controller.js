@@ -8,7 +8,7 @@ const ProfileController = require('./profile.controller');
 const MessageService = require('../services/message.service');
 
 function getUrl(roomId) {
-    return (process.env.SERVER_DOMAIN || "http://localhost:3000/") + rootUrl+ `/rooms/${roomId}`;
+    return (process.env.SERVER_DOMAIN || "http://localhost:3000") + rootUrl+ `/rooms/${roomId}`;
 }
 
 async function get(req, res){
@@ -89,14 +89,22 @@ async function removeMember(req, res){
 async function settingMember(req, res){
     let {id, member, admin} = merger(req);
     const auth = getAuth(req);
-    sendReject(res, "router not use");
+    let work;
+    if(admin == true || admin == "true"){
+        work = await RoomService.addAdmin(id, auth, member);
+    } else {
+        work = await RoomService.removeAdmin(id, auth, member);
+    };
+    if(work){
+        sendSuccess(res);
+    } else { sendReject(res)};
 }
 
 async function getMessage(req, res){
     let {id, last} = merger(req);
     const auth = getAuth(req);
-    const message = await MessageService.getMessageWithRoom(id, auth, last) || [];
-    sendSuccess(res, message);
+    const messages = await RoomService.getMessages(id, auth, last) || [];
+    sendSuccess(res, messages);
 }
 
 module.exports = {

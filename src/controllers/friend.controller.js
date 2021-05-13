@@ -42,7 +42,7 @@ async function remove(req, res){
 }
 
 function getUrl(page){
-    return (process.env.SERVER_DOMAIN || "http://localhost:3000/") + rootUrl + `/friends?page=${page}`
+    return (process.env.SERVER_DOMAIN || "http://localhost:3000") + rootUrl + `/friends?page=${page}`
 }
 module.exports = {
     get, 

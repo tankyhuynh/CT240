@@ -39,7 +39,7 @@ class SocketService {
                 await (new SocketModel({_id: account, socket})).save()
             }
         } catch(err) {
-            console.log("set socket error" + err);
+            console.log("Set socket error" + err);
             return false;
         }
 
