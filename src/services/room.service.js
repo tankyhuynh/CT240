@@ -17,7 +17,7 @@ async function create(name, members){
     let room;
     if(members.length == 2) {
         room = await RoomModel.findOne({"members.user": {$all: [members[0], members[1]]}});
-        console.log(`Room with 2 members ${members[0]} and ${members[1]} is exist!`);
+        console.log(`<X> Error: Room with 2 members ${members[0]} and ${members[1]} is exist!`);
         if(!room){} else { return room};
     }
     members = members.map(id=> ({user: id}));
@@ -72,7 +72,6 @@ async function getWithMember(member_id){
     for(i=0; i<rooms.length; i++){
         rooms[i].name = await getName(member_id, rooms[i]);
         rooms[i].avatar = await getAvatar(member_id, rooms[i]);
-        console.log(rooms[i]);
     }
     return rooms;
 }
@@ -86,11 +85,7 @@ async function getMemberIdWithId(_id, actor) {
 async function getMemberWithId(_id, actor){
     const room = await RoomModel.findOne({_id}).populate("members.user").lean();
     if(!room) return null;
-    console.log(".. k>> o");
-    console.log(room);
     const members = room.members.map(member=>member.user);
-    console.log(".. ..");
-    console.log(members);
     return members;
 }
 async function addMember(_id, member, actor){

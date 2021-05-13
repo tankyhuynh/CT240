@@ -29,7 +29,6 @@ async function create(req, res){
     let data;
     try {
         data = request(merger(req), ["receiver", "introduce"]);
-        console.log(data);
     } catch {
         sendReject(res, "data emtry");
         return;
@@ -77,7 +76,6 @@ async function reply(req, res){
 }
 async function remove(req, res){
     let auth = getAuth(req);
-    console.log("Run in function")
     const work = await RequestService.removeWithId(req.params.id, auth);
     if(!work){
         sendReject(res);

@@ -45,7 +45,6 @@ async function update(req, res){
         avatarUrl = null;
         avatar = null;
     }
-    console.log(`avatar URL: ${avatarUrl}` );
     
     let id = getAuth(req);
     let data = {};

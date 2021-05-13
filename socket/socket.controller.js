@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const secret = process.env.SECRET_TOKEN || "core-chat";
 
 const SocketService = require("./socket.service");
+const NotifyService = require('../src/services/notify.service');
 
 class Msg {
     static async send(socket, msg){
@@ -60,7 +61,15 @@ class SocketController {
     }
     static async sendTo(to, type, data){
         console.log(`socket send ${to} with type ${type} `);
-        SocketController.io.to(await SocketService.getSocket(to)).emit(type, data);
+        // let socketId = await SocketService.getSocket(to);
+        let socketId = await SocketService.getLocalSocket(SocketController.io, to);
+        if(!socketId) {
+            try {
+                await NotifyService.create(to,type, data);
+            } catch {};
+        } else {    
+            SocketController.io.to(socketId).emit(type, data);
+        }
     }
     static async route(io){
         SocketController.io = io;
@@ -79,11 +88,20 @@ class SocketController {
                }
         });
         io.on("connection", async (socket)=>{
-            await SocketService.setSocket(socket.account, socket.id);
+            // await SocketService.setSocket(socket.account, socket.id);
+            await SocketService.setLocalSocket(SocketController.io,socket.account, socket.id);
             console.log(">> A client connected!");
+
+            let notifys = await NotifyService.loadAll(socket.account) || [];
+            notifys.forEach(notify => {
+                this.sendTo(notify.account, notify.type, notify.content).then();
+                console.log(`.. Send notify to ${socket.account}`);
+            });
+
             socket.on("disconnecting",async (data)=> {
-                console.log("<> A client diconnect!");
-                await SocketService.clearSocket(socket.account)
+                console.log("<X> A client diconnect!");
+                // await SocketService.clearSocket(socket.account);
+                SocketService.clearLocalSocket(SocketController.io, socket.account).then();
             })  
 
             // route here
