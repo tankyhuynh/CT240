@@ -18,5 +18,6 @@ class SocketServer {
         config(this.io);
     } 
 }
+
 const socketServer = new SocketServer();
 module.exports = socketServer;

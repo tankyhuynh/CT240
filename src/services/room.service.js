@@ -4,6 +4,7 @@ const RoomModel = require('../models/room.model');
 const ProfileService = require('./profile.service');
 const MessageService = require('./message.service');
 const SocketController = require('../../socket/socket.controller');
+const SocketServerEmiter = require('../../socket/socket.gate');
 
 /**
  * 
@@ -25,7 +26,7 @@ async function create(name, members){
     members = members.map(id=> ({user: id}));
     room = new RoomModel({name, members, admin});
     await room.save();
-    SocketController.newRoom(members, room).then();
+    SocketServerEmiter.emit("room:new");
     return room;
 }
 

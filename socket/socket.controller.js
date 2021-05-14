@@ -1,10 +1,24 @@
 const {request} = require('../src/data-produce');
+
 const {createMessage,getMemberIdWithId } = require('../src/services/room.service')
 const jwt = require('jsonwebtoken');
 const secret = process.env.SECRET_TOKEN || "core-chat";
 
 const SocketService = require("./socket.service");
 const NotifyService = require('../src/services/notify.service');
+
+const SocketServerEmiter = require('./socket.gate');
+// register event
+
+SocketServerEmiter.on("room:new",  async (members, data)=> {
+        await SocketController.newRoom(members, data);
+});
+SocketServerEmiter.on("friend:new",  async (sender, friend)=> {
+    await SocketController.newFriend(sender, friend);
+});
+SocketServerEmiter.on("request:new",  async (receiver, request)=> {
+    await SocketController.newRequest(receiver , request);
+});
 
 class Msg {
     static async send(socket, msg){
@@ -54,7 +68,7 @@ class SocketController {
      * @param {Object} data - info of room
      */
     static async newRoom(members, data){
-        members.foreach(async (member) => {
+        members.forEach(async (member) => {
             await this.sendTo(member, "room:new", data)
         });
     }
