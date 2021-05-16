@@ -20,6 +20,7 @@ export class ListGroupsComponent implements OnInit {
 
   friendOfCurrentUser: FriendModel[];
   rooms: RoomModel[] = [];
+  memberIds: Array<any> = [];
 
   currentUserId: string = localStorage.getItem('userId');
 
@@ -66,16 +67,28 @@ export class ListGroupsComponent implements OnInit {
             friends = response.data.data;
             const friendsFilter = friends.filter(friend => friend._id !== this.currentUserId);
 
-            const dialogRef = this.dialog.open(ListRoomOptionsComponent, {
-              data: {
-                roomId: idRoom,
-                friends: friendsFilter,
-                type: "add",
-                className: "fas fa-user-plus",
-                title: "Thêm thành viên",
-                subTitle: "Chọn bạn bè thêm vào nhóm",
-                }} );
+            this.memberIds = [];
+            this.roomService
+                  .getMembersById(idRoom)
+                  .subscribe( (response:any) => {
+                    response.data.forEach(element => {
+                      this.memberIds.push(element?._id);
+                    });
 
+                    //Lỗi chỗ này => Đã fix (khi ra khỏi subscribe thì gtri chưa lấy kịp có thể dẫn đến sai sót)
+                    const friendsFilterTheSecond = friendsFilter.filter(friend => !this.memberIds.includes(friend?._id));
+
+                    const dialogRef = this.dialog.open(ListRoomOptionsComponent, {
+                      data: {
+                        roomId: idRoom,
+                        friends: friendsFilterTheSecond,
+                        type: "add",
+                        className: "fas fa-user-plus",
+                        title: "Thêm thành viên",
+                        subTitle: "Chọn bạn bè thêm vào nhóm",
+                        }} );
+
+                  } );
           });
 
 

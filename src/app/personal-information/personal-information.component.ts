@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ProfileService } from './profile.service';
 
 import { UserData } from '../auth/user.model'
@@ -11,6 +11,7 @@ import { ProfileModel } from './profile.model';
 import { Router } from '@angular/router';
 import { windowCount } from 'rxjs/operators';
 import { AccountService } from './account.service';
+import { profile } from 'node:console';
 
 @Component({
   selector: 'app-personal-information',
@@ -37,6 +38,10 @@ export class PersonalInformationComponent implements OnInit {
   @ViewChild("password") password: ElementRef<any>;
   defaultPlaceHolderText = ["Mật khẩu mới", "Xác nhận mật khẩu"];
 
+  @ViewChild(ReloginComponent)
+  public reLoginComponent: ReloginComponent;
+
+
   constructor(
     private profileService: ProfileService,
     private accountService: AccountService,
@@ -46,6 +51,17 @@ export class PersonalInformationComponent implements OnInit {
 
   ngOnInit(): void {
     const dialogRef = this.dialog.open(ReloginComponent, {disableClose: true});
+
+    this.form = new FormGroup({
+      'name': new FormControl({value: null, disabled: true}, {
+        validators: [Validators.required]
+      }),
+      'avatar': new FormControl(null, {
+        validators: [Validators.required],
+        asyncValidators: [mimeType]
+      })
+
+    });
 
     this.profileService
             .getProfile()
@@ -66,11 +82,7 @@ export class PersonalInformationComponent implements OnInit {
 
             });
 
-
-
-
   }
-
 
   changeDiableStatus(){
     this.isDiable = !this.isDiable;
@@ -114,12 +126,15 @@ export class PersonalInformationComponent implements OnInit {
     this.profileService
           .updateInfo(this.userId, this.form.value.name, this.form.value.avatar)
           .subscribe( (response:any) => {
+            console.log(response.data);
             this.isLoadingProfileProcess = false;
             const newProfile = {
               name: response.data.name,
               avatar: response.data.avatar
             }
-            this.profileService.changeUserProfileInLocalStorage(newProfile);
+            this.profileService
+                  .getOneById(this.userId);
+            // this.profileService.changeUserProfileInLocalStorage(response.data);
 
             this.resetForm(newProfile?.name);
             this.form.get('name').disable();

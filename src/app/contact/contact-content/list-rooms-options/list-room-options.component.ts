@@ -14,9 +14,14 @@ import { ContactListRoomService } from '../list-rooms/contact-list-rooms.service
 })
 export class ListRoomOptionsComponent implements OnInit {
 
+  private tokenTimer: any;
+
   form: FormGroup;
 
   members: Array<any> = [];
+
+  isShowMessageAlert: boolean = false;
+
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: {
                                                 roomId: string,
@@ -95,5 +100,6 @@ export class ListRoomOptionsComponent implements OnInit {
     this.members = memberIdClicked;
     console.log(`members: ${this.members}`);
   }
+
 
 }

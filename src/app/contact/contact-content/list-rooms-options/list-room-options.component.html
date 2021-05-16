@@ -41,6 +41,9 @@
             <img [src]="friend?.avatar" alt="" class="img-fluid item__img" />
             <span class="item__name">{{ friend.name }}</span>
           </div>
+
+          <div *ngIf="data.friends.length <= 0">Không có bạn bè phù hợp điều kiện để thêm vào nhóm</div>
+
         </div>
       </div>
       <div class="row justify-content-end">
