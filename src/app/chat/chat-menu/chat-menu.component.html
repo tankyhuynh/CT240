@@ -1,3 +1,7 @@
+<div *ngFor="let item of isMessageInRoomRead">
+  roomId: {{ item }} {{ isMessageInRoomRead[item] }}
+</div>
+
 <app-search>Search</app-search>
 <div class="row tabs-list">
   <div class="col">
@@ -8,6 +12,7 @@
       routerLinkActive="active"
       (click)="onClickShowContent()"
     >
+
       <div class="col-md-3 col-4">
         <img [src]="room?.avatar" alt="" class="img-fluid card__img" />
       </div>
@@ -15,10 +20,19 @@
         <div class="row">
           <span class="card__title">{{ room.name }}</span>
         </div>
+
+        <span style="float: right;"
+          matBadge="1"
+          *ngIf="haveNewMessage[room._id]
+                  && lastMessageOfRooms[room._id].sender !== currentUserId
+                  && !isMessageInRoomRead[room._id] ">
+        </span>
+
         <div class="row">
-          <i class="card__desc"> {{ lastMessage[room._id]?.data }} </i>
-          <!-- <i class="card__desc"> {{ tmp?.data }} </i> -->
+          <i class="card__desc"> {{lastMessageOfRooms[room._id]?.data  }} </i>
         </div>
+
+
       </div>
     </div>
   </div>

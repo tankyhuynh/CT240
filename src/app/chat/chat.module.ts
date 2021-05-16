@@ -10,6 +10,8 @@ import { ChatRoomChatModule } from "./chat-roomchat/chat-roomchat.module";
 import { ChatRoutingModule } from "./chat-routing.module";
 import { ChatComponent } from "./chat.component";
 
+import { MatBadgeModule } from '@angular/material/badge'
+
 @NgModule({
   declarations: [
     ChatComponent,
@@ -21,7 +23,8 @@ import { ChatComponent } from "./chat.component";
     ChatRoutingModule,
     ReactiveFormsModule,
     SearchModule,
-    ChatRoomChatModule
+    ChatRoomChatModule,
+    MatBadgeModule
   ]
 })
 export class ChatModule {

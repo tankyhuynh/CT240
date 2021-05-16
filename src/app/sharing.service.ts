@@ -25,7 +25,14 @@ export class SharingService {
   private messageSource = new BehaviorSubject<MessageModel[]>(null);
   currentMessageStatus = this.messageSource.asObservable();
 
+  private messageInRommReadSource = new BehaviorSubject<Array<any>>(null);
+  currentMessageInRommReadedSourceStatus = this.messageInRommReadSource.asObservable();
+
   constructor() {}
+
+  changeMessageInRoomRead(data) {
+    this.messageInRommReadSource.next(data);
+  }
 
   changeMessage(messages: MessageModel[]) {
     this.messageSource.next(messages);

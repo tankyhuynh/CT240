@@ -21,7 +21,7 @@ export class ContactAddRoomService {
 
   }
 
-  addNewMembers(roomId: string, memberId: string){
+  addNewMember(roomId: string, memberId: string){
     return this.http
                 .post(BACKEND_URL + roomId + "/members", {_id: memberId});
   }
@@ -31,9 +31,14 @@ export class ContactAddRoomService {
           .put(BACKEND_URL + id, room);
   }
 
-  delete(id: string){
+  changeAdminOfRoom(id: string, memberId: any){
     return this.http
-            .delete(BACKEND_URL + id);
+          .put(BACKEND_URL + id + "/members/" + memberId, {member: memberId, admin: true});
+  }
+
+  deleteMember(roomId: string, memberId: string){
+    return this.http
+                .delete(BACKEND_URL + roomId + "/members" + "/" + memberId);
   }
 
 }

@@ -22,6 +22,7 @@
         <div class="col">
           <div class="row align-items-center list-friends-add-groups__item" *ngFor="let friend of data.friends">
             <input
+              *ngIf="data.type !== 'leave'"
               class="input-checkbox"
               type="checkbox"
               name="add-groups"
@@ -29,15 +30,41 @@
               [value]="friend._id"
               (change)="checkBoxClick($event)"
             />
+            <input
+              *ngIf="data.type === 'leave'"
+              class="input-checkbox"
+              type="radio"
+              formControlName="members"
+              [value]="friend._id"
+              (change)="radioClick()"
+            />
             <img [src]="friend?.avatar" alt="" class="img-fluid item__img" />
             <span class="item__name">{{ friend.name }}</span>
           </div>
         </div>
       </div>
       <div class="row justify-content-end">
-        <button *ngIf="data.type === 'add' " (click)="addMembers()" class="sb-add-groups" type="button">Thêm</button>
-        <button *ngIf="data.type === 'delete' " class="sb-add-groups" type="button">Xoá</button>
-        <button *ngIf="data.type === 'leave' " class="sb-add-groups" type="button">Rời nhóm</button>
+        <button
+            *ngIf="data.type === 'add' "
+            (click)="addMembers()"
+            class="sb-add-groups"
+            type="button">
+            Thêm
+        </button>
+        <button
+            *ngIf="data.type === 'delete' "
+            (click)="deleteMembers()"
+            class="sb-add-groups"
+            type="button">
+            Xoá
+        </button>
+        <button
+            *ngIf="data.type === 'leave' "
+            (click)="leaveRoom()"
+            class="sb-add-groups"
+            type="button">
+            Rời nhóm
+        </button>
       </div>
     </form>
   </div>

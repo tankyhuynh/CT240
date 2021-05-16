@@ -42,6 +42,12 @@ export class SocketService {
     this.message = '';
   }
 
+  public onMessage(): Observable<MessageModel> {
+    return new Observable<MessageModel>(observer => {
+        this.socket.on('message:receive', (data: MessageModel) => observer.next(data));
+    });
+}
+
 
 
 }

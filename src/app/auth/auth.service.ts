@@ -109,7 +109,7 @@ export class AutheService {
             this.authStatusListener.next(true);
             const now = new Date();
             const expirationDate = new Date(
-              now.getTime() + expiresInDuration * 1000
+              now.getTime() + expiresInDuration * 1000 * 60
             );
 
             this.profileService.getOneById(this.userId);

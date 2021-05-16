@@ -32,10 +32,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   tmpImgPath = "https://images.pexels.com/photos/7457830/pexels-photo-7457830.jpeg?auto=compress&cs=tinysrgb&dpr=2&w=500";
 
   currentRoom: RoomModel;
+  profileOfFriends: Array<any> = [];
 
   rooms: RoomModel[] = [];
   messages: MessageModel[] = [];
-  lastMessageOfRoom: string[] = [];
+  lastMessageOfRooms: Array<any> = [];
+
   currentUserId: string = localStorage.getItem('userId');
 
   profiles: ProfileModel[] = [];
@@ -66,17 +68,29 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           .getAll()
           .subscribe( (response:any) => {
             this.rooms = response.data.data;
+            console.log("get all room: ");
+            console.log(this.rooms);
+            this.rooms.forEach(room => {
+              this.lastMessageOfRooms[room._id] = room.messagelast;
+            });
           });
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('roomId')) {
+
         const roomId = paramMap.get('roomId');
+
         this.roomService
               .getOneById(roomId)
               .subscribe( (response:any) => {
                 this.currentRoom = response.data;
                 console.log('get roomId: ');
                 console.log(this.currentRoom);
+
+                //Change status all message in room read
+                console.log(`currentRoom Name: ${this.currentRoom.name}`);
+                this.sharingService
+                      .changeMessageInRoomRead({roomId: this.currentRoom?._id, value: true});
               });
 
         this.roomService
@@ -84,11 +98,20 @@ export class ChatComponent implements OnInit, AfterViewChecked {
               .subscribe( (response:any) => {
                 console.log("get all messages in chat");
                 this.messages = response.data;
-
-                // Get last message of room
-                this.lastMessageOfRoom[roomId] = this.messages[this.messages.length-1];
-
               } );
+
+        this.roomService
+              .getMembersById(roomId)
+              .subscribe( (response:any) => {
+                const responseData = response.data;
+                console.log("responseData: ");
+                console.log(responseData);
+
+                // this.profileOfFriends = responseData;
+                responseData.forEach(element => {
+                  this.profileOfFriends[element._id] = element;
+                });
+              });
 
 
       }

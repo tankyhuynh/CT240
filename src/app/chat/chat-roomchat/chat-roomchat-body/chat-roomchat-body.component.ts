@@ -6,6 +6,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
+import { element } from 'protractor';
 import { RoomModel } from 'src/app/contact/contact-content/contact-add-room/contact-add-room.model';
 import { FriendModel } from 'src/app/contact/contact-content/list-friends/friend.model';
 import { ContactListRoomService } from 'src/app/contact/contact-content/list-rooms/contact-list-rooms.service';
@@ -25,7 +26,7 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
   @Input() messages: MessageModel[] = [];
   currentUserId: string = localStorage.getItem('userId');
 
-  profileOfFriends: string[] = [];
+  @Input() profileOfFriends: Array<any> = [];
 
   top: number;
 
@@ -44,22 +45,6 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
     this.socketService.getMessages().subscribe((message: MessageModel) => {
       this.messages.push(message);
     });
-
-    this.roomService
-          .getMembersById(this.chatroom._id)
-          .subscribe( (response:any) => {
-            const responseData = response.data;
-            responseData.forEach(element => {
-              if ( element._id === this.currentUserId ) {
-                const tmpUser:any = element;
-                tmpUser.name = "You";
-                this.profileOfFriends[element._id] = tmpUser;
-              }
-              else {
-                this.profileOfFriends[element._id] = element;
-              }
-            });
-          } );
 
   }
 

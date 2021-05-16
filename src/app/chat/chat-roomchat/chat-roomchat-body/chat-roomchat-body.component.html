@@ -1,10 +1,14 @@
+
 <div #scrollMe class="row chat-box__body" >
   <div class="col" >
     <div *ngFor="let message of messages">
       <div class="row" *ngIf="message.sender !==  currentUserId">
-        <img class="user__avatar"
-            [src]="profileOfFriends[message.sender]?.avatar"
+        <img *ngIf="profileOfFriends.length ===2 " class="user__avatar"
+            [src]="chatroom?.avatar"
           />
+        <img *ngIf="profileOfFriends.length !== 2" class="user__avatar"
+          [src]="profileOfFriends[message.sender]?.avatar"
+        />
         <div class="mess mess-left" >
           <span [title]="message.created_at | date:'medium'">
             {{ message.data }}

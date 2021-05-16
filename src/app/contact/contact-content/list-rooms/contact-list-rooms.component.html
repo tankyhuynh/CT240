@@ -57,7 +57,7 @@
                   <i class="fas fa-user-plus"></i>
                 </span>
                 <span
-                  *ngIf="room.admin == currentUserId"
+                  *ngIf="room.admin[room.admin.length-1] === currentUserId"
                   title="Xóa thành viên"
                   class="card__icon"
                   (click)="deleteMember(room._id)"
@@ -65,10 +65,10 @@
                   <i class="fas fa-user-minus"></i>
                 </span>
                 <span
-                  *ngIf="room.admin == currentUserId"
-                  title="Xoá nhóm"
+                  *ngIf="room.admin[room.admin.length-1] === currentUserId"
+                  title="Rời nhóm"
                   class="card__icon"
-                  (click)="delete(room._id)"
+                  (click)="leaveRoom(room._id)"
                 >
                   <i class="fas fa-sign-out-alt"></i>
                 </span>

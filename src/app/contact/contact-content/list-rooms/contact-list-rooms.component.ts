@@ -75,8 +75,6 @@ export class ListGroupsComponent implements OnInit {
                 title: "Thêm thành viên",
                 subTitle: "Chọn bạn bè thêm vào nhóm",
                 }} );
-            console.log("getAllFriends in contact listrooms");
-            console.log(friends);
 
           });
 
@@ -113,7 +111,7 @@ export class ListGroupsComponent implements OnInit {
 
   }
 
-  delete(idRoom: string) {
+  leaveRoom(idRoom: string) {
 
     this.roomService
           .getMembersById(idRoom)
