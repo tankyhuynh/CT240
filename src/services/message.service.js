@@ -54,12 +54,16 @@ async function create(sender, room, data){
     await message.save();
     return message;
 }
-
+async function deleteAllinRoom(sender, room){
+    MessageModel.deleteMany({sender,room}).then;
+    return true;
+}
 module.exports =  {
     get,
     getMessageLastOfRoom,
     getDetailMessageLastOfRoom,
     getMessageWithRoom,
     create,
+    deleteAllinRoom,
 }
 

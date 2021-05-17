@@ -78,7 +78,7 @@ async function getWithMember(member_id){
     }
     for(i=0; i<rooms.length; i++){
         rooms[i].messagelast = (await MessageService.getDetailMessageLastOfRoom(rooms[i]._id, member_id)) || {};
-        rooms[i].messagelast_at = rooms[i].messagelast.created_at;
+        rooms[i].messagelast_at = rooms[i].messagelast.created_at || rooms[i].created_at;
     }
     rooms = rooms.sort((a,b)=>{return a.messagelast_at > b.messagelast_at?-1:1})
     return rooms;
@@ -156,6 +156,7 @@ async function removeMember(_id, member, actor){
             await RoomModel.updateOne({_id}, {$push: {admin: [room.members[0].user]}});
         }
     }
+    MessageService.deleteAllinRoom(member, _id).then();
     return true;
 }
 async function memberChecker(_id, member){
