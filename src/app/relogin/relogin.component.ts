@@ -44,20 +44,14 @@ export class ReloginComponent implements OnInit {
       return;
     }
     const phone = localStorage.getItem('phone');
-    this.authSevice.confirmLogin(phone, this.form.value.password);
-
-    this.sharingService.currentReloginStatus.subscribe(isRelogin => {
-      this.isLoginSuccess = isRelogin;
-
-      if (this.isLoginSuccess) {
-        this.dialogRef.close();
-      }
-      else {
-
-      }
-
-
-    });
+    this.authSevice
+          .confirmLogin(phone, this.form.value.password)
+          .subscribe( (response:any) => {
+            this.isLoginSuccess = true;
+            this.dialogRef.close();
+          }, (error) => {
+            this.isLoginSuccess = false;
+          });
   }
 
 

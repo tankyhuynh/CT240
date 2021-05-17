@@ -23,7 +23,7 @@ export class AppComponent implements OnInit {
 
   isUserAuthenticated = false;
   currentUserId: string;
-  currentUser: UserData;
+  currentUser: ProfileModel;
 
   private authListenerSub: Subscription;
   private userListenerSub: Subscription;
@@ -33,15 +33,15 @@ export class AppComponent implements OnInit {
   constructor(
       private profileService: ProfileService,
       private authService: AutheService,
-      private sharingData: SharingService,
+      private sharingService: SharingService,
       private socketService: SocketService
       ){};
 
   ngOnInit(){
 
-    // this.sharingData.currentMenuItems.subscribe(newItems => this.itemsInAppComponent = newItems);
+    // this.sharingService.currentMenuItems.subscribe(newItems => this.itemsInAppComponent = newItems);
 
-    // this.sharingData.currentMenuClass.subscribe(newItems => this.menuClass = newItems);
+    // this.sharingService.currentMenuClass.subscribe(newItems => this.menuClass = newItems);
 
     // this.itemsInAppComponent = JSON.parse(localStorage.getItem('menuItems'));
 

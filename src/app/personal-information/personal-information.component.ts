@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 import { windowCount } from 'rxjs/operators';
 import { AccountService } from './account.service';
 import { profile } from 'node:console';
+import { SharingService } from '../sharing.service';
 
 @Component({
   selector: 'app-personal-information',
@@ -45,6 +46,7 @@ export class PersonalInformationComponent implements OnInit {
   constructor(
     private profileService: ProfileService,
     private accountService: AccountService,
+    private sharingService: SharingService,
     private dialog: MatDialog,
     private route: Router,
     private fb: FormBuilder) {}
@@ -132,9 +134,10 @@ export class PersonalInformationComponent implements OnInit {
               name: response.data.name,
               avatar: response.data.avatar
             }
-            this.profileService
-                  .getOneById(this.userId);
-            // this.profileService.changeUserProfileInLocalStorage(response.data);
+
+            this.profileService.changeUserStatusListerner(response.data);
+            this.sharingService.changeUserData(response.data);
+            localStorage.setItem('userData', JSON.stringify(response.data));
 
             this.resetForm(newProfile?.name);
             this.form.get('name').disable();

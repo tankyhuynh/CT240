@@ -71,23 +71,11 @@ export class AutheService {
 
   confirmLogin(phone: string, password: string) {
     const authData: AuthData = { phone: phone, password: password };
-    this.http
+    return this.http
       .post<{ data: { _id: string; token: string; expiresIn: number } }>(
         BACKEND_URL + 'login',
         authData
       )
-      .subscribe(
-        (response) => {
-          this.token = response.data.token;
-          if (this.token) {
-            this.sharingService.changeReloginStatus(true);
-            // this.router.navigate(['/']);
-          }
-        },
-        (err) => {
-          this.sharingService.changeReloginStatus(false);
-        }
-      );
   }
 
   login(mobilePhone: string, password: string) {
@@ -98,8 +86,9 @@ export class AutheService {
         authData
       )
       .subscribe(
-        (response) => {
+        (response:any) => {
           this.token = response.data.token;
+
           if (this.token) {
             const expiresInDuration = response.data.expiresIn;
             this.setAuthTimer(expiresInDuration);
@@ -112,14 +101,29 @@ export class AutheService {
               now.getTime() + expiresInDuration * 1000 * 60
             );
 
-            this.profileService.getOneById(this.userId);
+            this.profileService
+                  .getOneById(this.userId)
+                  .subscribe( (response:any) => {
+                    const userData = response.data;
 
-            this.saveDataToLocalStorage(
-              this.token,
-              expirationDate,
-              this.userId,
-              this.userData
-            );
+                    this.profileService.changeUserStatusListerner(response.data);
+                    this.sharingService.changeUserData(response.data);
+                    console.log("change user data work!!!");
+                    this.sharingService.currentUserData
+                          .subscribe((user) => {
+                            console.log(user);
+                          });
+
+                    this.saveDataToLocalStorage(
+                      this.token,
+                      expirationDate,
+                      this.userId,
+                      userData
+                    );
+
+
+
+                  });
 
             this.router.navigate(['/chat']);
           }
@@ -186,7 +190,7 @@ export class AutheService {
     const token = localStorage.getItem('token');
     const expirationDate = localStorage.getItem('expiration');
     const userId = localStorage.getItem('userId');
-    let userData;
+    let userInLocal = JSON?.parse(localStorage.getItem('userData'));
 
     if (!token || !expirationDate) {
       return;
@@ -195,6 +199,7 @@ export class AutheService {
       token: token,
       expirationDate: new Date(expirationDate),
       userId: userId,
+      userData: this.userData
     };
   }
 }

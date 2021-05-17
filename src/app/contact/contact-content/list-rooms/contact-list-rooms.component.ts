@@ -144,8 +144,10 @@ export class ListGroupsComponent implements OnInit {
 
             console.log(members);
           });
+  }
 
-
+  outRoom(){
+    alert("Hiện tại tính năng đang phát triển");
   }
 
 

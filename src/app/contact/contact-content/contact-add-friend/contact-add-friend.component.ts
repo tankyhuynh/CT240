@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { SharingService } from 'src/app/sharing.service';
 import { SuccessComponent } from 'src/app/success/success.component';
+import { SuccessService } from 'src/app/success/success.service';
 import { FriendModel } from '../list-friends/friend.model';
 import { ContactAddFriendService } from './contact-addfriend.service';
 
@@ -12,24 +13,27 @@ import { ContactAddFriendService } from './contact-addfriend.service';
   selector: 'app-contact-add-friend',
   templateUrl: './contact-add-friend.component.html',
   styleUrls: ['../contact-content.component.css'],
-  providers: [ContactAddFriendService]
+  providers: [ContactAddFriendService, SuccessService]
 })
 export class ContactAddFriendComponent implements OnInit {
 
   isLoading = false;
-
   valHideContactContent = false;
-
   hideFriend: boolean = true;
+  isShowMessageAlert: boolean = false;
 
   friend: FriendModel;
   @ViewChild("friendId") friendId: ElementRef<any>;
+  @ViewChild("introduction") introduction: ElementRef<any>;
+
+  private tokenTimer: any;
 
   constructor(
     private router: Router,
     private sharingService: SharingService,
     private hideContent: SharingService,
     private addFriendService: ContactAddFriendService,
+    private succecssService: SuccessService,
     private dialog: MatDialog
   ) {}
 
@@ -94,14 +98,28 @@ export class ContactAddFriendComponent implements OnInit {
           .subscribe(response => {
             console.log(response);
             this.isLoading = false;
-            this.friendId.nativeElement.value = "";
-          });
+            this.isShowMessageAlert = true;
 
-    //  this.dialog.open(SuccessComponent, {data: {title: "", message: "Add friend successed"}});
+            let isShowMessageAlert = this.isShowMessageAlert;
+            // this.setMessageAlertTimer(2);
+            // this.succecssService.setAuthTimer(2, function name() {
+            //   isShowMessageAlert = false;
+            // } );
+
+
+            this.friendId.nativeElement.value = "";
+            this.introduction.nativeElement.value = "";
+          });
 
   }
 
 
+  private setMessageAlertTimer(duration: number) {
+    this.tokenTimer = setTimeout(() => {
+      this.isShowMessageAlert = false;
+    }, duration * 1000);
+    console.log('Setting timer alert message: ' + duration);
+  }
 
   contactContent() {
     this.hideContent.showContentMobile.subscribe(
@@ -109,4 +127,5 @@ export class ContactAddFriendComponent implements OnInit {
     );
     this.valHideContactContent = true;
   }
+
 }

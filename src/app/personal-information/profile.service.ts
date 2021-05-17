@@ -18,10 +18,17 @@ export class ProfileService {
 
   private currentUserLogin: ProfileModel;
 
-  private userSource = new BehaviorSubject<UserData>(null);
+  private userSource = new BehaviorSubject<ProfileModel>(null);
   currentUserObservable = this.userSource.asObservable();
 
+  changeUserSource(newProfile: ProfileModel){
+    this.userSource.next(newProfile);
+  }
+
   private userStatusListener = new Subject<ProfileModel>();
+  changeUserStatusListerner(newProfile: ProfileModel){
+    this.userStatusListener.next(newProfile);
+  }
   getUserStatusListener(){
     return this.userStatusListener.asObservable();
   }
@@ -46,19 +53,7 @@ export class ProfileService {
   getOneById(id: string) {
     let reponseUser: ProfileModel;
     return this.http
-      .get<{data: ProfileModel}>(BACKEND_URL + id)
-      .subscribe((response) => {
-        reponseUser = {
-          name: response.data.name,
-          avatar: response.data.avatar,
-        };
-        // this.currentUserLogin = reponseUser;
-        // this.userStatusListener.next(this.currentUserLogin);
-        this.changeUserProfileInLocalStorage(reponseUser);
-
-      }, error => {
-        console.log(error);
-      });
+      .get<{data: ProfileModel}>(BACKEND_URL + id);
 
   }
 

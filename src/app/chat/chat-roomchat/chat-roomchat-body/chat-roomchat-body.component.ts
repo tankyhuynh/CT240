@@ -40,7 +40,9 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
 
   ngOnInit(): void {
     this.socketService.getMessages().subscribe((message: MessageModel) => {
-      this.messages.push(message);
+      if(message.room === this.chatroom._id){
+        this.messages.push(message);
+      }
     });
   }
 

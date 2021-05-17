@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { UserData } from './auth/user.model';
 import { MessageModel } from './chat/chat-roomchat/chat-roomchat-message.model';
+import { ProfileModel } from './personal-information/profile.model';
 
 @Injectable()
 export class SharingService {
@@ -16,7 +17,7 @@ export class SharingService {
   private showSource = new BehaviorSubject<boolean>(true);
   showContentMobile = this.showSource.asObservable();
 
-  private userDataSource = new BehaviorSubject<UserData>(null);
+  private userDataSource = new BehaviorSubject<ProfileModel>(null);
   currentUserData = this.userDataSource.asObservable();
 
   private reloginSource = new BehaviorSubject<boolean>(false);
@@ -42,7 +43,7 @@ export class SharingService {
     this.reloginSource.next(isRelogin);
   }
 
-  changeUserData(userData: UserData) {
+  changeUserData(userData: ProfileModel) {
     this.userDataSource.next(userData);
   }
 

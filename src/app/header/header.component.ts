@@ -44,7 +44,7 @@ export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    this.isUserAuthenticated = this.authService.getIsAuthenticated();
+   this.isUserAuthenticated = this.authService.getIsAuthenticated();
 
     if ( localStorage.getItem('userData') ) {
       this.userDataInLocalStorage = JSON.parse(localStorage.getItem('userData'))
@@ -57,12 +57,28 @@ export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
       });
 
 
-    this.userListenerSub = this.profileService
-                      .getUserStatusListener()
-                      .subscribe( userData => {
-                        this.currentUser = userData;
-                        localStorage.setItem('userData', JSON.stringify(userData));
-                      });
+      this.sharingService.currentUserData
+                          .subscribe( (currentUser) => {
+                            if ( currentUser ) {
+                              this.currentUser = currentUser;
+                            }
+                            else {
+                              this.userListenerSub = this.profileService
+                                    .getUserStatusListener()
+                                    .subscribe( userData => {
+                                      this.currentUser = userData;
+                                      localStorage.setItem('userData', JSON.stringify(userData));
+                                    });
+                            }
+                          });
+
+
+
+
+
+
+
+
   }
 
   onClick() {
