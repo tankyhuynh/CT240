@@ -19,14 +19,19 @@ async function create(name, members){
     let room;
     if(members.length == 2) {
         admin = members;
-        room = await RoomModel.findOne({"members.user": {$all: [members[0], members[1]]}});
-        console.log(`<X> Error: Room with 2 members ${members[0]} and ${members[1]} is exist!`);
+        room = await RoomModel.findOne({
+            $and: [
+                {"members": {$size: 2}},
+                {"members.user": {$all: [members[0], members[1]]}},
+            ]
+        });
         if(!room){} else { return room};
     }
+    let memberIds = members;
     members = members.map(id=> ({user: id}));
     room = new RoomModel({name, members, admin});
     await room.save();
-    SocketServerEmiter.emit("room:new");
+    SocketServerEmiter.emit("room:new", memberIds, room);
     return room;
 }
 

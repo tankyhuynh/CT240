@@ -5,6 +5,7 @@ const RoomService = require('./room.service');
 const SocketController = require('../../socket/socket.controller');
 
 async function create(sender, receiver, introduce){
+    if(sender === receiver) returnull;
     if(await FriendService.isFriend(sender, receiver)) return null;
     let request 
     try {

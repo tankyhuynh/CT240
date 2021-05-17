@@ -37,7 +37,8 @@ async function getAvatar(_id){
 // update info
 async function update(_id, data){
     let profile = null;
-    profile =  await ProfileModel.findOneAndUpdate({_id}, data);
+    await ProfileModel.updateOne({_id}, data);
+    profile =  await ProfileModel.findOne({_id});
     return profile;
 }
 

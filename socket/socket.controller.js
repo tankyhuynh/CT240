@@ -68,6 +68,7 @@ class SocketController {
      * @param {Object} data - info of room
      */
     static async newRoom(members, data){
+        console.log("run run ");
         members.forEach(async (member) => {
             await this.sendTo(member, "room:new", data)
         });
