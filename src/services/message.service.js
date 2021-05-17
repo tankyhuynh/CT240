@@ -55,8 +55,8 @@ async function create(sender, room, data){
     return message;
 }
 async function deleteAllinRoom(sender, room){
-    MessageModel.deleteMany({sender,room}).then;
-    return true;
+    MessageModel.deleteMany({sender,room}).then();
+    return true;essage
 }
 module.exports =  {
     get,
