@@ -25,7 +25,8 @@ export class ContactAddGroupComponent implements OnInit {
     private router: Router,
     private hideContent: SharingService,
     private friendService: ContactListFriendService,
-    private roomService: ContactAddRoomService) {}
+    private roomService: ContactAddRoomService
+  ) {}
 
   ngOnInit(): void {
     this.hideContent.showContentMobile.subscribe(
@@ -33,50 +34,45 @@ export class ContactAddGroupComponent implements OnInit {
     );
 
     this.form = new FormGroup({
-      'name': new FormControl(null, {
-        validators: [Validators.required, Validators.minLength(3)]}),
-      'members': new FormControl(null, {
-        validators: [Validators.required]})
-
+      name: new FormControl(null, {
+        validators: [Validators.required, Validators.minLength(3)],
+      }),
+      members: new FormControl(null, {
+        validators: [Validators.required],
+      }),
     });
 
-    this.friendService
-          .getAll()
-          .subscribe( (response:any) => {
-            this.friends = response.data.data;
-            console.log(this.friends);
-          } );
-
+    this.friendService.getAll().subscribe((response: any) => {
+      this.friends = response.data.data;
+      console.log(this.friends);
+    });
   }
 
-  checkBoxClick(e: any){
+  checkBoxClick(e: any) {
     console.log(`isChecked: ${e.target.checked} , value: ${e.target.value}`);
     if (e.target.checked) {
-     console.log(e.target.value);
-     this.members.push(e.target.value);
+      console.log(e.target.value);
+      this.members.push(e.target.value);
     }
     console.log(`members: ${this.members}`);
-
   }
 
-  onAddRoom(){
+  onAddRoom() {
     if (this.form.invalid) {
       return;
     }
-    const room:RoomModel = {
-      _id: "",
+    const room: RoomModel = {
+      _id: '',
       name: this.form.value.name,
       members: this.members,
-      avatar: "",
-      admin: "" // ko biết chỗ này có lối ko
-    }
-    this.roomService
-          .saveOne(room)
-          .subscribe( (response => {
-            console.log(response)
-          }) );
+      avatar: '',
+      admin: '',
+      top: 500, // ko biết chỗ này có lối ko
+    };
+    this.roomService.saveOne(room).subscribe((response) => {
+      console.log(response);
+    });
     this.router.navigate(['contact/content/list-rooms']);
-
   }
 
   contactContent() {

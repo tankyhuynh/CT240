@@ -15,7 +15,6 @@ import { SharingService } from 'src/app/sharing.service';
 import { SocketService } from 'src/app/socket/socket.service';
 import { MessageModel } from '../chat-roomchat-message.model';
 
-
 @Component({
   selector: 'app-chat-roomchat-body',
   templateUrl: './chat-roomchat-body.component.html',
@@ -30,7 +29,6 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
 
   top: number;
 
-
   @ViewChild('scrollMe') myScroller: ElementRef<any>;
 
   constructor(
@@ -41,11 +39,9 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-    this.top = 1;
     this.socketService.getMessages().subscribe((message: MessageModel) => {
       this.messages.push(message);
     });
-
   }
 
   ngAfterViewChecked() {
@@ -54,13 +50,18 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
 
   scrollToBottom(): void {
     try {
+      console.log(`ChatRoom Top: ${this.chatroom.top}`);
       var height = this.myScroller.nativeElement.scrollHeight;
-      if (this.top < height) {
-        this.myScroller.nativeElement.scrollTop = this.myScroller.nativeElement.scrollHeight;
-        this.top = this.myScroller.nativeElement.scrollHeight;
+      if (this.chatroom.top > 1000) {
+        this.chatroom.top = 500;
+      }
+      console.log(`Height: ${height}`);
+
+      if (this.chatroom.top < height) {
+        this.myScroller.nativeElement.scrollTop =
+          this.myScroller.nativeElement.scrollHeight;
+        this.chatroom.top = this.myScroller.nativeElement.scrollHeight;
       }
     } catch (error) {}
   }
-
-
 }
