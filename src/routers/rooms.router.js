@@ -9,6 +9,7 @@ router.put("/:id", RoomController.updateOne);
 router.delete("/:id",RoomController.removeOne);
 router.get("/:id/members", RoomController.getMembers);
 router.post("/:id/members", RoomController.addMember);
+router.delete("/:id/members", RoomController.leave);
 router.put("/:id/members/:member", RoomController.settingMember);
 router.delete("/:id/members/:member", RoomController.removeMember);
 router.get("/:id/messages", RoomController.getMessage);

@@ -11,6 +11,7 @@ function getUrl(roomId) {
     return (process.env.SERVER_DOMAIN || "http://localhost:3000") + rootUrl+ `/rooms/${roomId}`;
 }
 
+
 async function get(req, res){
     let {search, page} = merger(req);
     const auth = getAuth(req);
@@ -66,6 +67,21 @@ async function getMembers(req, res){
     const resData= members.map(el=>({...el, ref: ProfileController.getUrl(el)}));
     sendSuccess(res, resData);
 }
+
+/**
+ * Leave a room
+ * @param {} req 
+ * @param {} res 
+ */
+async function leave(req, res){
+    let {id} = merger(req);
+    const auth = getAuth(req);
+    try {
+        await RoomService.leave(id, auth);
+    } catch {sendReject(res); return;}
+    sendSuccess(res);
+    return;
+}
 async function addMember(req, res){
     let {id, _id: member_id} = merger(req);
     const auth = getAuth(req);
@@ -119,4 +135,5 @@ module.exports = {
     removeMember,
     settingMember,
     getMessage,
+    leave,
 }
