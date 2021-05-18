@@ -36,8 +36,9 @@ export class ContactAddRoomService {
           .put(BACKEND_URL + id + "/members/" + memberId, {member: memberId, admin: true});
   }
 
-  outRoom(){
-
+  outRoom(idRoom: string){
+    return this.http
+                .delete(BACKEND_URL + idRoom + "/members");
   }
 
   deleteMember(roomId: string, memberId: string){

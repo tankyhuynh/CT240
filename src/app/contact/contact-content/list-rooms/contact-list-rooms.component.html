@@ -68,13 +68,13 @@
                   *ngIf="room.admin[room.admin.length-1] !== currentUserId"
                   title="Rời nhóm"
                   class="card__icon"
-                  (click)="outRoom()"
+                  (click)="outRoom(room._id)"
                 >
                 <i class="fas fa-sign-out-alt"></i>
                 </span>
                 <span
                   *ngIf="room.admin[room.admin.length-1] === currentUserId"
-                  title="Rời nhóm"
+                  title="Chuyển admin nhóm"
                   class="card__icon"
                   (click)="leaveRoom(room._id)"
                 >

@@ -8,6 +8,7 @@ import { FriendModel } from '../list-friends/friend.model';
 import { ListRoomOptionsComponent } from '../list-rooms-options/list-room-options.component';
 import { RoomModel } from '../contact-add-room/contact-add-room.model';
 import { Subject } from 'rxjs';
+import { ContactAddRoomService } from '../contact-add-room/contact-add-room.service';
 
 @Component({
   selector: 'app-list-groups',
@@ -26,7 +27,8 @@ export class ListGroupsComponent implements OnInit {
 
   constructor(
     private hideContent: SharingService,
-    private roomService: ContactListRoomService,
+    private roomsService: ContactListRoomService,
+    private roomService: ContactAddRoomService,
     private friendService: ContactListFriendService,
     private dialog: MatDialog
   ) {}
@@ -35,7 +37,14 @@ export class ListGroupsComponent implements OnInit {
     this.hideContent.showContentMobile.subscribe(
       (hide) => (this.valHideContactContent = hide)
     );
-    this.roomService.getAll().subscribe((response: any) => {
+
+    this.fetchAllData();
+
+  }
+
+  fetchAllData(){
+
+    this.roomsService.getAll().subscribe((response: any) => {
       const responseData = response.data.data;
       this.rooms = responseData.filter(room => room.members.length > 2);
       console.log(this.rooms);
@@ -48,7 +57,6 @@ export class ListGroupsComponent implements OnInit {
             console.log("Friends of current userId: ");
             console.log(this.friendOfCurrentUser);
           } );
-
   }
 
   contactContent() {
@@ -68,7 +76,7 @@ export class ListGroupsComponent implements OnInit {
             const friendsFilter = friends.filter(friend => friend._id !== this.currentUserId);
 
             this.memberIds = [];
-            this.roomService
+            this.roomsService
                   .getMembersById(idRoom)
                   .subscribe( (response:any) => {
                     response.data.forEach(element => {
@@ -96,7 +104,7 @@ export class ListGroupsComponent implements OnInit {
 
   deleteMember(idRoom: string) {
 
-    this.roomService
+    this.roomsService
           .getMembersById(idRoom)
           .subscribe( (response:any) => {
             const members = response.data;
@@ -126,7 +134,7 @@ export class ListGroupsComponent implements OnInit {
 
   leaveRoom(idRoom: string) {
 
-    this.roomService
+    this.roomsService
           .getMembersById(idRoom)
           .subscribe( (response:any) => {
             const members = response.data;
@@ -141,13 +149,21 @@ export class ListGroupsComponent implements OnInit {
                 title: "Rời nhóm",
                 subTitle: "Chọn quản trị viên",
                 }} );
+              this.fetchAllData();
 
             console.log(members);
           });
   }
 
-  outRoom(){
-    alert("Hiện tại tính năng đang phát triển");
+  outRoom(idRoom: string){
+    // alert("Hiện tại tính năng đang phát triển");
+    this.roomService
+          .outRoom(idRoom)
+          .subscribe( (response:any) => {
+            console.log("Out room: ");
+            console.log(response);
+            this.fetchAllData();
+          });
   }
 
 

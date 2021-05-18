@@ -79,9 +79,14 @@ export class ListRoomOptionsComponent implements OnInit {
           .changeAdminOfRoom(this.data.roomId, this.members)
           .subscribe( (response:any) => {
             console.log('Leave room');
-
+            this.roomService
+                  .outRoom(this.data.roomId)
+                  .subscribe( (response:any) => {
+                    console.log(response);
+                  });
           } );
-          this.dialogRef.close();
+
+    this.dialogRef.close();
   }
 
 
