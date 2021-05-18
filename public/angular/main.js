@@ -244,7 +244,8 @@ __webpack_require__.r(__webpack_exports__);
 // The list of file replacements can be found in `angular.json`.
 const environment = {
     production: false,
-    apiUrl: "http://localhost:3000/api/v1"
+    apiUrl: "/api/v1"
+    // apiUrl: "http://localhost:3000/api/v1"
 };
 /*
  * For easier debugging in development mode, you can import the following file
@@ -326,7 +327,7 @@ class SocketService {
     constructor(authService) {
         this.authService = authService;
         this.message = "Hello from TanKy";
-        this.url = 'http://localhost:3000';
+        this.url = undefined;
         this.getMessages = () => {
             return rxjs__WEBPACK_IMPORTED_MODULE_0__["Observable"].create((observer) => {
                 this.socket.on('message:receive', (message) => {
