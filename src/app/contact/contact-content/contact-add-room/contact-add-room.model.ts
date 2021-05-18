@@ -8,4 +8,5 @@ export interface RoomModel {
   admin: string;
   messagelast?: MessageModel;
   top: number;
+  newMessage?: boolean;
 }

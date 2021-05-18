@@ -17,7 +17,7 @@ export class ChatMenuComponent implements OnInit {
   currentUserId: string = localStorage.getItem("userId");
 
   @Input() currentRoom: RoomModel;
-  @Input() rooms: RoomModel[] = [];
+  @Input() rooms: Array<any> = [];
   @Input() lastMessageOfRooms: Array<any> = [];
 
   show: boolean = false;
@@ -31,12 +31,22 @@ export class ChatMenuComponent implements OnInit {
 
   ngOnInit(): void {
 
+    // this.rooms.forEach(room => {
+    //   room.newMessage = false;
+    // });
+
     this.socketService
           .onMessage()
           .subscribe( (newMessage:any) => {
             this.haveNewMessage[newMessage?.room] = true;
             this.lastMessageOfRooms[newMessage?.room] = newMessage;
-            console.log(newMessage);
+
+            // this.rooms.forEach(room => {
+            //   if ( room._id === newMessage.room ) {
+            //     room.newMessage = true;
+            //   }
+            // })
+            console.log(this.rooms);
 
             //Change haveNewMessage in roomId status to false
             this.sharingService.changeMessageInRoomRead({roomId: newMessage?.room, value: false});
@@ -56,6 +66,11 @@ export class ChatMenuComponent implements OnInit {
   seenAllMessage(){
     this.haveNewMessage[this.currentRoom?._id] = false;
     this.sharingService.changeMessageInRoomRead({roomId: this.currentRoom?._id, value: true});
+    // this.rooms.forEach(room => {
+    //   if ( room?._id === this.currentRoom?._id ) {
+    //     room.newMessage = false;
+    //   }
+    // });
   }
 
 

@@ -42,6 +42,39 @@
   transition: all 750ms;
 }
 
+/* File Preview */
+
+.filePreview {
+  position: absolute;
+  width: 63vw;
+  background-color: rgba(0, 0, 0, 0.125);
+  bottom: 15.3vh;
+  padding: 0.5rem;
+}
+
+.imagePreview {
+  width: 10rem;
+  height: 7.5rem;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.filePreview__icon-close {
+  padding: 0.3rem 0.5rem;
+  color: var(--color-3);
+  font-size: 1.1rem;
+  font-weight: 500;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 750ms;
+}
+
+.filePreview__icon-close:hover,
+.filePreview__icon-close:focus {
+  background-color: var(--color-2);
+  transition: all 750ms;
+}
+
 /* Responsive */
 
 @media only screen and (max-width: 480px) {
@@ -83,4 +116,12 @@
     background-color: var(--color-2);
     transition: all 750ms;
   }
+
+/* File Preview */
+
+.filePreview {
+  bottom: 17.5vh;
+  width: 101%;
+  padding: 0.5rem 1rem;
+}
 }

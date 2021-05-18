@@ -1,46 +1,73 @@
-
-<div #scrollMe class="row chat-box__body" >
-  <div class="col" >
+<div #scrollMe class="row chat-box__body">
+  <div class="col">
     <div *ngFor="let message of messages">
-      <div class="row" *ngIf="message.sender !==  currentUserId">
-        <img *ngIf="profileOfFriends.length ===2 " class="user__avatar"
-            [src]="chatroom?.avatar"
-          />
-        <img *ngIf="profileOfFriends.length !== 2" class="user__avatar"
+      <div class="row" *ngIf="message.sender !== currentUserId">
+        <img
+          *ngIf="profileOfFriends.length === 2"
+          class="user__avatar"
+          [src]="chatroom?.avatar"
+        />
+        <img
+          *ngIf="profileOfFriends.length !== 2"
+          class="user__avatar"
           [src]="profileOfFriends[message.sender]?.avatar"
         />
-        <div class="mess mess-left" >
-          <span [title]="message.created_at | date:'medium'">
+        <div class="mess mess-left">
+          <span [title]="message.created_at | date: 'medium'">
             {{ message.data }}
           </span>
         </div>
+
         <div class="mess-sender">
           <span>
             {{ profileOfFriends[message.sender]?.name }}
           </span>
         </div>
       </div>
+      <!-- <div class="row" *ngIf="message.sender !== currentUserId">
+        <img
+          *ngIf="profileOfFriends.length === 2"
+          class="user__avatar"
+          [src]="chatroom?.avatar"
+        />
+        <img
+          *ngIf="profileOfFriends.length !== 2"
+          class="user__avatar"
+          [src]="profileOfFriends[message.sender]?.avatar"
+        />
+        <div class="mess mess-left">
+          <img
+            src="http://localhost:3000/public/images/pexels-sharad-kachhi-3937174.jpg-1621328017892.jpg"
+            alt="hình ảnh"
+            class="mess-image"
+          />
+        </div>
 
-      <div class="row justify-content-end" *ngIf="message.sender ===  currentUserId">
-        <div class="mess mess-right" >
-          <span [title]="message.created_at | date:'medium'">
+        <div class="mess-sender">
+          <span>
+            {{ profileOfFriends[message.sender]?.name }}
+          </span>
+        </div>
+      </div> -->
+
+      <div
+        class="row justify-content-end"
+        *ngIf="message.sender === currentUserId"
+      >
+        <div class="mess mess-right">
+          <span [title]="message.created_at | date: 'medium'">
             {{ message.data }}
           </span>
         </div>
-        <div class="mess-sender" style="text-align: end" >
+        <div class="mess-sender" style="text-align: end">
           <span *ngIf="profileOfFriends[message.sender]?._id === currentUserId">
             You
           </span>
           <span *ngIf="profileOfFriends[message.sender]?._id !== currentUserId">
             {{ profileOfFriends[message.sender]?.name }}
           </span>
-
         </div>
       </div>
-
-
     </div>
   </div>
 </div>
-
-

@@ -1,3 +1,12 @@
+<div
+  class="filePreview row justify-content-between"
+  *ngIf="imageURL !== '' && imageURL"
+>
+  <img class="imagePreview" [src]="imageURL" />
+  <span class="filePreview__icon-close align-self-start" (click)="closePreview()">
+    <i class="fas fa-times"></i>
+  </span>
+</div>
 <div class="row chat-box__send align-items-center">
   <div class="col-md-11 col-10">
     <textarea
@@ -14,10 +23,18 @@
         <i class="fab fa-telegram-plane"></i>
       </button>
     </div>
-    <div class="row justify-content-center">
-      <span class="chat-box__send--btn">
+    <form class="row justify-content-center" [formGroup]="form">
+      <label for="send_file" class="chat-box__send--btn">
         <i class="fas fa-paperclip"></i>
-      </span>
-    </div>
+      </label>
+      <input
+        type="file"
+        style="display: none"
+        name="send_file"
+        id="send_file"
+        #filePicker
+        (change)="onFilePicked($event)"
+      />
+    </form>
   </div>
 </div>

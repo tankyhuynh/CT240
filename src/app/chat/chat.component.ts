@@ -54,7 +54,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-    this.socketService.setUpConnnection();
+    // this.socketService.setUpConnnection();
 
     // this.listFriendService
     // .getAll()

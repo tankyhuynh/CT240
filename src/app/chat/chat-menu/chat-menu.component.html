@@ -1,6 +1,3 @@
-<div *ngFor="let item of isMessageInRoomRead">
-  roomId: {{ item }} {{ isMessageInRoomRead[item] }}
-</div>
 
 <app-search>Search</app-search>
 <div class="row tabs-list">
@@ -26,7 +23,14 @@
           *ngIf="haveNewMessage[room._id]
                   && lastMessageOfRooms[room._id].sender !== currentUserId
                   && !isMessageInRoomRead[room._id] ">
-        </span>
+         </span>
+
+
+         <!-- <span style="float: right;"
+          matBadge="."
+          *ngIf=" room?.newMessage
+                  && lastMessageOfRooms[room._id].sender !== currentUserId ">
+         </span> -->
 
         <div class="row">
           <i class="card__desc"> {{lastMessageOfRooms[room._id]?.data  }} </i>

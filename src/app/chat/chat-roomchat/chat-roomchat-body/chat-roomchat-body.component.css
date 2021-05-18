@@ -57,9 +57,24 @@
   box-shadow: 2px 2px 5px 0px var(--color-1);
 }
 
+.mess-image {
+  max-width: 30rem;
+  max-height: 15rem;
+  object-fit: contain;
+  border-radius: 15px;
+}
+
 @media only screen and (max-width: 480px) {
   .chat-box__body {
     height: 72.5vh;
     max-height: 72.5vh;
+  }
+  .mess {
+    max-width: 80vw;
+  }
+
+  .mess-image {
+    max-width: 70vw;
+    max-height: 50vw;
   }
 }

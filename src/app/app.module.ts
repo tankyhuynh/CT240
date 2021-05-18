@@ -29,6 +29,7 @@ import { SharingService } from './sharing.service';
 import { SocketService } from './socket/socket.service';
 import { ReloginComponent } from './relogin/relogin.component';
 import { ListRoomOptionsComponent } from './contact/contact-content/list-rooms-options/list-room-options.component';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import { ListRoomOptionsComponent } from './contact/contact-content/list-rooms-o
     HttpClientModule,
     MenuModule,
     SearchModule,
+    MatBadgeModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

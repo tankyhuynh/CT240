@@ -17,6 +17,7 @@ import { ProfileModel } from '../personal-information/profile.model';
 export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
   @Input() isUserAuthenticated = false;
   menuMobile = false;
+  @Input() socketChangeIn:string;
 
   private authListenerSub: Subscription;
   private userListenerSub: Subscription;
@@ -25,11 +26,8 @@ export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
   userDataInLocalStorage: ProfileModel;
   tmpImgPath = "https://images.pexels.com/photos/4397900/pexels-photo-4397900.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260";
 
-  items = [
-    ['Tin nhắn', 'chat'],
-    ['Danh bạ', 'contact'],
-    ['Chỉnh sửa', 'personal-information'],
-  ];
+  @Input() menuItems:any;
+
 
   constructor(
     private authService: AutheService,

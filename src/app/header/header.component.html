@@ -1,3 +1,6 @@
+
+
+
 <div class="row align-items-center header" *ngIf="isUserAuthenticated">
   <nav class="navbar navbar-expand-lg">
     <span class="navbar-brand">
@@ -34,14 +37,20 @@
       *ngIf="!menuMobile"
     >
       <div class="row justify-content-center">
-        <div *ngFor="let item of items">
+        <div *ngFor="let item of menuItems ">
+
+          <span *ngIf="item.showBadge && item.key === 'message'"  matBadge="..."></span>
+
           <span
             *ngIf="isUserAuthenticated"
             class="user__case--item"
-            [routerLink]="'/' + item[1]"
+            [routerLink]="'/' + item.url"
+            (click)="item.showBadge = false"
             routerLinkActive="highlight"
           >
-            {{ item[0] }}
+
+            {{ item.content }}
+
           </span>
         </div>
         <div>
@@ -61,17 +70,18 @@
       *ngIf="menuMobile"
     >
       <div class="row justify-content-center">
-        <div *ngFor="let item of items">
+        <div *ngFor="let item of menuItems">
           <span
             *ngIf="isUserAuthenticated"
             class="user__case--item"
-            [routerLink]="'/' + item[1]"
+            [routerLink]="'/' + item.url"
             routerLinkActive="highlight"
             data-toggle="collapse"
             data-target="#navbarSupportedContent"
           >
-            {{ item[0] }}
+            {{ item.content }}
           </span>
+
         </div>
         <div>
           <span

@@ -1,3 +1,7 @@
+.mat-badge-content {
+  background-color: red;
+}
+
 .highlight {
   background-color: var(--color-1) !important;
 }

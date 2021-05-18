@@ -52,12 +52,10 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
 
   scrollToBottom(): void {
     try {
-      console.log(`ChatRoom Top: ${this.chatroom.top}`);
       var height = this.myScroller.nativeElement.scrollHeight;
       if (this.chatroom.top > 1000) {
         this.chatroom.top = 500;
       }
-      console.log(`Height: ${height}`);
 
       if (this.chatroom.top < height) {
         this.myScroller.nativeElement.scrollTop =
