@@ -1,6 +1,6 @@
 
 const {sendReject, sendSuccess} = require('../result');
-const uploadMiddle = require('../middleware/multerUpload');
+const uploadMiddle = require('../middleware/multerUploadFile');
 
 function upload(req, res){
     uploadMiddle(req, res, function(err){
