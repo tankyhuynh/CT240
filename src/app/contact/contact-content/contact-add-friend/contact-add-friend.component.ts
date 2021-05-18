@@ -101,11 +101,7 @@ export class ContactAddFriendComponent implements OnInit {
             this.isShowMessageAlert = true;
 
             let isShowMessageAlert = this.isShowMessageAlert;
-            // this.setMessageAlertTimer(2);
-            // this.succecssService.setAuthTimer(2, function name() {
-            //   isShowMessageAlert = false;
-            // } );
-
+            this.setMessageAlertTimer(2);
 
             this.friendId.nativeElement.value = "";
             this.introduction.nativeElement.value = "";

@@ -34,7 +34,16 @@
             >
               <div>
                 <img
+                  *ngIf="currentUserId !== friendRequest.sender._id"
                   [src]="friendRequest.sender?.avatar"
+                  alt=""
+                  class="img-fluid card__img"
+                />
+              </div>
+              <div>
+                <img
+                *ngIf="currentUserId === friendRequest.sender._id"
+                  [src]="friendRequest.receiver?.avatar"
                   alt=""
                   class="img-fluid card__img"
                 />

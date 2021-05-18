@@ -30,6 +30,8 @@ export class PersonalInformationComponent implements OnInit {
   isDiable: boolean = true;
   isLoadingProfileProcess: boolean = false;
   isLoadingPassProcess: boolean = false;
+  isChangProfileSuccess: boolean = false;
+  isChangePassSuccessed: boolean = false;
 
   imageURL: string;
   form: FormGroup;
@@ -38,6 +40,8 @@ export class PersonalInformationComponent implements OnInit {
   @ViewChild("username") username: ElementRef<any>;
   @ViewChild("password") password: ElementRef<any>;
   defaultPlaceHolderText = ["Mật khẩu mới", "Xác nhận mật khẩu"];
+
+  private tokenTimer: any;
 
   @ViewChild(ReloginComponent)
   public reLoginComponent: ReloginComponent;
@@ -128,6 +132,11 @@ export class PersonalInformationComponent implements OnInit {
     this.profileService
           .updateInfo(this.userId, this.form.value.name, this.form.value.avatar)
           .subscribe( (response:any) => {
+            this.changeDiableStatus();
+
+            this.isChangProfileSuccess = true;
+            this.setMessageChangeProfileSuccess(2);
+
             console.log(response.data);
             this.isLoadingProfileProcess = false;
             const newProfile = {
@@ -151,7 +160,24 @@ export class PersonalInformationComponent implements OnInit {
           .changePassword(this.password.nativeElement.value)
           .subscribe( (response:any) => {
             this.isLoadingPassProcess = false;
+            this.isChangePassSuccessed = true;
+            this.setMessageChangPassSuccess(2);
+
           });
+  }
+
+  private setMessageChangeProfileSuccess(duration: number) {
+    this.tokenTimer = setTimeout(() => {
+      this.isChangProfileSuccess = false;
+    }, duration * 1000);
+    console.log('Setting timer alert message: ' + duration);
+  }
+
+  private setMessageChangPassSuccess(duration: number) {
+    this.tokenTimer = setTimeout(() => {
+      this.isChangePassSuccessed = false;
+    }, duration * 1000);
+    console.log('Setting timer alert message: ' + duration);
   }
 
 }

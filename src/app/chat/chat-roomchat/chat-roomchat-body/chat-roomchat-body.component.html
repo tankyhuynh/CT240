@@ -26,12 +26,15 @@
           <span [title]="message.created_at | date:'medium'">
             {{ message.data }}
           </span>
-
         </div>
         <div class="mess-sender" style="text-align: end" >
-          <span>
+          <span *ngIf="profileOfFriends[message.sender]?._id === currentUserId">
+            You
+          </span>
+          <span *ngIf="profileOfFriends[message.sender]?._id !== currentUserId">
             {{ profileOfFriends[message.sender]?.name }}
           </span>
+
         </div>
       </div>
 
