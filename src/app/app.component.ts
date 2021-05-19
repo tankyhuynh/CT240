@@ -1,5 +1,11 @@
-import { Component, EventEmitter, Input, OnChanges, OnInit, Output } from '@angular/core';
-
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+} from '@angular/core';
 
 import { Subscription } from 'rxjs';
 import { AutheService } from './auth/auth.service';
@@ -10,17 +16,13 @@ import { SharingService } from './sharing.service';
 import { SocketModel } from './socket/socket.model';
 import { SocketService } from './socket/socket.service';
 
-
-
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [
-    SharingService]
+  providers: [SharingService],
 })
 export class AppComponent implements OnInit {
-
   isUserAuthenticated = false;
   isNewMessageReceive: boolean = false;
 
@@ -37,31 +39,30 @@ export class AppComponent implements OnInit {
       key: 'message',
       content: 'Tin nhắn',
       url: 'chat',
-      showBadge: false
+      showBadge: false,
     },
     {
       key: 'contact',
       content: 'Danh bạ',
       url: 'contact',
-      showBadge: false
+      showBadge: false,
     },
     {
       key: 'personal',
       content: 'Chỉnh sửa',
       url: 'personal-information',
-      showBadge: false
+      showBadge: false,
     },
   ];
 
   constructor(
-      private profileService: ProfileService,
-      private authService: AutheService,
-      private sharingService: SharingService,
-      private socketService: SocketService
-      ){};
+    private profileService: ProfileService,
+    private authService: AutheService,
+    private sharingService: SharingService,
+    private socketService: SocketService
+  ) {}
 
-  ngOnInit(){
-
+  ngOnInit() {
     // this.sharingService.currentMenuItems.subscribe(newItems => this.itemsInAppComponent = newItems);
 
     // this.sharingService.currentMenuClass.subscribe(newItems => this.menuClass = newItems);
@@ -73,38 +74,28 @@ export class AppComponent implements OnInit {
     this.isUserAuthenticated = this.authService.getIsAuthenticated();
 
     this.authListenerSub = this.authService
-                  .getAuthStatusListener()
-                  .subscribe(isAuth => {
-                    this.isUserAuthenticated = isAuth;
+      .getAuthStatusListener()
+      .subscribe((isAuth) => {
+        this.isUserAuthenticated = isAuth;
 
-                    this.socketService
-                          .setUpConnnection();
+        this.socketService.setUpConnnection();
 
-                    this.onMessageReceive();
+        this.onMessageReceive();
+      });
 
-                  });
-
-    this.socketService
-    .setUpConnnection();
+    this.socketService.setUpConnnection();
 
     this.onMessageReceive();
-
   }
 
-  onMessageReceive(){
-    this.socketService
-    .onMessage()
-    .subscribe( (newMessage:any) => {
-      console.log("newMessage in app comp: ");
+  onMessageReceive() {
+    this.socketService.onMessage().subscribe((newMessage: any) => {
+      console.log('newMessage in app comp: ');
       console.log(newMessage);
-      if ( newMessage.sender !== this.currentUserId ) {
+
+      if (newMessage.sender !== this.currentUserId) {
         this.menuItems[0].showBadge = true;
       }
     });
   }
-
-
-
-
-
 }

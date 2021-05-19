@@ -1,4 +1,3 @@
-
 <app-search>Search</app-search>
 <div class="row tabs-list">
   <div class="col">
@@ -7,9 +6,8 @@
       *ngFor="let room of rooms"
       [routerLink]="['/chat', room._id]"
       routerLinkActive="active"
-      (click)="onClickShowContent()"
+      (click)="onClickShowContent(room._id)"
     >
-
       <div class="col-md-3 col-4">
         <img [src]="room?.avatar" alt="" class="img-fluid card__img" />
       </div>
@@ -18,25 +16,27 @@
           <span class="card__title">{{ room.name }}</span>
         </div>
 
-        <span style="float: right;"
+        <span
+          style="float: right"
           matBadge="."
-          *ngIf="haveNewMessage[room._id]
+          *ngIf="
+            room.newMessage &&
+            lastMessageOfRooms[room._id].sender !== currentUserId
+          "
+        ></span>
+        <!-- ngIf="haveNewMessage[room._id]
                   && lastMessageOfRooms[room._id].sender !== currentUserId
-                  && !isMessageInRoomRead[room._id] ">
-         </span>
+                  && !isMessageInRoomRead[room._id] "> -->
 
-
-         <!-- <span style="float: right;"
+        <!-- <span style="float: right;"
           matBadge="."
           *ngIf=" room?.newMessage
                   && lastMessageOfRooms[room._id].sender !== currentUserId ">
          </span> -->
 
         <div class="row">
-          <i class="card__desc"> {{lastMessageOfRooms[room._id]?.data  }} </i>
+          <i class="card__desc"> {{ lastMessageOfRooms[room._id]?.data }} </i>
         </div>
-
-
       </div>
     </div>
   </div>

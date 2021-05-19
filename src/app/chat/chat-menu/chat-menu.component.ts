@@ -1,4 +1,11 @@
-import { AfterViewChecked, AfterViewInit, Component, Input, OnChanges, OnInit } from '@angular/core';
+import {
+  AfterViewChecked,
+  AfterViewInit,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+} from '@angular/core';
 import { RoomModel } from 'src/app/contact/contact-content/contact-add-room/contact-add-room.model';
 import { ContactListFriendService } from 'src/app/contact/contact-content/list-friends/contact-list-friend.service';
 import { FriendModel } from 'src/app/contact/contact-content/list-friends/friend.model';
@@ -14,7 +21,7 @@ import { MessageModel } from '../chat-roomchat/chat-roomchat-message.model';
 export class ChatMenuComponent implements OnInit {
   @Input() imgPath: string;
 
-  currentUserId: string = localStorage.getItem("userId");
+  currentUserId: string = localStorage.getItem('userId');
 
   @Input() currentRoom: RoomModel;
   @Input() rooms: Array<any> = [];
@@ -27,51 +34,58 @@ export class ChatMenuComponent implements OnInit {
   constructor(
     private sharingService: SharingService,
     private listFriendService: ContactListFriendService,
-    private socketService: SocketService) {}
+    private socketService: SocketService
+  ) {}
 
   ngOnInit(): void {
-
     // this.rooms.forEach(room => {
     //   room.newMessage = false;
     // });
 
-    this.socketService
-          .onMessage()
-          .subscribe( (newMessage:any) => {
-            this.haveNewMessage[newMessage?.room] = true;
-            this.lastMessageOfRooms[newMessage?.room] = newMessage;
+    this.socketService.onMessage().subscribe((newMessage: any) => {
+      this.haveNewMessage[newMessage?.room] = true;
+      this.lastMessageOfRooms[newMessage?.room] = newMessage;
 
-            // this.rooms.forEach(room => {
-            //   if ( room._id === newMessage.room ) {
-            //     room.newMessage = true;
-            //   }
-            // })
-            console.log(this.rooms);
+      this.rooms.forEach((room) => {
+        if (room._id === newMessage.room) {
+          room.newMessage = true;
+        }
+      });
+      // console.log('Load Menu Component');
+      // console.log(this.rooms);
 
-            //Change haveNewMessage in roomId status to false
-            this.sharingService.changeMessageInRoomRead({roomId: newMessage?.room, value: false});
-          } );
+      //Change haveNewMessage in roomId status to false
+      this.sharingService.changeMessageInRoomRead({
+        roomId: newMessage?.room,
+        value: false,
+      });
+    });
   }
 
-  onClickShowContent() {
+  onClickShowContent(id: string) {
     this.sharingService.showContentMobile.subscribe(
       (isShow) => (this.show = isShow)
     );
     this.sharingService.changeShowValue(!this.show);
 
     //Seen all message in current room
-    this.seenAllMessage();
+    this.seenAllMessage(id);
   }
 
-  seenAllMessage(){
-    this.haveNewMessage[this.currentRoom?._id] = false;
-    this.sharingService.changeMessageInRoomRead({roomId: this.currentRoom?._id, value: true});
+  seenAllMessage(id: string) {
+    this.rooms.forEach((room) => {
+      if (room._id == id) {
+        room.newMessage = false;
+      }
+    });
+    this.sharingService.changeMessageInRoomRead({
+      roomId: this.currentRoom?._id,
+      value: true,
+    });
     // this.rooms.forEach(room => {
     //   if ( room?._id === this.currentRoom?._id ) {
     //     room.newMessage = false;
     //   }
     // });
   }
-
-
 }
