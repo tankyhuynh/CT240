@@ -20,6 +20,10 @@ SocketServerEmiter.on("request:new",  async (receiver, request)=> {
     await SocketController.newRequest(receiver , request);
 });
 
+
+
+
+
 class Msg {
     static async send(socket, msg){
         const sender = socket.account;
@@ -122,9 +126,55 @@ class SocketController {
             socket.on("message:send",async (data)=> {
                 await Msg.send(socket, data);
             }); 
+
+            // callvideo
+            socket.on("media:request", async(data)=> {
+                const {offer, to} = data;
+                let from = socket.account;
+                console.log("> media:request");
+                console.log(data);
+                this.sendTo(to, "media:request", {from,offer});
+            });
+            socket.on("media:response", async(data)=> {
+                const {answer, to} = data;
+                let from = socket.account;
+                console.log("> media:response");
+                console.log(data);
+                this.sendTo(to, "media:response", {from, answer})
+            });
+            socket.on("media:iceCandidate", async(data)=>{
+            	const {iceCandidate, to} = data;
+            	let from = socket.account;
+            	this.sendTo(to, "media:iceCandidate", {from, iceCandidate});
+            });
             
+            socket.on("call:new", async(data)=>{
+            	const {to} = data;
+            	let from = socket.account;
+            	this.sendTo(to, "call:new", {to, from});
+            });
+            socket.on("call:end", async(data)=>{
+            	const {to} = data;
+            	let from = socket.account;
+            	this.sendTo(to, "call:end", {to, from});
+            });
+            socket.on("call:accept", async(data)=>{
+            	const {to} = data;
+            	let from = socket.account;
+            	this.sendTo(to, "call:accept", {to, from});
+            });
+            socket.on("call:reject", async(data)=>{
+            	const {to} = data;
+            	let from = socket.account;
+            	this.sendTo(to, "call:reject", {to, from});
+            });
+            socket.on("vCall", async(data)=>{
+		const {to} = data;
+		let from = socket.account;
+		this.sendTo(to, "vCall", {from, ...data});
+            });
                 
-        })
+        });
     }
     
 }
