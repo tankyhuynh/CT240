@@ -24,15 +24,6 @@
             lastMessageOfRooms[room._id].sender !== currentUserId
           "
         ></span>
-        <!-- ngIf="haveNewMessage[room._id]
-                  && lastMessageOfRooms[room._id].sender !== currentUserId
-                  && !isMessageInRoomRead[room._id] "> -->
-
-        <!-- <span style="float: right;"
-          matBadge="."
-          *ngIf=" room?.newMessage
-                  && lastMessageOfRooms[room._id].sender !== currentUserId ">
-         </span> -->
 
         <div class="row">
           <i class="card__desc"> {{ lastMessageOfRooms[room._id]?.data }} </i>

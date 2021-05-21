@@ -9,6 +9,7 @@ import {
 import { RoomModel } from 'src/app/contact/contact-content/contact-add-room/contact-add-room.model';
 import { ContactListFriendService } from 'src/app/contact/contact-content/list-friends/contact-list-friend.service';
 import { FriendModel } from 'src/app/contact/contact-content/list-friends/friend.model';
+import { ContactListRoomService } from 'src/app/contact/contact-content/list-rooms/contact-list-rooms.service';
 import { SharingService } from 'src/app/sharing.service';
 import { SocketService } from 'src/app/socket/socket.service';
 import { MessageModel } from '../chat-roomchat/chat-roomchat-message.model';
@@ -34,13 +35,11 @@ export class ChatMenuComponent implements OnInit {
   constructor(
     private sharingService: SharingService,
     private listFriendService: ContactListFriendService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private roomsService: ContactListRoomService
   ) {}
 
   ngOnInit(): void {
-    // this.rooms.forEach(room => {
-    //   room.newMessage = false;
-    // });
 
     this.socketService.onMessage().subscribe((newMessage: any) => {
       this.haveNewMessage[newMessage?.room] = true;
@@ -51,8 +50,8 @@ export class ChatMenuComponent implements OnInit {
           room.newMessage = true;
         }
       });
-      // console.log('Load Menu Component');
-      // console.log(this.rooms);
+      console.log('Load Menu Component');
+      console.log(this.rooms);
 
       //Change haveNewMessage in roomId status to false
       this.sharingService.changeMessageInRoomRead({
@@ -74,18 +73,14 @@ export class ChatMenuComponent implements OnInit {
 
   seenAllMessage(id: string) {
     this.rooms.forEach((room) => {
-      if (room._id == id) {
+      if (room._id === id) {
         room.newMessage = false;
       }
     });
     this.sharingService.changeMessageInRoomRead({
       roomId: this.currentRoom?._id,
-      value: true,
+      value: false,
     });
-    // this.rooms.forEach(room => {
-    //   if ( room?._id === this.currentRoom?._id ) {
-    //     room.newMessage = false;
-    //   }
-    // });
+
   }
 }

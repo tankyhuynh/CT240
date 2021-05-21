@@ -78,6 +78,10 @@ export class AppComponent implements OnInit {
       .subscribe((isAuth) => {
         this.isUserAuthenticated = isAuth;
 
+        if (isAuth) {
+          this.currentUserId = this.authService.getUserId();
+        }
+
         this.socketService.setUpConnnection();
 
         this.onMessageReceive();
@@ -95,6 +99,7 @@ export class AppComponent implements OnInit {
 
       if (newMessage.sender !== this.currentUserId) {
         this.menuItems[0].showBadge = true;
+        this.sharingService.changeMessageInRoomRead({"key": "asdsdasd"});
       }
     });
   }

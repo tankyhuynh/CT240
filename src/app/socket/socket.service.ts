@@ -33,8 +33,12 @@ export class SocketService {
     });
 }
 
-  sendMessage(room: string, data: string) {
-    this.socket.emit('message:send', {room: room, data: data});
+  sendMessage(room: string, data:any) {
+    const DATA = {
+      content: data?.content,
+      url: data?.url
+    };
+    this.socket.emit('message:send', {room: room, data: DATA});
     this.socket.on('message:receive', (data) => {
       this.newMessage = data;
       console.log(this.newMessage);

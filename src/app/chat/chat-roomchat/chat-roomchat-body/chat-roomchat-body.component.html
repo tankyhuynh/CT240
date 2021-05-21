@@ -1,7 +1,9 @@
 <div #scrollMe class="row chat-box__body">
   <div class="col">
     <div *ngFor="let message of messages">
-      <div class="row" *ngIf="message.sender !== currentUserId">
+
+<!-- Receiver -->
+      <div class="row" *ngIf="message.sender !== currentUserId && !message.data.url">
         <img
           *ngIf="profileOfFriends.length === 2"
           class="user__avatar"
@@ -14,7 +16,7 @@
         />
         <div class="mess mess-left">
           <span [title]="message.created_at | date: 'medium'">
-            {{ message.data }}
+            {{ message.data?.content }}
           </span>
         </div>
 
@@ -24,7 +26,9 @@
           </span>
         </div>
       </div>
-      <!-- <div class="row" *ngIf="message.sender !== currentUserId">
+
+      <!-- message URL exist -->
+      <div class="row" *ngIf="message.sender !== currentUserId && message.data.url">
         <img
           *ngIf="profileOfFriends.length === 2"
           class="user__avatar"
@@ -37,7 +41,7 @@
         />
         <div class="mess mess-left">
           <img
-            src="http://localhost:3000/public/images/pexels-sharad-kachhi-3937174.jpg-1621328017892.jpg"
+            [src]="message.data?.url"
             alt="hình ảnh"
             class="mess-image"
           />
@@ -48,15 +52,16 @@
             {{ profileOfFriends[message.sender]?.name }}
           </span>
         </div>
-      </div> -->
+      </div>
 
+
+<!-- Sender -->
       <div
         class="row justify-content-end"
-        *ngIf="message.sender === currentUserId"
-      >
+        *ngIf="message.sender === currentUserId && !message.data.url">
         <div class="mess mess-right">
           <span [title]="message.created_at | date: 'medium'">
-            {{ message.data }}
+            {{ message.data?.content }}
           </span>
         </div>
         <div class="mess-sender" style="text-align: end">
@@ -68,6 +73,32 @@
           </span>
         </div>
       </div>
+
+      <div
+        class="row justify-content-end"
+        *ngIf="message.sender === currentUserId && message.data.url">
+
+        <img
+          *ngIf="profileOfFriends.length === 2"
+          class="user__avatar"
+          [src]="chatroom?.avatar"
+        />
+        <img
+          *ngIf="profileOfFriends.length !== 2"
+          class="user__avatar"
+          [src]="profileOfFriends[message.sender]?.avatar"
+        />
+        <div class="mess mess-right">
+          <img
+            [src]="message.data?.url"
+            alt="hình ảnh"
+            class="mess-image"
+          />
+        </div>
+      </div>
+
+
+
     </div>
   </div>
 </div>

@@ -39,11 +39,24 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
+
+    this.sharingService
+          .currentSendNewImageStatus
+          .subscribe( (response:any) => {
+            console.log("currentSendNewImageStatus: ");
+            console.log(response);
+            if ( response ) {
+              this.messages.push(response);
+            }
+          });
+
     this.socketService.getMessages().subscribe((message: MessageModel) => {
       if(message.room === this.chatroom._id){
         this.messages.push(message);
       }
     });
+
+
   }
 
   ngAfterViewChecked() {

@@ -100,7 +100,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           console.log(`currentRoom Name: ${this.currentRoom.name}`);
           this.sharingService.changeMessageInRoomRead({
             roomId: this.currentRoom?._id,
-            value: true,
+            value: false,
           });
         });
 
