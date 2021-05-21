@@ -10,6 +10,7 @@ import {
 import { FileService } from './sendFile.service';
 import { SharingService } from 'src/app/sharing.service';
 import { MessageModel } from '../chat-roomchat-message.model';
+import { url } from 'node:inspector';
 
 @Component({
   selector: 'app-chat-roomchat-send',
@@ -68,6 +69,7 @@ export class ChatRoomchatSendComponent implements OnInit {
             }
 
             this.sharingService.changeSendNewImage(newMessage);
+            this.socketService.sendImage(this.roomId, imageUrl);
             this.resetForm();
             this.closePreview();
           } );

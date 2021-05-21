@@ -78,16 +78,7 @@
       <div
         class="row justify-content-end"
         *ngIf="message.sender === currentUserId && message.data?.url">
-        <img
-          *ngIf="profileOfFriends.length === 2"
-          class="user__avatar"
-          [src]="chatroom?.avatar"
-        />
-        <img
-          *ngIf="profileOfFriends.length !== 2"
-          class="user__avatar"
-          [src]="profileOfFriends[message.sender]?.avatar"
-        />
+
         <div class="mess mess-right">
           <img
             [src]="message.data?.url"

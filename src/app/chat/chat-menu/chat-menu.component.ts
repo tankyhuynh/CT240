@@ -50,8 +50,6 @@ export class ChatMenuComponent implements OnInit {
           room.newMessage = true;
         }
       });
-      console.log('Load Menu Component');
-      console.log(this.rooms);
 
       //Change haveNewMessage in roomId status to false
       this.sharingService.changeMessageInRoomRead({

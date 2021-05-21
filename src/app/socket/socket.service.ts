@@ -35,8 +35,22 @@ export class SocketService {
 
   sendMessage(room: string, data:any) {
     const DATA = {
-      content: data?.content,
-      url: data?.url
+      content: data
+    };
+    if (DATA?.content === '') {
+      return;
+    }
+    this.socket.emit('message:send', {room: room, data: DATA});
+    this.socket.on('message:receive', (data) => {
+      this.newMessage = data;
+      console.log(this.newMessage);
+    });
+    this.message = '';
+  }
+
+  sendImage(room: string, url: string) {
+    const DATA = {
+      url: url
     };
     this.socket.emit('message:send', {room: room, data: DATA});
     this.socket.on('message:receive', (data) => {
@@ -48,7 +62,11 @@ export class SocketService {
 
   public onMessage(): Observable<MessageModel> {
     return new Observable<MessageModel>(observer => {
-        this.socket.on('message:receive', (data: MessageModel) => observer.next(data));
+        this.socket.on('message:receive', (data: MessageModel) => {
+          console.log("respones in socket receive message: ");
+          console.log(data);
+          observer.next(data)
+        });
     });
 }
 
