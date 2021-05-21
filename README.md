@@ -1,5 +1,5 @@
 # MEANChat
-## Đề tài: Webchat
+## Đề tài: MEANChat
   - NodeJS: api
   - CRUD
   - Save db
@@ -13,19 +13,15 @@
   - dotenv
 
 ## Thiết kế:
-  + Router - Controller - Service - Model
-  + Document
-  + Content-path: /api/v1
+  - Router - Controller - Service - Model
+  - Document
+  - Content-path: /api/v1
 
 
 ### Note
-- Tuần 12: Nộp SRS
-- Tuần 16: Nộp Project
+  - Tuần 12: Nộp SRS
+  - Tuần 16: Nộp Project
 
-## Backend 
-### upload image error
-### sort message with created_date asc
-### image in room chat null
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.6.
 

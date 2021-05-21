@@ -7,6 +7,9 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { FileService } from './sendFile.service';
+import { SharingService } from 'src/app/sharing.service';
+import { MessageModel } from '../chat-roomchat-message.model';
 
 @Component({
   selector: 'app-chat-roomchat-send',
@@ -18,33 +21,74 @@ export class ChatRoomchatSendComponent implements OnInit {
   imageURL: string;
   form: FormGroup;
 
+  private currentUserId: string = localStorage.getItem('userId');
+
   @ViewChild('message') message: ElementRef<any>;
 
-  constructor(private socketService: SocketService, private route: Router) {}
+  constructor(
+    private socketService: SocketService,
+    private route: Router,
+    private sendfileService: FileService,
+    private sharingService: SharingService) {}
 
   ngOnInit(): void {
     this.form = new FormGroup({
-      avatar: new FormControl(null, {
+      image: new FormControl(null, {
         validators: [Validators.required],
         asyncValidators: [],
       }),
     });
   }
 
-  sendMessage(data: string) {
-    this.socketService.sendMessage(this.roomId, data);
-    this.message.nativeElement.value = '';
+  sendMessage(data: any) {
+    if ( !this.form.value.image ) {
+      console.log("dont have image");
+      this.socketService.sendMessage(this.roomId, data);
+      this.message.nativeElement.value = '';
+    }
+    else {
+      console.log("image existed ");
+      this.sendFile(this.form.value.image);
+    }
+  }
+
+  sendFile(image: File){
+    this.sendfileService
+          .sendImage(image)
+          .subscribe( (response:any) => {
+            const imageUrl = response.data.url;
+            console.log('send image: ');
+            console.log(imageUrl);
+
+            const newMessage:MessageModel = {
+              room: this.roomId,
+              data: {url: imageUrl},
+              sender: this.currentUserId,
+              created_at: new Date()
+            }
+
+            this.sharingService.changeSendNewImage(newMessage);
+            this.resetForm();
+            this.closePreview();
+          } );
+  }
+
+  resetForm(){
+    this.form.patchValue({image: null});
+    this.form.get('image').updateValueAndValidity();
   }
 
   onFilePicked(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
-    this.form.patchValue({ avatar: file });
-    this.form.get('avatar').updateValueAndValidity();
+    this.form.patchValue({ image: file });
+    this.form.get('image').updateValueAndValidity();
 
     const reader = new FileReader();
     reader.onload = () => {
       this.imageURL = reader.result as string;
     };
+    console.log("image: ");
+    console.log(file)
     reader.readAsDataURL(file);
   }
 

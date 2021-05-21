@@ -29,7 +29,15 @@ export class SharingService {
   private messageInRommReadSource = new BehaviorSubject<Array<any>>(null);
   currentMessageInRommReadedSourceStatus = this.messageInRommReadSource.asObservable();
 
+  private sendNewImageSource = new BehaviorSubject<MessageModel>(null);
+  currentSendNewImageStatus = this.sendNewImageSource.asObservable();
+
+
   constructor() {}
+
+  changeSendNewImage(message: MessageModel) {
+    this.sendNewImageSource.next(message);
+  }
 
   changeMessageInRoomRead(data) {
     this.messageInRommReadSource.next(data);
