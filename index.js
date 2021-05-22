@@ -5,7 +5,7 @@ const path = require('path');
 const serverConfig = require('./configs/server.config');
 const app = serverConfig.config();
 
-app.use("/vcall/", express.static(path.join(process.cwd(), "public", "vcall"));
+app.use("/vcall/", express.static(path.join(process.cwd(), "public", "vcall")));
 app.use("/document", express.static(path.join(process.cwd(), "public", "document")));
 app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/", express.static(path.join(__dirname, "public/angular")));
