@@ -4,6 +4,8 @@ import { io } from 'socket.io-client';
 import { AutheService } from '../auth/auth.service';
 import { MessageModel } from '../chat/chat-roomchat/chat-roomchat-message.model';
 
+import {VCallAPI}  from './VCall.model'
+
 
 @Injectable({
   providedIn: 'root'
@@ -17,22 +19,26 @@ export class SocketService {
 
   newMessage: MessageModel;
 
+  signal = {
+    on: (handle) => {
+        this.socket.on("vCall" , handle);
+    },
+    emit: (data) => {
+      this.socket.emit("vCall" ,data);
+    }
+  }
+
+  vCallAPI = new VCallAPI(this.signal, "http://localhost:3000/public/vcall/index.html");
+
+
   constructor(private authService: AutheService) {}
 
   setUpConnnection(){
     const token = this.authService.getToken();
     this.socket = io(this.url, {auth: {token: token}});
-
   }
 
-  public getMessages = () => {
-    return Observable.create((observer) => {
-            this.socket.on('message:receive', (message) => {
-                observer.next(message);
-            });
-    });
-}
-
+  // Message
   sendMessage(room: string, data:any) {
     const DATA = {
       content: data
@@ -71,5 +77,25 @@ export class SocketService {
 }
 
 
+//Socket call video
+setUpVideoCall(to: string){
 
+
+ this.socket.on("call:new", data=>{
+   console.log(`from ${data?.from}`);
+    this.vCallAPI.createReceiveView(data.from);
+  })
+
+}
+
+
+/**
+ * Sự kiện cho btn gọi
+ */
+connect(to: string){
+    this.socket.emit("call:new", {to});
+    console.log(`to ${to}`);
+    this.vCallAPI.createCallView(to);
+
+  }
 }

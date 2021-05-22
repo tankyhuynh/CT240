@@ -29,6 +29,8 @@ export class SharingService {
   private messageInRommReadSource = new BehaviorSubject<Array<any>>(null);
   currentMessageInRommReadedSourceStatus = this.messageInRommReadSource.asObservable();
 
+  private messageReadHistory: Array<any> = [];
+
   private sendNewImageSource = new BehaviorSubject<MessageModel>(null);
   currentSendNewImageStatus = this.sendNewImageSource.asObservable();
 
@@ -40,7 +42,17 @@ export class SharingService {
   }
 
   changeMessageInRoomRead(data) {
-    this.messageInRommReadSource.next(data);
+    if ( this.messageReadHistory.length > 0 ) {
+      this.messageReadHistory.forEach((history:any) => {
+        if ( history?.roomId !== data?.roomId ) {
+          this.messageReadHistory.push(data);
+        }
+      })
+    }
+    else {
+      this.messageReadHistory.push(data);
+    }
+    this.messageInRommReadSource.next(this.messageReadHistory);
   }
 
   changeMessage(messages: MessageModel[]) {

@@ -4,6 +4,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { SharingService } from 'src/app/sharing.service';
+import { SocketService } from 'src/app/socket/socket.service';
 import { SuccessComponent } from 'src/app/success/success.component';
 import { SuccessService } from 'src/app/success/success.service';
 import { FriendModel } from '../list-friends/friend.model';
@@ -59,7 +60,6 @@ export class ContactAddFriendComponent implements OnInit {
       this.addFriendService
           .getOneById(friendId)
           .subscribe( (response:any) => {
-
             if( response.data ){
               this.isLoading = false;
               this.hideFriend = false;
@@ -68,11 +68,7 @@ export class ContactAddFriendComponent implements OnInit {
                 name: response.data.name,
                 phone: response.data.phone,
                 avatar: response.data.avatar
-              };
-
-              console.log(`valHideContactContent: ${this.hideFriend}`)
-              console.log(response);
-              console.log(this.friend);
+              }
             }
             else{
               this.hideFriend = true;
@@ -82,9 +78,8 @@ export class ContactAddFriendComponent implements OnInit {
           (error) => {
             console.log("Dont find user");
           };
-    } catch (error) {
+    } catch (error) {}
 
-    }
   }
 
   addFriend(friendId: string, introduce: string){

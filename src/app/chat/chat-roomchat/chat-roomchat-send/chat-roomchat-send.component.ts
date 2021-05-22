@@ -75,6 +75,7 @@ export class ChatRoomchatSendComponent implements OnInit {
           } );
   }
 
+
   resetForm(){
     this.form.patchValue({image: null});
     this.form.get('image').updateValueAndValidity();

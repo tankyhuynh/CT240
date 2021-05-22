@@ -54,36 +54,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-    // this.socketService.setUpConnnection();
 
-    // this.listFriendService
-    // .getAll()
-    // .subscribe( (response:any) => {
-    //   this.friends = response.data.data;
-    //   console.log(this.friends);
-    // });
+    this.fetchAllData();
 
-    this.roomService.getAll().subscribe((response: any) => {
-      this.rooms = response.data.data;
-      // console.log('get all room: ');
-      // console.log(this.rooms);
-      this.rooms.forEach((room) => {
-        this.lastMessageOfRooms[room._id] = room.messagelast;
-        room.newMessage = false;
-        // console.log(room);
-      });
-    });
-
-    this.socketService.onMessage().subscribe((newMessage: any) => {
-      console.log('newMessage in app comp: ');
-      console.log(newMessage);
-
-      this.rooms.forEach((room) => {
-        if (newMessage.room == room._id) {
-          room.newMessage = true;
-        }
-      });
-    });
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('roomId')) {
@@ -92,8 +65,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.roomService.getOneById(roomId).subscribe((response: any) => {
           this.currentRoom = response.data;
           this.currentRoom.top = 500;
-          this.currentRoom.newMessage = false;
-          // console.log('get roomId: ');
+
           console.log(this.currentRoom);
 
           //Change status all message in room read
@@ -102,6 +74,9 @@ export class ChatComponent implements OnInit, AfterViewChecked {
             roomId: this.currentRoom?._id,
             value: false,
           });
+
+          this.fetchAllData();
+
         });
 
         this.roomService
@@ -122,6 +97,32 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           });
         });
       }
+
+    });
+
+
+  }
+
+  fetchAllData(){
+    console.log('fetch all data');
+    this.roomService.getAll().subscribe((response: any) => {
+      this.rooms = response.data.data;
+
+      this.sharingService
+            .currentMessageInRommReadedSourceStatus
+            .subscribe( (newMessage:any) => {
+              this.rooms.forEach((room) => {
+                this.lastMessageOfRooms[room._id] = room.messagelast;
+                if ( newMessage?.length > 0 ) {
+                  newMessage.forEach(element => {
+                    if ( element?.roomId === room._id ) {
+                      room.newMessage = element.value;
+                    }
+                  });
+                }
+              });
+            } );
+
     });
   }
 

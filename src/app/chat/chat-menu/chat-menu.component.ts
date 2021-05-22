@@ -41,21 +41,22 @@ export class ChatMenuComponent implements OnInit {
 
   ngOnInit(): void {
 
+
     this.socketService.onMessage().subscribe((newMessage: any) => {
-      this.haveNewMessage[newMessage?.room] = true;
-      this.lastMessageOfRooms[newMessage?.room] = newMessage;
+      this.updateRoomStatus(newMessage, true)
+      if ( !newMessage?.data?.content ) {
+        newMessage.data.content = "Image";
+      }
+    });
+  }
 
-      this.rooms.forEach((room) => {
-        if (room._id === newMessage.room) {
-          room.newMessage = true;
+  updateRoomStatus(newMessage: any, status: boolean){
+    this.lastMessageOfRooms[newMessage?.room] = newMessage;
+
+    this.rooms.forEach((room) => {
+        if (room._id === newMessage.roomId) {
+          room.newMessage = status;
         }
-      });
-
-      //Change haveNewMessage in roomId status to false
-      this.sharingService.changeMessageInRoomRead({
-        roomId: newMessage?.room,
-        value: false,
-      });
     });
   }
 
@@ -76,8 +77,8 @@ export class ChatMenuComponent implements OnInit {
       }
     });
     this.sharingService.changeMessageInRoomRead({
-      roomId: this.currentRoom?._id,
-      value: false,
+      roomId: id,
+      value: false
     });
 
   }
