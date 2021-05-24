@@ -57,6 +57,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     this.fetchAllData();
 
+    this.socketService.onMessage().subscribe((newMessage: any) => {
+      this.updateLastMessageOfAllRoom();
+    });
+
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('roomId')) {
@@ -123,7 +127,29 @@ export class ChatComponent implements OnInit, AfterViewChecked {
               });
             } );
 
+
+
+
     });
+  }
+
+  updateLastMessageOfAllRoom(){
+    console.log('updateLastMessageOfAllRoom');
+    //fetch lastMessage of each room from sharing service lastMessage
+    this.sharingService
+    .lastMessage$
+    .subscribe( (lastMessage:any) => {
+      this.rooms.forEach((room) => {
+        if ( lastMessage?.length > 0 ) {
+          lastMessage.forEach(element => {
+            if ( element?.roomId === room._id ) {
+              room.messagelast.data.content = element.value;
+              this.lastMessageOfRooms[room._id] = room.messagelast;
+            }
+          });
+        }
+      });
+    } );
   }
 
   ngAfterViewChecked() {}

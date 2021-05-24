@@ -40,6 +40,7 @@ export class AppComponent implements OnInit {
       content: 'Tin nhắn',
       url: 'chat',
       showBadge: false,
+      numOfPeopleWaitToReply: 0
     },
     {
       key: 'contact',
@@ -88,17 +89,51 @@ export class AppComponent implements OnInit {
     this.socketService.setUpConnnection();
 
     this.onMessageReceive();
+
+    this.subscribeRoomStatusOfRoom();
+
   }
 
   onMessageReceive() {
     this.socketService.onMessage().subscribe((newMessage: any) => {
-      console.log('newMessage in app comp: ');
-      console.log(newMessage);
-
       if (newMessage.sender !== this.currentUserId) {
-        this.menuItems[0].showBadge = true;
         this.sharingService.changeMessageInRoomRead({roomId: newMessage.room, value: true});
+        this.sharingService.changeLastMessageOfRoom({roomId: newMessage.room, value: newMessage.data.content});
       }
     });
   }
+
+
+  subscribeRoomStatusOfRoom(){
+    this.sharingService
+            .currentMessageInRommReadedSourceStatus
+            .subscribe( (newMessage:any) => {
+              if ( newMessage?.length > 0 ) {
+                let isAllMessagesRead = true;
+                newMessage.forEach(message => {
+                  if (message?.value === true) {
+                    isAllMessagesRead = false;
+                  }
+                });
+                if ( isAllMessagesRead ) {
+                  this.menuItems[0].showBadge = false;
+                }
+                else  {
+                  this.menuItems[0].showBadge = true;
+                  let numOfPeopleWaitToReply = 0;
+                  newMessage.forEach(message => {
+                    if (message?.value === true) {
+                      numOfPeopleWaitToReply ++;
+                    }
+                  });
+                  this.menuItems[0].numOfPeopleWaitToReply = numOfPeopleWaitToReply;
+                }
+
+              }
+              else {
+                this.menuItems[0].showBadge = false;
+              }
+            } );
+  }
+
 }

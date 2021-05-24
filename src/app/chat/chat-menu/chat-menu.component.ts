@@ -41,17 +41,17 @@ export class ChatMenuComponent implements OnInit {
 
   ngOnInit(): void {
 
-
     this.socketService.onMessage().subscribe((newMessage: any) => {
       this.updateRoomStatus(newMessage, true)
       if ( !newMessage?.data?.content ) {
         newMessage.data.content = "Image";
       }
     });
+
   }
 
   updateRoomStatus(newMessage: any, status: boolean){
-    this.lastMessageOfRooms[newMessage?.room] = newMessage;
+    this.sharingService.changeLastMessageOfRoom({roomId: newMessage.room, value: newMessage.data.content});
 
     this.rooms.forEach((room) => {
         if (room._id === newMessage.roomId) {

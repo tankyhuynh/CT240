@@ -33,18 +33,18 @@
       id="navbarSupportedContent"
       *ngIf="!menuMobile"
     >
+
       <div class="row justify-content-center">
         <div *ngFor="let item of menuItems">
           <span
             *ngIf="item.showBadge && item.key === 'message'"
-            matBadge="..."
+            [matBadge]="item?.numOfPeopleWaitToReply || '...' "
           ></span>
 
           <span
             *ngIf="isUserAuthenticated"
             class="user__case--item"
             [routerLink]="'/' + item.url"
-            (click)="item.showBadge = false"
             routerLinkActive="highlight"
           >
             {{ item.content }}

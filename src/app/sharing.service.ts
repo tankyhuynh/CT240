@@ -26,10 +26,16 @@ export class SharingService {
   private messageSource = new BehaviorSubject<MessageModel[]>(null);
   currentMessageStatus = this.messageSource.asObservable();
 
+  // save history of room
   private messageInRommReadSource = new BehaviorSubject<Array<any>>(null);
   currentMessageInRommReadedSourceStatus = this.messageInRommReadSource.asObservable();
-
   private messageReadHistory: Array<any> = [];
+
+  // save lastMessage of each room
+  // nữa đỗi từ từ qua variable and variable$ dễ đọc hơn
+  private lastMessage = new BehaviorSubject<Array<any>>(null);
+  lastMessage$ = this.lastMessage.asObservable();
+  private lastMessageHistory: Array<any> = [];
 
   private sendNewImageSource = new BehaviorSubject<MessageModel>(null);
   currentSendNewImageStatus = this.sendNewImageSource.asObservable();
@@ -47,12 +53,38 @@ export class SharingService {
         if ( history?.roomId !== data?.roomId ) {
           this.messageReadHistory.push(data);
         }
+        else {
+          if(history?.value !== data?.value){
+            const index = this.messageReadHistory.indexOf(history);
+            this.messageReadHistory[index]  = data;
+          }
+        }
       })
     }
     else {
       this.messageReadHistory.push(data);
     }
     this.messageInRommReadSource.next(this.messageReadHistory);
+  }
+
+  changeLastMessageOfRoom(data) {
+    if ( this.lastMessageHistory.length > 0 ) {
+      this.lastMessageHistory.forEach((history:any) => {
+        if ( history?.roomId !== data?.roomId ) {
+          this.lastMessageHistory.push(data);
+        }
+        else {
+          if(history?.value !== data?.value){
+            const index = this.lastMessageHistory.indexOf(history);
+            this.lastMessageHistory[index]  = data;
+          }
+        }
+      })
+    }
+    else {
+      this.lastMessageHistory.push(data);
+    }
+    this.lastMessage.next(this.lastMessageHistory);
   }
 
   changeMessage(messages: MessageModel[]) {
