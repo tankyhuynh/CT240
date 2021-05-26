@@ -42,16 +42,20 @@ export class ChatRoomchatSendComponent implements OnInit {
   }
 
   sendMessage(data: any) {
-    if ( !this.form.value.image ) {
+    if ( this.form.value.image ) {
       console.log("dont have image");
-      this.socketService.sendMessage(this.roomId, data);
-      this.message.nativeElement.value = '';
+      this.sendFile(this.form.value.image);
+      if ( this.message.nativeElement.value ) {
+        this.socketService.sendMessage(this.roomId, data);
+      }
     }
     else {
-      console.log("image existed ");
-      this.sendFile(this.form.value.image);
+      if ( this.message.nativeElement.value ) {
+        this.socketService.sendMessage(this.roomId, data);
+      }
     }
-  }
+    this.resetForm();
+}
 
   sendFile(image: File){
     this.sendfileService
@@ -79,6 +83,7 @@ export class ChatRoomchatSendComponent implements OnInit {
   resetForm(){
     this.form.patchValue({image: null});
     this.form.get('image').updateValueAndValidity();
+    this.message.nativeElement.value = '';
   }
 
   onFilePicked(event: Event) {
@@ -90,8 +95,7 @@ export class ChatRoomchatSendComponent implements OnInit {
     reader.onload = () => {
       this.imageURL = reader.result as string;
     };
-    console.log("image: ");
-    console.log(file)
+    this.message.nativeElement.focus();
     reader.readAsDataURL(file);
   }
 

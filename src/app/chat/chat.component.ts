@@ -92,7 +92,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
         this.roomService.getMembersById(roomId).subscribe((response: any) => {
           const responseData = response.data;
-          console.log('responseData: ');
+          console.log('members of room: ');
           console.log(responseData);
 
           // this.profileOfFriends = responseData;
@@ -116,6 +116,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
             .currentMessageInRommReadedSourceStatus
             .subscribe( (newMessage:any) => {
               this.rooms.forEach((room) => {
+                if ( room.messagelast.data?.content ) {
+                  this.lastMessageOfRooms[room._id] = room.messagelast;
+                }
+                else {
+                  room.messagelast.data.content = "Image";
+                }
                 this.lastMessageOfRooms[room._id] = room.messagelast;
                 if ( newMessage?.length > 0 ) {
                   newMessage.forEach(element => {

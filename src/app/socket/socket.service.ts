@@ -86,16 +86,16 @@ setUpVideoCall(to: string){
     this.vCallAPI.createReceiveView(data.from);
   })
 
-}
-
-
-/**
+  /**
  * Sự kiện cho btn gọi
  */
-connect(to: string){
-    this.socket.emit("call:new", {to});
+  this.socket.emit("call:new", {to});
     console.log(`to ${to}`);
     this.vCallAPI.createCallView(to);
 
-  }
+}
+
+
+
+
 }

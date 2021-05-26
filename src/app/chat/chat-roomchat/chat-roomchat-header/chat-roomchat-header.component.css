@@ -24,6 +24,22 @@
   text-overflow: ellipsis;
 }
 
+/* Call Video */
+
+.btn-call-video {
+  margin: 0 1rem;
+  padding: 0.8rem;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  transition: all 750ms;
+  cursor: pointer;
+}
+
+.btn-call-video:hover, .btn-call-video:focus {
+  background-color: var(--color-2);
+  transition: all 750ms;
+}
+
 @media only screen and (max-width: 480px) {
   .icon-close {
     display: inline-block !important;
