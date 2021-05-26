@@ -371,7 +371,7 @@ class SocketService {
                 this.socket.emit("vCall", data);
             }
         };
-        this.vCallAPI = new _VCall_model__WEBPACK_IMPORTED_MODULE_2__["VCallAPI"](this.signal, "http://localhost:3000/public/vcall/index.html");
+        this.vCallAPI = new _VCall_model__WEBPACK_IMPORTED_MODULE_2__["VCallAPI"](this.signal, "/vcall/index.html");
     }
     setUpConnnection() {
         const token = this.authService.getToken();
