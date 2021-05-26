@@ -1,0 +1,497 @@
+openapi: "3.0.2"
+info:
+  title: API webchat
+  version: "1.0"
+servers:
+  - url: http://localhost:3000/api
+
+
+components:
+  schemas:
+    profile: 
+      type: object
+      properties:
+        _id:
+          type: string
+        name: 
+          type: string
+        avatar: 
+          type: string
+          format: url
+    request: 
+      type: object
+      properties:
+        _id: 
+          type: string
+        sender: 
+          $ref: "#/components/schemas/profile"
+        receiver: 
+          $ref: "#/components/schemas/profile"
+        sended_at: 
+          type: string  
+          format: date
+    room: 
+      type: object  
+      properties:
+        _id: 
+          type: string  
+        name: 
+          type: string
+     
+    message:
+      type: object
+      properties:
+        _id:
+          type: string
+        sender: 
+          $ref: "#/components/schemas/profile"
+        to: 
+          type: string
+          description: room id
+        
+          
+        
+
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      name: session_id
+      in: cookie
+
+
+paths:  
+  /message/{_id}: 
+    get: 
+      tags:
+        - message
+      summary: Lấy thông tin một tin nhắn
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema: 
+            type: string
+      responses:
+        200: 
+          description: ok
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/message"
+  /message/modified/{id}:
+    post: 
+      summary: Tương tác với message
+      tags:
+        - message
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema: 
+            type: string
+      responses:
+        200: 
+          description: ok
+  /room:
+    get:
+      tags:
+        - room
+      summary: get list room, that you is member
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/room"
+    post: 
+      summary: Create a new room
+      tags:
+        - room
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: 
+                  type: string
+                members: 
+                  type: array
+                  items: 
+                    type: object
+                    properties:
+                      _id: 
+                        type: string
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/room"
+        
+  /room/{_id}:
+    get:
+      summary: Retrieve some room messages with the date "last" from earlier
+      tags:
+        - room
+      parameters:
+        - in: path
+          name: _id
+          schema: 
+            type: string
+          required: true
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  room: 
+                    $ref: "#/components/schemas/room"
+                  message: 
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/message"
+    post: 
+      summary: update setting room
+      tags:
+        - room
+      parameters:
+        - in: path
+          name: last
+          schema: 
+            type: string
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/room"
+      responses:
+        200: 
+          description: ok
+                
+    delete:
+      summary: Delete a room
+      tags:
+        - room
+      parameters:
+      - in: path
+        name: _id
+        required: true
+        schema: 
+          type: string
+      responses:
+        200:
+          description: ok
+
+
+
+      
+    
+            
+
+
+    
+
+
+
+  /friend/request:
+    get: 
+      summary: get list friend request
+      tags:
+        - friend request
+      responses:
+        200: 
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  $ref: "#/components/schemas/request"
+    post:   
+      summary: send a friend request
+      tags:
+        - friend request
+      requestBody: 
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                receiver_id: 
+                  type: string
+                introdution: 
+                  type: string
+      responses:
+        200: 
+          description: ok;
+  
+  /friend/request/{_id}:
+    get: 
+      summary: get a friend request info
+      tags:
+        - friend request
+      parameters:
+        - in: path  
+          name: _id
+          description: request id
+          schema: 
+            type: string
+          required: true
+      responses:
+        200:
+          description: ok
+          content:
+            application/json:
+              schema: 
+                $ref: "#/components/schemas/request"
+    post: 
+      summary: responses a friend request  agree == (accept==true)
+      tags:
+        - friend request
+      parameters:
+        - in: path  
+          name: _id
+          description: request id
+          schema: 
+            type: string
+          required: true
+      requestBody: 
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                accept: 
+                  type: boolean
+      responses:
+        200:
+          description: ok
+    delete: 
+      summary: delete a your friend request
+      tags:
+        - friend request
+      parameters:
+        - in: path  
+          name: _id
+          description: request id
+          schema: 
+            type: string
+          required: true
+      responses:
+        200: 
+          description: ok
+      
+        
+  /friend/request/me:
+    get: 
+      summary: get list friend request you send
+      tags:
+        - friend request
+      responses:
+        200:
+          description: ok
+          content:
+            application/json: 
+              schema: 
+                type: array 
+                items: 
+                  $ref: "#/components/schemas/request"
+
+  /friend:
+    get:
+      summary: get list friend
+      tags:
+        - friend
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: array
+                items: 
+                  $ref:  "#/components/schemas/profile"
+    delete: 
+      summary: delete a friend from a list
+      tags:
+        - friend
+      requestBody: 
+        content:
+          application/json: 
+            schema: 
+              type: object
+              properties:
+                _id: 
+                  type: string
+                  description: profile._id of your friend
+      responses:
+        200:
+          description: ok
+        400: 
+          description: err
+
+  /profiles:
+    get: 
+      summary: get your profile
+      tags: 
+      - profile
+      responses:
+        200:
+          description: ok
+          content: 
+            application/json: 
+              schema: 
+                $ref: "#/components/schemas/profile"
+    post:
+      tags:  
+      - profile
+      summary: update profile info
+      requestBody:
+        content:
+          application/json: 
+            schema: 
+              $ref: "#/components/schemas/profile"
+      responses:
+        '200':
+          description: OK
+        '400': 
+          description: Can't updata profile               
+    delete: 
+      tags:
+        - profile
+      summary: delete a account
+      responses:
+        200: 
+          description: ok 
+  /profiles/{numberphone}:
+     get:
+      summary: get a profile with numberphone
+      tags: 
+      - profile
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: 
+            type: string            
+      responses: 
+        200:
+          description: ok
+          content: 
+            application/json: 
+              schema: 
+                $ref:  "#/components/schemas/profile"
+  /profiles/{_id}:
+    get:
+      summary: get a profile with profile id
+      tags: 
+      - profile
+      parameters:
+        - in: path
+          name: _id
+          required: true
+          schema: 
+            type: string            
+      responses: 
+        200:
+          description: ok
+          content: 
+            application/json: 
+              schema: 
+                $ref:  "#/components/schemas/profile"
+  /profile/check/{username}:
+    get:
+      tags: 
+      - profile
+      summary: check a username availability
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema: 
+            type: string
+            minimum: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: 
+                type: integer
+                enum:
+                  - 0
+                  - 1
+
+  /logout:
+    delete:
+      summary: logout account
+      tags: 
+      - authentication
+      security:
+        - ApiKeyAuth: []
+      responses:
+        '200':
+          description: OK
+  /register:
+    post:
+      summary: register account
+      tags:
+        - authentication
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                phone:
+                  type: string
+                password:
+                  type: string
+                username: 
+                  type: string
+      responses:
+        '200':
+          description: OK
+  /login:
+    post:
+      tags: 
+      - authentication
+      description: use login system
+      
+      requestBody: 
+        content:
+          application/json:
+           schema: 
+            type: object
+            properties: 
+              phone: 
+                type: string
+                format: string
+              password:
+                type: string
+                format: password
+      responses:
+        "200":
+          description: OK
+          content: 
+            application/json:
+              schema:
+                  type: string
+
+
+            
+           
+        
+  
+
+
