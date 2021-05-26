@@ -90,6 +90,8 @@ export class AppComponent implements OnInit {
 
     this.onMessageReceive();
 
+    this.onNewVideoCallReceive();
+
     this.subscribeRoomStatusOfRoom();
 
   }
@@ -101,6 +103,14 @@ export class AppComponent implements OnInit {
         this.sharingService.changeLastMessageOfRoom({roomId: newMessage.room, value: newMessage.data.content});
       }
     });
+  }
+
+  onNewVideoCallReceive(){
+    this.socketService
+      .onNewVideoCall()
+      .subscribe( (response:any) => {
+        console.log("VIdeo call init");
+      } );
   }
 
 

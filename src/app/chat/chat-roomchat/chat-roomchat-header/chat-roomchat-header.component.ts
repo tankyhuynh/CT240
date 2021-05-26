@@ -33,7 +33,7 @@ export class ChatRoomchatHeaderComponent implements OnInit {
     const currentUserId = localStorage.getItem('userId');
     const partnerId:any = (this.currentRoom.members.filter(member => member.user !== currentUserId))[0].user;
     this.socketService
-          .setUpVideoCall(partnerId);
+          .createNewVideoCall(partnerId);
   }
 
 }

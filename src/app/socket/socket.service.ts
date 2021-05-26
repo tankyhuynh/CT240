@@ -77,18 +77,21 @@ export class SocketService {
 }
 
 
-//Socket call video
-setUpVideoCall(to: string){
+
+//Listen new video call receive
+onNewVideoCall(){
+  return new Observable<MessageModel>(observer => {
+    this.socket.on("call:new", data=>{
+      console.log(`from ${data?.from}`);
+       this.vCallAPI.createReceiveView(data.from);
+     })
+});
 
 
- this.socket.on("call:new", data=>{
-   console.log(`from ${data?.from}`);
-    this.vCallAPI.createReceiveView(data.from);
-  })
+}
 
-  /**
- * Sự kiện cho btn gọi
- */
+//Create new video call request
+createNewVideoCall(to: string){
   this.socket.emit("call:new", {to});
     console.log(`to ${to}`);
     this.vCallAPI.createCallView(to);

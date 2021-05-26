@@ -45,12 +45,12 @@ export class ChatRoomchatSendComponent implements OnInit {
     if ( this.form.value.image ) {
       console.log("dont have image");
       this.sendFile(this.form.value.image);
-      if ( this.message.nativeElement.value ) {
+      if ( this.message.nativeElement.value !== '\n' ) {
         this.socketService.sendMessage(this.roomId, data);
       }
     }
     else {
-      if ( this.message.nativeElement.value ) {
+      if ( this.message.nativeElement.value !== '\n' ) {
         this.socketService.sendMessage(this.roomId, data);
       }
     }
