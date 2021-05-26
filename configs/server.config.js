@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const app = express();
-const server = require('http').Server(app);
+const server = require('https').Server(app);
 
 function config() {
     const port = process.env.PORT || 3000;
