@@ -59,20 +59,9 @@ class ChatComponent {
         this.profiles = [];
     }
     ngOnInit() {
-        this.socketService.setUpConnnection();
-        // this.listFriendService
-        // .getAll()
-        // .subscribe( (response:any) => {
-        //   this.friends = response.data.data;
-        //   console.log(this.friends);
-        // });
-        this.roomService.getAll().subscribe((response) => {
-            this.rooms = response.data.data;
-            console.log('get all room: ');
-            console.log(this.rooms);
-            this.rooms.forEach((room) => {
-                this.lastMessageOfRooms[room._id] = room.messagelast;
-            });
+        this.fetchAllData();
+        this.socketService.onMessage().subscribe((newMessage) => {
+            this.updateLastMessageOfAllRoom();
         });
         this.route.paramMap.subscribe((paramMap) => {
             if (paramMap.has('roomId')) {
@@ -81,14 +70,14 @@ class ChatComponent {
                     var _a;
                     this.currentRoom = response.data;
                     this.currentRoom.top = 500;
-                    console.log('get roomId: ');
                     console.log(this.currentRoom);
                     //Change status all message in room read
                     console.log(`currentRoom Name: ${this.currentRoom.name}`);
                     this.sharingService.changeMessageInRoomRead({
                         roomId: (_a = this.currentRoom) === null || _a === void 0 ? void 0 : _a._id,
-                        value: true,
+                        value: false,
                     });
+                    this.fetchAllData();
                 });
                 this.roomService
                     .getAllMessageByIdRoom(roomId)
@@ -98,7 +87,7 @@ class ChatComponent {
                 });
                 this.roomService.getMembersById(roomId).subscribe((response) => {
                     const responseData = response.data;
-                    console.log('responseData: ');
+                    console.log('members of room: ');
                     console.log(responseData);
                     // this.profileOfFriends = responseData;
                     responseData.forEach((element) => {
@@ -106,6 +95,51 @@ class ChatComponent {
                     });
                 });
             }
+        });
+    }
+    fetchAllData() {
+        console.log('fetch all data');
+        this.roomService.getAll().subscribe((response) => {
+            this.rooms = response.data.data;
+            this.sharingService
+                .currentMessageInRommReadedSourceStatus
+                .subscribe((newMessage) => {
+                this.rooms.forEach((room) => {
+                    var _a;
+                    if ((_a = room.messagelast.data) === null || _a === void 0 ? void 0 : _a.content) {
+                        this.lastMessageOfRooms[room._id] = room.messagelast;
+                    }
+                    else {
+                        room.messagelast.data.content = "Image";
+                    }
+                    this.lastMessageOfRooms[room._id] = room.messagelast;
+                    if ((newMessage === null || newMessage === void 0 ? void 0 : newMessage.length) > 0) {
+                        newMessage.forEach(element => {
+                            if ((element === null || element === void 0 ? void 0 : element.roomId) === room._id) {
+                                room.newMessage = element.value;
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    }
+    updateLastMessageOfAllRoom() {
+        console.log('updateLastMessageOfAllRoom');
+        //fetch lastMessage of each room from sharing service lastMessage
+        this.sharingService
+            .lastMessage$
+            .subscribe((lastMessage) => {
+            this.rooms.forEach((room) => {
+                if ((lastMessage === null || lastMessage === void 0 ? void 0 : lastMessage.length) > 0) {
+                    lastMessage.forEach(element => {
+                        if ((element === null || element === void 0 ? void 0 : element.roomId) === room._id) {
+                            room.messagelast.data.content = element.value;
+                            this.lastMessageOfRooms[room._id] = room.messagelast;
+                        }
+                    });
+                }
+            });
         });
     }
     ngAfterViewChecked() { }
@@ -135,7 +169,7 @@ ChatComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComp
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/tnhan/CT240/CT240/src/main.ts */"zUnb");
+module.exports = __webpack_require__(/*! /home/tnhan/CT240/src/main.ts */"zUnb");
 
 
 /***/ }),
@@ -244,8 +278,7 @@ __webpack_require__.r(__webpack_exports__);
 // The list of file replacements can be found in `angular.json`.
 const environment = {
     production: false,
-    apiUrl: "/api/v1"
-    // apiUrl: "http://localhost:3000/api/v1"
+    apiUrl: "http://localhost:3000/api/v1"
 };
 /*
  * For easier debugging in development mode, you can import the following file
@@ -317,8 +350,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! rxjs */ "qCKp");
 /* harmony import */ var socket_io_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! socket.io-client */ "jifJ");
 /* harmony import */ var socket_io_client__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(socket_io_client__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var _auth_auth_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../auth/auth.service */ "qXBG");
+/* harmony import */ var _VCall_model__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./VCall.model */ "brEo");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var _auth_auth_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../auth/auth.service */ "qXBG");
+
 
 
 
@@ -327,21 +362,41 @@ class SocketService {
     constructor(authService) {
         this.authService = authService;
         this.message = "Hello from TanKy";
-        this.url = undefined;
-        this.getMessages = () => {
-            return rxjs__WEBPACK_IMPORTED_MODULE_0__["Observable"].create((observer) => {
-                this.socket.on('message:receive', (message) => {
-                    observer.next(message);
-                });
-            });
+        this.url = 'http://localhost:3000';
+        this.signal = {
+            on: (handle) => {
+                this.socket.on("vCall", handle);
+            },
+            emit: (data) => {
+                this.socket.emit("vCall", data);
+            }
         };
+        this.vCallAPI = new _VCall_model__WEBPACK_IMPORTED_MODULE_2__["VCallAPI"](this.signal, "http://localhost:3000/public/vcall/index.html");
     }
     setUpConnnection() {
         const token = this.authService.getToken();
         this.socket = Object(socket_io_client__WEBPACK_IMPORTED_MODULE_1__["io"])(this.url, { auth: { token: token } });
     }
+    // Message
     sendMessage(room, data) {
-        this.socket.emit('message:send', { room: room, data: data });
+        const DATA = {
+            content: data
+        };
+        if ((DATA === null || DATA === void 0 ? void 0 : DATA.content) === '') {
+            return;
+        }
+        this.socket.emit('message:send', { room: room, data: DATA });
+        this.socket.on('message:receive', (data) => {
+            this.newMessage = data;
+            console.log(this.newMessage);
+        });
+        this.message = '';
+    }
+    sendImage(room, url) {
+        const DATA = {
+            url: url
+        };
+        this.socket.emit('message:send', { room: room, data: DATA });
         this.socket.on('message:receive', (data) => {
             this.newMessage = data;
             console.log(this.newMessage);
@@ -350,12 +405,31 @@ class SocketService {
     }
     onMessage() {
         return new rxjs__WEBPACK_IMPORTED_MODULE_0__["Observable"](observer => {
-            this.socket.on('message:receive', (data) => observer.next(data));
+            this.socket.on('message:receive', (data) => {
+                console.log("respones in socket receive message: ");
+                console.log(data);
+                observer.next(data);
+            });
         });
     }
+    //Listen new video call receive
+    onNewVideoCall() {
+        return new rxjs__WEBPACK_IMPORTED_MODULE_0__["Observable"](observer => {
+            this.socket.on("call:new", data => {
+                console.log(`from ${data === null || data === void 0 ? void 0 : data.from}`);
+                this.vCallAPI.createReceiveView(data.from);
+            });
+        });
+    }
+    //Create new video call request
+    createNewVideoCall(to) {
+        this.socket.emit("call:new", { to });
+        console.log(`to ${to}`);
+        this.vCallAPI.createCallView(to);
+    }
 }
-SocketService.ɵfac = function SocketService_Factory(t) { return new (t || SocketService)(_angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵinject"](_auth_auth_service__WEBPACK_IMPORTED_MODULE_3__["AutheService"])); };
-SocketService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_2__["ɵɵdefineInjectable"]({ token: SocketService, factory: SocketService.ɵfac, providedIn: 'root' });
+SocketService.ɵfac = function SocketService_Factory(t) { return new (t || SocketService)(_angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵinject"](_auth_auth_service__WEBPACK_IMPORTED_MODULE_4__["AutheService"])); };
+SocketService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_3__["ɵɵdefineInjectable"]({ token: SocketService, factory: SocketService.ɵfac, providedIn: 'root' });
 
 
 /***/ }),
@@ -372,11 +446,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ChatRoomchatHeaderComponent", function() { return ChatRoomchatHeaderComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
 /* harmony import */ var src_app_sharing_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/sharing.service */ "hTjv");
+/* harmony import */ var src_app_socket_socket_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/socket/socket.service */ "FRSv");
+
 
 
 class ChatRoomchatHeaderComponent {
-    constructor(showContent) {
+    constructor(showContent, socketService) {
         this.showContent = showContent;
+        this.socketService = socketService;
         this.show = false;
     }
     ngOnInit() { }
@@ -384,25 +461,39 @@ class ChatRoomchatHeaderComponent {
         this.showContent.showContentMobile.subscribe((isShow) => (this.show = isShow));
         this.showContent.changeShowValue(!this.show);
     }
+    onCallVideo() {
+        const currentUserId = localStorage.getItem('userId');
+        const partnerId = (this.currentRoom.members.filter(member => member.user !== currentUserId))[0].user;
+        this.socketService
+            .createNewVideoCall(partnerId);
+    }
 }
-ChatRoomchatHeaderComponent.ɵfac = function ChatRoomchatHeaderComponent_Factory(t) { return new (t || ChatRoomchatHeaderComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_sharing_service__WEBPACK_IMPORTED_MODULE_1__["SharingService"])); };
-ChatRoomchatHeaderComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: ChatRoomchatHeaderComponent, selectors: [["app-chat-roomchat-header"]], inputs: { imgPath: "imgPath", currentRoom: "currentRoom" }, decls: 6, vars: 2, consts: [[1, "row", "chat-box__title", "align-items-center"], [1, "icon-close", 2, "display", "none", 3, "click"], [1, "fas", "fa-arrow-left"], ["alt", "", 1, "img-fluid", "chat-box__title--img", 3, "src"], [1, "chat-box__title--desc"]], template: function ChatRoomchatHeaderComponent_Template(rf, ctx) { if (rf & 1) {
+ChatRoomchatHeaderComponent.ɵfac = function ChatRoomchatHeaderComponent_Factory(t) { return new (t || ChatRoomchatHeaderComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_sharing_service__WEBPACK_IMPORTED_MODULE_1__["SharingService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_socket_socket_service__WEBPACK_IMPORTED_MODULE_2__["SocketService"])); };
+ChatRoomchatHeaderComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: ChatRoomchatHeaderComponent, selectors: [["app-chat-roomchat-header"]], inputs: { imgPath: "imgPath", currentRoom: "currentRoom" }, decls: 10, vars: 2, consts: [[1, "row", "chat-box__title", "align-items-center", "justify-content-between"], [1, "icon-close", 2, "display", "none", 3, "click"], [1, "fas", "fa-arrow-left"], ["alt", "", 1, "img-fluid", "chat-box__title--img", 3, "src"], [1, "chat-box__title--desc"], [1, "btn-call-video", 3, "click"], [1, "fas", "fa-video"]], template: function ChatRoomchatHeaderComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "span", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ChatRoomchatHeaderComponent_Template_span_click_1_listener() { return ctx.onClickShowContent(); });
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "i", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "span", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ChatRoomchatHeaderComponent_Template_span_click_2_listener() { return ctx.onClickShowContent(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "i", 2);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](3, "img", 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "span", 4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "img", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "span", 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "div");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "span", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ChatRoomchatHeaderComponent_Template_span_click_8_listener() { return ctx.onCallVideo(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](9, "i", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx.currentRoom == null ? null : ctx.currentRoom.avatar, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx.currentRoom == null ? null : ctx.currentRoom.name, " ");
-    } }, styles: [".chat-box__title[_ngcontent-%COMP%] {\n  height: 12.5vh;\n  background-color: var(--color-1);\n  border-bottom: 2px solid var(--color-2);\n  border-top-left-radius: 15px;\n  border-top-right-radius: 15px;\n}\n\n.chat-box__title--img[_ngcontent-%COMP%] {\n  margin: 0 1rem;\n  width: 4rem;\n  height: 4rem;\n  object-fit: cover;\n  border-radius: 50%;\n  border: 2px solid var(--color-2);\n}\n\n.chat-box__title--desc[_ngcontent-%COMP%] {\n  max-width: 10rem;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n@media only screen and (max-width: 480px) {\n  .icon-close[_ngcontent-%COMP%] {\n    display: inline-block !important;\n    margin-left: 0.75rem;\n    padding: 0.5rem 0.8rem;\n    border-radius: 50%;\n    transition: all 750ms;\n    background-color: var(--color-2);\n    cursor: pointer;\n  }\n\n  .icon-close[_ngcontent-%COMP%]:hover {\n    background-color: var(--color-2);\n    transition: all 750ms;\n  }\n\n  .chat-box__title[_ngcontent-%COMP%] {\n    height: 10vh;\n    background-color: var(--color-1);\n    border-top-left-radius: 0;\n    border-top-right-radius: 0;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYXQtcm9vbWNoYXQtaGVhZGVyLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsbUJBQW1COztBQUVuQjtFQUNFLGNBQWM7RUFDZCxnQ0FBZ0M7RUFDaEMsdUNBQXVDO0VBQ3ZDLDRCQUE0QjtFQUM1Qiw2QkFBNkI7QUFDL0I7O0FBRUE7RUFDRSxjQUFjO0VBQ2QsV0FBVztFQUNYLFlBQVk7RUFDWixpQkFBaUI7RUFDakIsa0JBQWtCO0VBQ2xCLGdDQUFnQztBQUNsQzs7QUFFQTtFQUNFLGdCQUFnQjtFQUNoQixtQkFBbUI7RUFDbkIsZ0JBQWdCO0VBQ2hCLHVCQUF1QjtBQUN6Qjs7QUFFQTtFQUNFO0lBQ0UsZ0NBQWdDO0lBQ2hDLG9CQUFvQjtJQUNwQixzQkFBc0I7SUFDdEIsa0JBQWtCO0lBQ2xCLHFCQUFxQjtJQUNyQixnQ0FBZ0M7SUFDaEMsZUFBZTtFQUNqQjs7RUFFQTtJQUNFLGdDQUFnQztJQUNoQyxxQkFBcUI7RUFDdkI7O0VBRUE7SUFDRSxZQUFZO0lBQ1osZ0NBQWdDO0lBQ2hDLHlCQUF5QjtJQUN6QiwwQkFBMEI7RUFDNUI7QUFDRiIsImZpbGUiOiJjaGF0LXJvb21jaGF0LWhlYWRlci5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLyogQ2hhdCBCb3ggVGl0bGUgKi9cblxuLmNoYXQtYm94X190aXRsZSB7XG4gIGhlaWdodDogMTIuNXZoO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0xKTtcbiAgYm9yZGVyLWJvdHRvbTogMnB4IHNvbGlkIHZhcigtLWNvbG9yLTIpO1xuICBib3JkZXItdG9wLWxlZnQtcmFkaXVzOiAxNXB4O1xuICBib3JkZXItdG9wLXJpZ2h0LXJhZGl1czogMTVweDtcbn1cblxuLmNoYXQtYm94X190aXRsZS0taW1nIHtcbiAgbWFyZ2luOiAwIDFyZW07XG4gIHdpZHRoOiA0cmVtO1xuICBoZWlnaHQ6IDRyZW07XG4gIG9iamVjdC1maXQ6IGNvdmVyO1xuICBib3JkZXItcmFkaXVzOiA1MCU7XG4gIGJvcmRlcjogMnB4IHNvbGlkIHZhcigtLWNvbG9yLTIpO1xufVxuXG4uY2hhdC1ib3hfX3RpdGxlLS1kZXNjIHtcbiAgbWF4LXdpZHRoOiAxMHJlbTtcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgdGV4dC1vdmVyZmxvdzogZWxsaXBzaXM7XG59XG5cbkBtZWRpYSBvbmx5IHNjcmVlbiBhbmQgKG1heC13aWR0aDogNDgwcHgpIHtcbiAgLmljb24tY2xvc2Uge1xuICAgIGRpc3BsYXk6IGlubGluZS1ibG9jayAhaW1wb3J0YW50O1xuICAgIG1hcmdpbi1sZWZ0OiAwLjc1cmVtO1xuICAgIHBhZGRpbmc6IDAuNXJlbSAwLjhyZW07XG4gICAgYm9yZGVyLXJhZGl1czogNTAlO1xuICAgIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0yKTtcbiAgICBjdXJzb3I6IHBvaW50ZXI7XG4gIH1cblxuICAuaWNvbi1jbG9zZTpob3ZlciB7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gICAgdHJhbnNpdGlvbjogYWxsIDc1MG1zO1xuICB9XG5cbiAgLmNoYXQtYm94X190aXRsZSB7XG4gICAgaGVpZ2h0OiAxMHZoO1xuICAgIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTEpO1xuICAgIGJvcmRlci10b3AtbGVmdC1yYWRpdXM6IDA7XG4gICAgYm9yZGVyLXRvcC1yaWdodC1yYWRpdXM6IDA7XG4gIH1cbn1cbiJdfQ== */"] });
+    } }, styles: [".chat-box__title[_ngcontent-%COMP%] {\n  height: 12.5vh;\n  background-color: var(--color-1);\n  border-bottom: 2px solid var(--color-2);\n  border-top-left-radius: 15px;\n  border-top-right-radius: 15px;\n}\n\n.chat-box__title--img[_ngcontent-%COMP%] {\n  margin: 0 1rem;\n  width: 4rem;\n  height: 4rem;\n  object-fit: cover;\n  border-radius: 50%;\n  border: 2px solid var(--color-2);\n}\n\n.chat-box__title--desc[_ngcontent-%COMP%] {\n  max-width: 10rem;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n\n\n.btn-call-video[_ngcontent-%COMP%] {\n  margin: 0 1rem;\n  padding: 0.8rem;\n  border-radius: 50%;\n  font-size: 1.2rem;\n  transition: all 750ms;\n  cursor: pointer;\n}\n\n.btn-call-video[_ngcontent-%COMP%]:hover, .btn-call-video[_ngcontent-%COMP%]:focus {\n  background-color: var(--color-2);\n  transition: all 750ms;\n}\n\n@media only screen and (max-width: 480px) {\n  .icon-close[_ngcontent-%COMP%] {\n    display: inline-block !important;\n    margin-left: 0.75rem;\n    padding: 0.5rem 0.8rem;\n    border-radius: 50%;\n    transition: all 750ms;\n    background-color: var(--color-2);\n    cursor: pointer;\n  }\n\n  .icon-close[_ngcontent-%COMP%]:hover {\n    background-color: var(--color-2);\n    transition: all 750ms;\n  }\n\n  .chat-box__title[_ngcontent-%COMP%] {\n    height: 10vh;\n    background-color: var(--color-1);\n    border-top-left-radius: 0;\n    border-top-right-radius: 0;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYXQtcm9vbWNoYXQtaGVhZGVyLmNvbXBvbmVudC5jc3MiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6IkFBQUEsbUJBQW1COztBQUVuQjtFQUNFLGNBQWM7RUFDZCxnQ0FBZ0M7RUFDaEMsdUNBQXVDO0VBQ3ZDLDRCQUE0QjtFQUM1Qiw2QkFBNkI7QUFDL0I7O0FBRUE7RUFDRSxjQUFjO0VBQ2QsV0FBVztFQUNYLFlBQVk7RUFDWixpQkFBaUI7RUFDakIsa0JBQWtCO0VBQ2xCLGdDQUFnQztBQUNsQzs7QUFFQTtFQUNFLGdCQUFnQjtFQUNoQixtQkFBbUI7RUFDbkIsZ0JBQWdCO0VBQ2hCLHVCQUF1QjtBQUN6Qjs7QUFFQSxlQUFlOztBQUVmO0VBQ0UsY0FBYztFQUNkLGVBQWU7RUFDZixrQkFBa0I7RUFDbEIsaUJBQWlCO0VBQ2pCLHFCQUFxQjtFQUNyQixlQUFlO0FBQ2pCOztBQUVBO0VBQ0UsZ0NBQWdDO0VBQ2hDLHFCQUFxQjtBQUN2Qjs7QUFFQTtFQUNFO0lBQ0UsZ0NBQWdDO0lBQ2hDLG9CQUFvQjtJQUNwQixzQkFBc0I7SUFDdEIsa0JBQWtCO0lBQ2xCLHFCQUFxQjtJQUNyQixnQ0FBZ0M7SUFDaEMsZUFBZTtFQUNqQjs7RUFFQTtJQUNFLGdDQUFnQztJQUNoQyxxQkFBcUI7RUFDdkI7O0VBRUE7SUFDRSxZQUFZO0lBQ1osZ0NBQWdDO0lBQ2hDLHlCQUF5QjtJQUN6QiwwQkFBMEI7RUFDNUI7QUFDRiIsImZpbGUiOiJjaGF0LXJvb21jaGF0LWhlYWRlci5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLyogQ2hhdCBCb3ggVGl0bGUgKi9cblxuLmNoYXQtYm94X190aXRsZSB7XG4gIGhlaWdodDogMTIuNXZoO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0xKTtcbiAgYm9yZGVyLWJvdHRvbTogMnB4IHNvbGlkIHZhcigtLWNvbG9yLTIpO1xuICBib3JkZXItdG9wLWxlZnQtcmFkaXVzOiAxNXB4O1xuICBib3JkZXItdG9wLXJpZ2h0LXJhZGl1czogMTVweDtcbn1cblxuLmNoYXQtYm94X190aXRsZS0taW1nIHtcbiAgbWFyZ2luOiAwIDFyZW07XG4gIHdpZHRoOiA0cmVtO1xuICBoZWlnaHQ6IDRyZW07XG4gIG9iamVjdC1maXQ6IGNvdmVyO1xuICBib3JkZXItcmFkaXVzOiA1MCU7XG4gIGJvcmRlcjogMnB4IHNvbGlkIHZhcigtLWNvbG9yLTIpO1xufVxuXG4uY2hhdC1ib3hfX3RpdGxlLS1kZXNjIHtcbiAgbWF4LXdpZHRoOiAxMHJlbTtcbiAgd2hpdGUtc3BhY2U6IG5vd3JhcDtcbiAgb3ZlcmZsb3c6IGhpZGRlbjtcbiAgdGV4dC1vdmVyZmxvdzogZWxsaXBzaXM7XG59XG5cbi8qIENhbGwgVmlkZW8gKi9cblxuLmJ0bi1jYWxsLXZpZGVvIHtcbiAgbWFyZ2luOiAwIDFyZW07XG4gIHBhZGRpbmc6IDAuOHJlbTtcbiAgYm9yZGVyLXJhZGl1czogNTAlO1xuICBmb250LXNpemU6IDEuMnJlbTtcbiAgdHJhbnNpdGlvbjogYWxsIDc1MG1zO1xuICBjdXJzb3I6IHBvaW50ZXI7XG59XG5cbi5idG4tY2FsbC12aWRlbzpob3ZlciwgLmJ0bi1jYWxsLXZpZGVvOmZvY3VzIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbn1cblxuQG1lZGlhIG9ubHkgc2NyZWVuIGFuZCAobWF4LXdpZHRoOiA0ODBweCkge1xuICAuaWNvbi1jbG9zZSB7XG4gICAgZGlzcGxheTogaW5saW5lLWJsb2NrICFpbXBvcnRhbnQ7XG4gICAgbWFyZ2luLWxlZnQ6IDAuNzVyZW07XG4gICAgcGFkZGluZzogMC41cmVtIDAuOHJlbTtcbiAgICBib3JkZXItcmFkaXVzOiA1MCU7XG4gICAgdHJhbnNpdGlvbjogYWxsIDc1MG1zO1xuICAgIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTIpO1xuICAgIGN1cnNvcjogcG9pbnRlcjtcbiAgfVxuXG4gIC5pY29uLWNsb3NlOmhvdmVyIHtcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0yKTtcbiAgICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG4gIH1cblxuICAuY2hhdC1ib3hfX3RpdGxlIHtcbiAgICBoZWlnaHQ6IDEwdmg7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG4gICAgYm9yZGVyLXRvcC1sZWZ0LXJhZGl1czogMDtcbiAgICBib3JkZXItdG9wLXJpZ2h0LXJhZGl1czogMDtcbiAgfVxufVxuIl19 */"] });
 
 
 /***/ }),
@@ -755,54 +846,143 @@ PersonalInformationComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_5__[
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ChatRoomchatSendComponent", function() { return ChatRoomchatSendComponent; });
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "fXoL");
-/* harmony import */ var src_app_socket_socket_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/socket/socket.service */ "FRSv");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/router */ "tyNb");
+/* harmony import */ var _angular_forms__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/forms */ "3Pt+");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var src_app_socket_socket_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/socket/socket.service */ "FRSv");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "tyNb");
+/* harmony import */ var _sendFile_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./sendFile.service */ "T8x4");
+/* harmony import */ var src_app_sharing_service__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! src/app/sharing.service */ "hTjv");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ "ofXK");
+
+
+
+
+
 
 
 
 const _c0 = ["message"];
+function ChatRoomchatSendComponent_div_0_Template(rf, ctx) { if (rf & 1) {
+    const _r4 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "img", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "span", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function ChatRoomchatSendComponent_div_0_Template_span_click_2_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r4); const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"](); return ctx_r3.closePreview(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](3, "i", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("src", ctx_r0.imageURL, _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵsanitizeUrl"]);
+} }
 class ChatRoomchatSendComponent {
-    constructor(socketService, route) {
+    constructor(socketService, route, sendfileService, sharingService) {
         this.socketService = socketService;
         this.route = route;
+        this.sendfileService = sendfileService;
+        this.sharingService = sharingService;
+        this.currentUserId = localStorage.getItem('userId');
     }
     ngOnInit() {
+        this.form = new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormGroup"]({
+            image: new _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormControl"](null, {
+                validators: [_angular_forms__WEBPACK_IMPORTED_MODULE_0__["Validators"].required],
+                asyncValidators: [],
+            }),
+        });
     }
     sendMessage(data) {
-        this.socketService.sendMessage(this.roomId, data);
-        this.message.nativeElement.value = "";
+        if (this.form.value.image) {
+            console.log("dont have image");
+            this.sendFile(this.form.value.image);
+            if (this.message.nativeElement.value !== '\n') {
+                this.socketService.sendMessage(this.roomId, data);
+            }
+        }
+        else {
+            if (this.message.nativeElement.value !== '\n') {
+                this.socketService.sendMessage(this.roomId, data);
+            }
+        }
+        this.resetForm();
+    }
+    sendFile(image) {
+        this.sendfileService
+            .sendImage(image)
+            .subscribe((response) => {
+            const imageUrl = response.data.url;
+            console.log('send image: ');
+            console.log(imageUrl);
+            const newMessage = {
+                room: this.roomId,
+                data: { url: imageUrl },
+                sender: this.currentUserId,
+                created_at: new Date()
+            };
+            this.sharingService.changeSendNewImage(newMessage);
+            this.socketService.sendImage(this.roomId, imageUrl);
+            this.resetForm();
+            this.closePreview();
+        });
+    }
+    resetForm() {
+        this.form.patchValue({ image: null });
+        this.form.get('image').updateValueAndValidity();
+        this.message.nativeElement.value = '';
+    }
+    onFilePicked(event) {
+        const file = event.target.files[0];
+        this.form.patchValue({ image: file });
+        this.form.get('image').updateValueAndValidity();
+        const reader = new FileReader();
+        reader.onload = () => {
+            this.imageURL = reader.result;
+        };
+        this.message.nativeElement.focus();
+        reader.readAsDataURL(file);
+    }
+    closePreview() {
+        this.imageURL = null;
     }
 }
-ChatRoomchatSendComponent.ɵfac = function ChatRoomchatSendComponent_Factory(t) { return new (t || ChatRoomchatSendComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_socket_socket_service__WEBPACK_IMPORTED_MODULE_1__["SocketService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"])); };
-ChatRoomchatSendComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: ChatRoomchatSendComponent, selectors: [["app-chat-roomchat-send"]], viewQuery: function ChatRoomchatSendComponent_Query(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵviewQuery"](_c0, 1);
+ChatRoomchatSendComponent.ɵfac = function ChatRoomchatSendComponent_Factory(t) { return new (t || ChatRoomchatSendComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_socket_socket_service__WEBPACK_IMPORTED_MODULE_2__["SocketService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_sendFile_service__WEBPACK_IMPORTED_MODULE_4__["FileService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](src_app_sharing_service__WEBPACK_IMPORTED_MODULE_5__["SharingService"])); };
+ChatRoomchatSendComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: ChatRoomchatSendComponent, selectors: [["app-chat-roomchat-send"]], viewQuery: function ChatRoomchatSendComponent_Query(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵviewQuery"](_c0, 1);
     } if (rf & 2) {
         let _t;
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.message = _t.first);
-    } }, inputs: { roomId: "roomId" }, decls: 11, vars: 0, consts: [[1, "row", "chat-box__send", "align-items-center"], [1, "col-md-11", "col-10"], ["rows", "2", "placeholder", "Tin nh\u1EAFn m\u1EDBi", 1, "chat-box__send--text", 3, "keyup.enter"], ["message", ""], [1, "col-md-1", "col-2"], [1, "row", "justify-content-center"], [1, "chat-box__send--btn", 3, "click"], [1, "fab", "fa-telegram-plane"], [1, "chat-box__send--btn"], [1, "fas", "fa-paperclip"]], template: function ChatRoomchatSendComponent_Template(rf, ctx) { if (rf & 1) {
-        const _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "textarea", 2, 3);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("keyup.enter", function ChatRoomchatSendComponent_Template_textarea_keyup_enter_2_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r1); const _r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](3); return ctx.sendMessage(_r0.value); });
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 4);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 5);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "button", 6);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ChatRoomchatSendComponent_Template_button_click_6_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r1); const _r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵreference"](3); return ctx.sendMessage(_r0.value); });
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](7, "i", 7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "div", 5);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "span", 8);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](10, "i", 9);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    } }, styles: [".chat-box__send[_ngcontent-%COMP%] {\n  height: 15vh;\n  background-color: var(--color-1);\n  border-top: 2px solid var(--color-2);\n  border-bottom-left-radius: 15px;\n  border-bottom-right-radius: 15px;\n}\n.chat-box__send--text[_ngcontent-%COMP%] {\n  margin-top: 0.5rem;\n  padding: 0.5rem 1rem;\n  font-size: 0.9rem;\n  width: 100%;\n  border: none;\n  border-radius: 15px;\n}\n.chat-box__send--text[_ngcontent-%COMP%]::-webkit-scrollbar {\n  width: 6px;\n}\n.chat-box__send--text[_ngcontent-%COMP%]::-webkit-scrollbar-thumb {\n  background-color: var(--color-4);\n  border-radius: 5px;\n}\n.chat-box__send--btn[_ngcontent-%COMP%] {\n  margin: 0.25rem 0;\n  padding: 0.25rem 1rem;\n  text-align: center;\n  color: var(--color-3);\n  background-color: var(--color-2);\n  border: 1px solid var(--color-2);\n  border-radius: 15px;\n  transition: all 750ms;\n  cursor: pointer;\n}\n.chat-box__send--btn[_ngcontent-%COMP%]:hover {\n  background-color: var(--color-1);\n  transition: all 750ms;\n}\n\n@media only screen and (max-width: 480px) {\n  .content.show[_ngcontent-%COMP%] {\n    display: inline-block;\n    position: fixed;\n    top: 0;\n    bottom: 0;\n    left: 0;\n    right: 0;\n    padding: 0.5rem;\n  }\n  .content[_ngcontent-%COMP%] {\n    display: none;\n    transition: all 750ms;\n  }\n\n  .tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > img[_ngcontent-%COMP%] {\n    width: 15vw;\n    height: 15vw;\n  }\n\n  .chat-box__body[_ngcontent-%COMP%] {\n    height: 72.5vh;\n    max-height: 72.5vh;\n  }\n\n  .icon-close[_ngcontent-%COMP%] {\n    display: inline-block !important;\n    margin-left: 0.75rem;\n    padding: 0.5rem 0.8rem;\n    border-radius: 50%;\n    transition: all 750ms;\n    background-color: var(--color-2);\n    cursor: pointer;\n  }\n\n  .icon-close[_ngcontent-%COMP%]:hover {\n    background-color: var(--color-2);\n    transition: all 750ms;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYXQtcm9vbWNoYXQtc2VuZC5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLGtCQUFrQjtBQUNsQjtFQUNFLFlBQVk7RUFDWixnQ0FBZ0M7RUFDaEMsb0NBQW9DO0VBQ3BDLCtCQUErQjtFQUMvQixnQ0FBZ0M7QUFDbEM7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixvQkFBb0I7RUFDcEIsaUJBQWlCO0VBQ2pCLFdBQVc7RUFDWCxZQUFZO0VBQ1osbUJBQW1CO0FBQ3JCO0FBRUE7RUFDRSxVQUFVO0FBQ1o7QUFFQTtFQUNFLGdDQUFnQztFQUNoQyxrQkFBa0I7QUFDcEI7QUFFQTtFQUNFLGlCQUFpQjtFQUNqQixxQkFBcUI7RUFDckIsa0JBQWtCO0VBQ2xCLHFCQUFxQjtFQUNyQixnQ0FBZ0M7RUFDaEMsZ0NBQWdDO0VBQ2hDLG1CQUFtQjtFQUNuQixxQkFBcUI7RUFDckIsZUFBZTtBQUNqQjtBQUVBO0VBQ0UsZ0NBQWdDO0VBQ2hDLHFCQUFxQjtBQUN2QjtBQUVBLGVBQWU7QUFFZjtFQUNFO0lBQ0UscUJBQXFCO0lBQ3JCLGVBQWU7SUFDZixNQUFNO0lBQ04sU0FBUztJQUNULE9BQU87SUFDUCxRQUFRO0lBQ1IsZUFBZTtFQUNqQjtFQUNBO0lBQ0UsYUFBYTtJQUNiLHFCQUFxQjtFQUN2Qjs7RUFFQTtJQUNFLFdBQVc7SUFDWCxZQUFZO0VBQ2Q7O0VBRUE7SUFDRSxjQUFjO0lBQ2Qsa0JBQWtCO0VBQ3BCOztFQUVBO0lBQ0UsZ0NBQWdDO0lBQ2hDLG9CQUFvQjtJQUNwQixzQkFBc0I7SUFDdEIsa0JBQWtCO0lBQ2xCLHFCQUFxQjtJQUNyQixnQ0FBZ0M7SUFDaEMsZUFBZTtFQUNqQjs7RUFFQTtJQUNFLGdDQUFnQztJQUNoQyxxQkFBcUI7RUFDdkI7QUFDRiIsImZpbGUiOiJjaGF0LXJvb21jaGF0LXNlbmQuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi8qIENoYXQgQm94IFNlbmQgKi9cbi5jaGF0LWJveF9fc2VuZCB7XG4gIGhlaWdodDogMTV2aDtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG4gIGJvcmRlci10b3A6IDJweCBzb2xpZCB2YXIoLS1jb2xvci0yKTtcbiAgYm9yZGVyLWJvdHRvbS1sZWZ0LXJhZGl1czogMTVweDtcbiAgYm9yZGVyLWJvdHRvbS1yaWdodC1yYWRpdXM6IDE1cHg7XG59XG5cbi5jaGF0LWJveF9fc2VuZC0tdGV4dCB7XG4gIG1hcmdpbi10b3A6IDAuNXJlbTtcbiAgcGFkZGluZzogMC41cmVtIDFyZW07XG4gIGZvbnQtc2l6ZTogMC45cmVtO1xuICB3aWR0aDogMTAwJTtcbiAgYm9yZGVyOiBub25lO1xuICBib3JkZXItcmFkaXVzOiAxNXB4O1xufVxuXG4uY2hhdC1ib3hfX3NlbmQtLXRleHQ6Oi13ZWJraXQtc2Nyb2xsYmFyIHtcbiAgd2lkdGg6IDZweDtcbn1cblxuLmNoYXQtYm94X19zZW5kLS10ZXh0Ojotd2Via2l0LXNjcm9sbGJhci10aHVtYiB7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTQpO1xuICBib3JkZXItcmFkaXVzOiA1cHg7XG59XG5cbi5jaGF0LWJveF9fc2VuZC0tYnRuIHtcbiAgbWFyZ2luOiAwLjI1cmVtIDA7XG4gIHBhZGRpbmc6IDAuMjVyZW0gMXJlbTtcbiAgdGV4dC1hbGlnbjogY2VudGVyO1xuICBjb2xvcjogdmFyKC0tY29sb3ItMyk7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTIpO1xuICBib3JkZXI6IDFweCBzb2xpZCB2YXIoLS1jb2xvci0yKTtcbiAgYm9yZGVyLXJhZGl1czogMTVweDtcbiAgdHJhbnNpdGlvbjogYWxsIDc1MG1zO1xuICBjdXJzb3I6IHBvaW50ZXI7XG59XG5cbi5jaGF0LWJveF9fc2VuZC0tYnRuOmhvdmVyIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG4gIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbn1cblxuLyogUmVzcG9uc2l2ZSAqL1xuXG5AbWVkaWEgb25seSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDQ4MHB4KSB7XG4gIC5jb250ZW50LnNob3cge1xuICAgIGRpc3BsYXk6IGlubGluZS1ibG9jaztcbiAgICBwb3NpdGlvbjogZml4ZWQ7XG4gICAgdG9wOiAwO1xuICAgIGJvdHRvbTogMDtcbiAgICBsZWZ0OiAwO1xuICAgIHJpZ2h0OiAwO1xuICAgIHBhZGRpbmc6IDAuNXJlbTtcbiAgfVxuICAuY29udGVudCB7XG4gICAgZGlzcGxheTogbm9uZTtcbiAgICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG4gIH1cblxuICAudGFicy1jYXJkX19pdGVtID4gZGl2ID4gaW1nIHtcbiAgICB3aWR0aDogMTV2dztcbiAgICBoZWlnaHQ6IDE1dnc7XG4gIH1cblxuICAuY2hhdC1ib3hfX2JvZHkge1xuICAgIGhlaWdodDogNzIuNXZoO1xuICAgIG1heC1oZWlnaHQ6IDcyLjV2aDtcbiAgfVxuXG4gIC5pY29uLWNsb3NlIHtcbiAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2sgIWltcG9ydGFudDtcbiAgICBtYXJnaW4tbGVmdDogMC43NXJlbTtcbiAgICBwYWRkaW5nOiAwLjVyZW0gMC44cmVtO1xuICAgIGJvcmRlci1yYWRpdXM6IDUwJTtcbiAgICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gICAgY3Vyc29yOiBwb2ludGVyO1xuICB9XG5cbiAgLmljb24tY2xvc2U6aG92ZXIge1xuICAgIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTIpO1xuICAgIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbiAgfVxufVxuIl19 */"] });
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵloadQuery"]()) && (ctx.message = _t.first);
+    } }, inputs: { roomId: "roomId" }, decls: 14, vars: 2, consts: [["class", "filePreview row justify-content-between", 4, "ngIf"], [1, "row", "chat-box__send", "align-items-center"], [1, "col-md-11", "col-10"], ["rows", "2", "placeholder", "Tin nh\u1EAFn m\u1EDBi", 1, "chat-box__send--text", 3, "keyup.enter"], ["message", ""], [1, "col-md-1", "col-2"], [1, "row", "justify-content-center"], [1, "chat-box__send--btn", 3, "click"], [1, "fab", "fa-telegram-plane"], [1, "row", "justify-content-center", 3, "formGroup"], ["for", "send_file", 1, "chat-box__send--btn"], [1, "fas", "fa-paperclip"], ["type", "file", "name", "send_file", "id", "send_file", 2, "display", "none", 3, "change"], ["filePicker", ""], [1, "filePreview", "row", "justify-content-between"], [1, "imagePreview", 3, "src"], [1, "filePreview__icon-close", "align-self-start", 3, "click"], [1, "fas", "fa-times"]], template: function ChatRoomchatSendComponent_Template(rf, ctx) { if (rf & 1) {
+        const _r5 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵgetCurrentView"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵtemplate"](0, ChatRoomchatSendComponent_div_0_Template, 4, 1, "div", 0);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](1, "div", 1);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](2, "div", 2);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](3, "textarea", 3, 4);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("keyup.enter", function ChatRoomchatSendComponent_Template_textarea_keyup_enter_3_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r5); const _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵreference"](4); return ctx.sendMessage(_r1.value); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](5, "div", 5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](6, "div", 6);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](7, "button", 7);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("click", function ChatRoomchatSendComponent_Template_button_click_7_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵrestoreView"](_r5); const _r1 = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵreference"](4); return ctx.sendMessage(_r1.value); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](8, "i", 8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](9, "form", 9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](10, "label", 10);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](11, "i", 11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](12, "input", 12, 13);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵlistener"]("change", function ChatRoomchatSendComponent_Template_input_change_12_listener($event) { return ctx.onFilePicked($event); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
+    } if (rf & 2) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("ngIf", ctx.imageURL !== "" && ctx.imageURL);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("formGroup", ctx.form);
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_6__["NgIf"], _angular_forms__WEBPACK_IMPORTED_MODULE_0__["ɵangular_packages_forms_forms_ba"], _angular_forms__WEBPACK_IMPORTED_MODULE_0__["NgControlStatusGroup"], _angular_forms__WEBPACK_IMPORTED_MODULE_0__["FormGroupDirective"]], styles: [".chat-box__send[_ngcontent-%COMP%] {\n  height: 15vh;\n  background-color: var(--color-1);\n  border-top: 2px solid var(--color-2);\n  border-bottom-left-radius: 15px;\n  border-bottom-right-radius: 15px;\n}\n.chat-box__send--text[_ngcontent-%COMP%] {\n  margin-top: 0.5rem;\n  padding: 0.5rem 1rem;\n  font-size: 0.9rem;\n  width: 100%;\n  border: none;\n  border-radius: 15px;\n}\n.chat-box__send--text[_ngcontent-%COMP%]::-webkit-scrollbar {\n  width: 6px;\n}\n.chat-box__send--text[_ngcontent-%COMP%]::-webkit-scrollbar-thumb {\n  background-color: var(--color-4);\n  border-radius: 5px;\n}\n.chat-box__send--btn[_ngcontent-%COMP%] {\n  margin: 0.25rem 0;\n  padding: 0.25rem 1rem;\n  text-align: center;\n  color: var(--color-3);\n  background-color: var(--color-2);\n  border: 1px solid var(--color-2);\n  border-radius: 15px;\n  transition: all 750ms;\n  cursor: pointer;\n}\n.chat-box__send--btn[_ngcontent-%COMP%]:hover {\n  background-color: var(--color-1);\n  transition: all 750ms;\n}\n\n.filePreview[_ngcontent-%COMP%] {\n  position: absolute;\n  width: 63vw;\n  background-color: rgba(0, 0, 0, 0.125);\n  bottom: 15.3vh;\n  padding: 0.5rem;\n}\n.imagePreview[_ngcontent-%COMP%] {\n  width: 10rem;\n  height: 7.5rem;\n  object-fit: cover;\n  border-radius: 10px;\n}\n.filePreview__icon-close[_ngcontent-%COMP%] {\n  padding: 0.3rem 0.5rem;\n  color: var(--color-3);\n  font-size: 1.1rem;\n  font-weight: 500;\n  border-radius: 50%;\n  cursor: pointer;\n  transition: all 750ms;\n}\n.filePreview__icon-close[_ngcontent-%COMP%]:hover, .filePreview__icon-close[_ngcontent-%COMP%]:focus {\n  background-color: var(--color-2);\n  transition: all 750ms;\n}\n\n@media only screen and (max-width: 480px) {\n  .content.show[_ngcontent-%COMP%] {\n    display: inline-block;\n    position: fixed;\n    top: 0;\n    bottom: 0;\n    left: 0;\n    right: 0;\n    padding: 0.5rem;\n  }\n  .content[_ngcontent-%COMP%] {\n    display: none;\n    transition: all 750ms;\n  }\n\n  .tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > img[_ngcontent-%COMP%] {\n    width: 15vw;\n    height: 15vw;\n  }\n\n  .chat-box__body[_ngcontent-%COMP%] {\n    height: 72.5vh;\n    max-height: 72.5vh;\n  }\n\n  .icon-close[_ngcontent-%COMP%] {\n    display: inline-block !important;\n    margin-left: 0.75rem;\n    padding: 0.5rem 0.8rem;\n    border-radius: 50%;\n    transition: all 750ms;\n    background-color: var(--color-2);\n    cursor: pointer;\n  }\n\n  .icon-close[_ngcontent-%COMP%]:hover {\n    background-color: var(--color-2);\n    transition: all 750ms;\n  }\n\n\n\n.filePreview[_ngcontent-%COMP%] {\n  bottom: 17.5vh;\n  width: 101%;\n  padding: 0.5rem 1rem;\n}\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYXQtcm9vbWNoYXQtc2VuZC5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLGtCQUFrQjtBQUNsQjtFQUNFLFlBQVk7RUFDWixnQ0FBZ0M7RUFDaEMsb0NBQW9DO0VBQ3BDLCtCQUErQjtFQUMvQixnQ0FBZ0M7QUFDbEM7QUFFQTtFQUNFLGtCQUFrQjtFQUNsQixvQkFBb0I7RUFDcEIsaUJBQWlCO0VBQ2pCLFdBQVc7RUFDWCxZQUFZO0VBQ1osbUJBQW1CO0FBQ3JCO0FBRUE7RUFDRSxVQUFVO0FBQ1o7QUFFQTtFQUNFLGdDQUFnQztFQUNoQyxrQkFBa0I7QUFDcEI7QUFFQTtFQUNFLGlCQUFpQjtFQUNqQixxQkFBcUI7RUFDckIsa0JBQWtCO0VBQ2xCLHFCQUFxQjtFQUNyQixnQ0FBZ0M7RUFDaEMsZ0NBQWdDO0VBQ2hDLG1CQUFtQjtFQUNuQixxQkFBcUI7RUFDckIsZUFBZTtBQUNqQjtBQUVBO0VBQ0UsZ0NBQWdDO0VBQ2hDLHFCQUFxQjtBQUN2QjtBQUVBLGlCQUFpQjtBQUVqQjtFQUNFLGtCQUFrQjtFQUNsQixXQUFXO0VBQ1gsc0NBQXNDO0VBQ3RDLGNBQWM7RUFDZCxlQUFlO0FBQ2pCO0FBRUE7RUFDRSxZQUFZO0VBQ1osY0FBYztFQUNkLGlCQUFpQjtFQUNqQixtQkFBbUI7QUFDckI7QUFFQTtFQUNFLHNCQUFzQjtFQUN0QixxQkFBcUI7RUFDckIsaUJBQWlCO0VBQ2pCLGdCQUFnQjtFQUNoQixrQkFBa0I7RUFDbEIsZUFBZTtFQUNmLHFCQUFxQjtBQUN2QjtBQUVBOztFQUVFLGdDQUFnQztFQUNoQyxxQkFBcUI7QUFDdkI7QUFFQSxlQUFlO0FBRWY7RUFDRTtJQUNFLHFCQUFxQjtJQUNyQixlQUFlO0lBQ2YsTUFBTTtJQUNOLFNBQVM7SUFDVCxPQUFPO0lBQ1AsUUFBUTtJQUNSLGVBQWU7RUFDakI7RUFDQTtJQUNFLGFBQWE7SUFDYixxQkFBcUI7RUFDdkI7O0VBRUE7SUFDRSxXQUFXO0lBQ1gsWUFBWTtFQUNkOztFQUVBO0lBQ0UsY0FBYztJQUNkLGtCQUFrQjtFQUNwQjs7RUFFQTtJQUNFLGdDQUFnQztJQUNoQyxvQkFBb0I7SUFDcEIsc0JBQXNCO0lBQ3RCLGtCQUFrQjtJQUNsQixxQkFBcUI7SUFDckIsZ0NBQWdDO0lBQ2hDLGVBQWU7RUFDakI7O0VBRUE7SUFDRSxnQ0FBZ0M7SUFDaEMscUJBQXFCO0VBQ3ZCOztBQUVGLGlCQUFpQjs7QUFFakI7RUFDRSxjQUFjO0VBQ2QsV0FBVztFQUNYLG9CQUFvQjtBQUN0QjtBQUNBIiwiZmlsZSI6ImNoYXQtcm9vbWNoYXQtc2VuZC5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLyogQ2hhdCBCb3ggU2VuZCAqL1xuLmNoYXQtYm94X19zZW5kIHtcbiAgaGVpZ2h0OiAxNXZoO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0xKTtcbiAgYm9yZGVyLXRvcDogMnB4IHNvbGlkIHZhcigtLWNvbG9yLTIpO1xuICBib3JkZXItYm90dG9tLWxlZnQtcmFkaXVzOiAxNXB4O1xuICBib3JkZXItYm90dG9tLXJpZ2h0LXJhZGl1czogMTVweDtcbn1cblxuLmNoYXQtYm94X19zZW5kLS10ZXh0IHtcbiAgbWFyZ2luLXRvcDogMC41cmVtO1xuICBwYWRkaW5nOiAwLjVyZW0gMXJlbTtcbiAgZm9udC1zaXplOiAwLjlyZW07XG4gIHdpZHRoOiAxMDAlO1xuICBib3JkZXI6IG5vbmU7XG4gIGJvcmRlci1yYWRpdXM6IDE1cHg7XG59XG5cbi5jaGF0LWJveF9fc2VuZC0tdGV4dDo6LXdlYmtpdC1zY3JvbGxiYXIge1xuICB3aWR0aDogNnB4O1xufVxuXG4uY2hhdC1ib3hfX3NlbmQtLXRleHQ6Oi13ZWJraXQtc2Nyb2xsYmFyLXRodW1iIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItNCk7XG4gIGJvcmRlci1yYWRpdXM6IDVweDtcbn1cblxuLmNoYXQtYm94X19zZW5kLS1idG4ge1xuICBtYXJnaW46IDAuMjVyZW0gMDtcbiAgcGFkZGluZzogMC4yNXJlbSAxcmVtO1xuICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gIGNvbG9yOiB2YXIoLS1jb2xvci0zKTtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gIGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWNvbG9yLTIpO1xuICBib3JkZXItcmFkaXVzOiAxNXB4O1xuICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLmNoYXQtYm94X19zZW5kLS1idG46aG92ZXIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0xKTtcbiAgdHJhbnNpdGlvbjogYWxsIDc1MG1zO1xufVxuXG4vKiBGaWxlIFByZXZpZXcgKi9cblxuLmZpbGVQcmV2aWV3IHtcbiAgcG9zaXRpb246IGFic29sdXRlO1xuICB3aWR0aDogNjN2dztcbiAgYmFja2dyb3VuZC1jb2xvcjogcmdiYSgwLCAwLCAwLCAwLjEyNSk7XG4gIGJvdHRvbTogMTUuM3ZoO1xuICBwYWRkaW5nOiAwLjVyZW07XG59XG5cbi5pbWFnZVByZXZpZXcge1xuICB3aWR0aDogMTByZW07XG4gIGhlaWdodDogNy41cmVtO1xuICBvYmplY3QtZml0OiBjb3ZlcjtcbiAgYm9yZGVyLXJhZGl1czogMTBweDtcbn1cblxuLmZpbGVQcmV2aWV3X19pY29uLWNsb3NlIHtcbiAgcGFkZGluZzogMC4zcmVtIDAuNXJlbTtcbiAgY29sb3I6IHZhcigtLWNvbG9yLTMpO1xuICBmb250LXNpemU6IDEuMXJlbTtcbiAgZm9udC13ZWlnaHQ6IDUwMDtcbiAgYm9yZGVyLXJhZGl1czogNTAlO1xuICBjdXJzb3I6IHBvaW50ZXI7XG4gIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbn1cblxuLmZpbGVQcmV2aWV3X19pY29uLWNsb3NlOmhvdmVyLFxuLmZpbGVQcmV2aWV3X19pY29uLWNsb3NlOmZvY3VzIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbn1cblxuLyogUmVzcG9uc2l2ZSAqL1xuXG5AbWVkaWEgb25seSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDQ4MHB4KSB7XG4gIC5jb250ZW50LnNob3cge1xuICAgIGRpc3BsYXk6IGlubGluZS1ibG9jaztcbiAgICBwb3NpdGlvbjogZml4ZWQ7XG4gICAgdG9wOiAwO1xuICAgIGJvdHRvbTogMDtcbiAgICBsZWZ0OiAwO1xuICAgIHJpZ2h0OiAwO1xuICAgIHBhZGRpbmc6IDAuNXJlbTtcbiAgfVxuICAuY29udGVudCB7XG4gICAgZGlzcGxheTogbm9uZTtcbiAgICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG4gIH1cblxuICAudGFicy1jYXJkX19pdGVtID4gZGl2ID4gaW1nIHtcbiAgICB3aWR0aDogMTV2dztcbiAgICBoZWlnaHQ6IDE1dnc7XG4gIH1cblxuICAuY2hhdC1ib3hfX2JvZHkge1xuICAgIGhlaWdodDogNzIuNXZoO1xuICAgIG1heC1oZWlnaHQ6IDcyLjV2aDtcbiAgfVxuXG4gIC5pY29uLWNsb3NlIHtcbiAgICBkaXNwbGF5OiBpbmxpbmUtYmxvY2sgIWltcG9ydGFudDtcbiAgICBtYXJnaW4tbGVmdDogMC43NXJlbTtcbiAgICBwYWRkaW5nOiAwLjVyZW0gMC44cmVtO1xuICAgIGJvcmRlci1yYWRpdXM6IDUwJTtcbiAgICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gICAgY3Vyc29yOiBwb2ludGVyO1xuICB9XG5cbiAgLmljb24tY2xvc2U6aG92ZXIge1xuICAgIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTIpO1xuICAgIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbiAgfVxuXG4vKiBGaWxlIFByZXZpZXcgKi9cblxuLmZpbGVQcmV2aWV3IHtcbiAgYm90dG9tOiAxNy41dmg7XG4gIHdpZHRoOiAxMDElO1xuICBwYWRkaW5nOiAwLjVyZW0gMXJlbTtcbn1cbn1cbiJdfQ== */"] });
 
 
 /***/ }),
@@ -981,10 +1161,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var src_app_sharing_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/sharing.service */ "hTjv");
 /* harmony import */ var src_app_contact_contact_content_list_friends_contact_list_friend_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/contact/contact-content/list-friends/contact-list-friend.service */ "QQtj");
 /* harmony import */ var src_app_socket_socket_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/socket/socket.service */ "FRSv");
-/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common */ "ofXK");
+/* harmony import */ var src_app_contact_contact_content_list_rooms_contact_list_rooms_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! src/app/contact/contact-content/list-rooms/contact-list-rooms.service */ "ywU7");
 /* harmony import */ var _search_search_component__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../../search/search.component */ "tq2C");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/router */ "tyNb");
-/* harmony import */ var _angular_material_badge__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/material/badge */ "TU8p");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ "ofXK");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! @angular/router */ "tyNb");
+/* harmony import */ var _angular_material_badge__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! @angular/material/badge */ "TU8p");
 
 
 
@@ -993,60 +1174,52 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-function ChatMenuComponent_div_0_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-} if (rf & 2) {
-    const item_r2 = ctx.$implicit;
-    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate2"](" roomId: ", item_r2, " ", ctx_r0.isMessageInRoomRead[item_r2], "\n");
-} }
-function ChatMenuComponent_div_5_span_7_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "span", 12);
+
+function ChatMenuComponent_div_4_span_7_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "span", 11);
 } }
 const _c0 = function (a1) { return ["/chat", a1]; };
-function ChatMenuComponent_div_5_Template(rf, ctx) { if (rf & 1) {
-    const _r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ChatMenuComponent_div_5_Template_div_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r6); const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r5.onClickShowContent(); });
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 5);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "img", 6);
+function ChatMenuComponent_div_4_Template(rf, ctx) { if (rf & 1) {
+    const _r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function ChatMenuComponent_div_4_Template_div_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r4); const room_r1 = ctx.$implicit; const ctx_r3 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r3.onClickShowContent(room_r1._id); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "img", 5);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "span", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "span", 8);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, ChatMenuComponent_div_5_span_7_Template, 1, 0, "span", 10);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "div", 8);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "i", 11);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, ChatMenuComponent_div_4_span_7_Template, 1, 0, "span", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](8, "div", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "i", 10);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](10);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const room_r3 = ctx.$implicit;
-    const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction1"](5, _c0, room_r3._id));
+    const room_r1 = ctx.$implicit;
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction1"](5, _c0, room_r1._id));
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", room_r3 == null ? null : room_r3.avatar, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", room_r1 == null ? null : room_r1.avatar, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](room_r3.name);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate"](room_r1.name);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r1.haveNewMessage[room_r3._id] && ctx_r1.lastMessageOfRooms[room_r3._id].sender !== ctx_r1.currentUserId && !ctx_r1.isMessageInRoomRead[room_r3._id]);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", room_r1.newMessage && ctx_r0.lastMessageOfRooms[room_r1._id].sender !== ctx_r0.currentUserId);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r1.lastMessageOfRooms[room_r3._id] == null ? null : ctx_r1.lastMessageOfRooms[room_r3._id].data, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r0.lastMessageOfRooms[room_r1._id] == null ? null : ctx_r0.lastMessageOfRooms[room_r1._id].data == null ? null : ctx_r0.lastMessageOfRooms[room_r1._id].data.content, " ");
 } }
 class ChatMenuComponent {
-    constructor(sharingService, listFriendService, socketService) {
+    constructor(sharingService, listFriendService, socketService, roomsService) {
         this.sharingService = sharingService;
         this.listFriendService = listFriendService;
         this.socketService = socketService;
-        this.currentUserId = localStorage.getItem("userId");
+        this.roomsService = roomsService;
+        this.currentUserId = localStorage.getItem('userId');
         this.rooms = [];
         this.lastMessageOfRooms = [];
         this.show = false;
@@ -1054,44 +1227,54 @@ class ChatMenuComponent {
         this.isMessageInRoomRead = [];
     }
     ngOnInit() {
-        this.socketService
-            .onMessage()
-            .subscribe((newMessage) => {
-            this.haveNewMessage[newMessage === null || newMessage === void 0 ? void 0 : newMessage.room] = true;
-            this.lastMessageOfRooms[newMessage === null || newMessage === void 0 ? void 0 : newMessage.room] = newMessage;
-            console.log(newMessage);
-            //Change haveNewMessage in roomId status to false
-            this.sharingService.changeMessageInRoomRead({ roomId: newMessage === null || newMessage === void 0 ? void 0 : newMessage.room, value: false });
+        this.socketService.onMessage().subscribe((newMessage) => {
+            var _a;
+            this.updateRoomStatus(newMessage, true);
+            if (!((_a = newMessage === null || newMessage === void 0 ? void 0 : newMessage.data) === null || _a === void 0 ? void 0 : _a.content)) {
+                newMessage.data.content = "Image";
+            }
         });
     }
-    onClickShowContent() {
+    updateRoomStatus(newMessage, status) {
+        this.sharingService.changeLastMessageOfRoom({ roomId: newMessage.room, value: newMessage.data.content });
+        this.rooms.forEach((room) => {
+            if (room._id === newMessage.roomId) {
+                room.newMessage = status;
+            }
+        });
+    }
+    onClickShowContent(id) {
         this.sharingService.showContentMobile.subscribe((isShow) => (this.show = isShow));
         this.sharingService.changeShowValue(!this.show);
         //Seen all message in current room
-        this.seenAllMessage();
+        this.seenAllMessage(id);
     }
-    seenAllMessage() {
-        var _a, _b;
-        this.haveNewMessage[(_a = this.currentRoom) === null || _a === void 0 ? void 0 : _a._id] = false;
-        this.sharingService.changeMessageInRoomRead({ roomId: (_b = this.currentRoom) === null || _b === void 0 ? void 0 : _b._id, value: true });
+    seenAllMessage(id) {
+        this.rooms.forEach((room) => {
+            if (room._id === id) {
+                room.newMessage = false;
+            }
+        });
+        this.sharingService.changeMessageInRoomRead({
+            roomId: id,
+            value: false
+        });
     }
 }
-ChatMenuComponent.ɵfac = function ChatMenuComponent_Factory(t) { return new (t || ChatMenuComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_sharing_service__WEBPACK_IMPORTED_MODULE_1__["SharingService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_contact_contact_content_list_friends_contact_list_friend_service__WEBPACK_IMPORTED_MODULE_2__["ContactListFriendService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_socket_socket_service__WEBPACK_IMPORTED_MODULE_3__["SocketService"])); };
-ChatMenuComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: ChatMenuComponent, selectors: [["app-chat-menu"]], inputs: { imgPath: "imgPath", currentRoom: "currentRoom", rooms: "rooms", lastMessageOfRooms: "lastMessageOfRooms" }, decls: 6, vars: 2, consts: [[4, "ngFor", "ngForOf"], [1, "row", "tabs-list"], [1, "col"], ["class", "row tabs-card__item align-items-center", "routerLinkActive", "active", 3, "routerLink", "click", 4, "ngFor", "ngForOf"], ["routerLinkActive", "active", 1, "row", "tabs-card__item", "align-items-center", 3, "routerLink", "click"], [1, "col-md-3", "col-4"], ["alt", "", 1, "img-fluid", "card__img", 3, "src"], [1, "col-md-9", "col-8"], [1, "row"], [1, "card__title"], ["style", "float: right;", "matBadge", ".", 4, "ngIf"], [1, "card__desc"], ["matBadge", ".", 2, "float", "right"]], template: function ChatMenuComponent_Template(rf, ctx) { if (rf & 1) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, ChatMenuComponent_div_0_Template, 2, 2, "div", 0);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "app-search");
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Search");
+ChatMenuComponent.ɵfac = function ChatMenuComponent_Factory(t) { return new (t || ChatMenuComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_sharing_service__WEBPACK_IMPORTED_MODULE_1__["SharingService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_contact_contact_content_list_friends_contact_list_friend_service__WEBPACK_IMPORTED_MODULE_2__["ContactListFriendService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_socket_socket_service__WEBPACK_IMPORTED_MODULE_3__["SocketService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_contact_contact_content_list_rooms_contact_list_rooms_service__WEBPACK_IMPORTED_MODULE_4__["ContactListRoomService"])); };
+ChatMenuComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: ChatMenuComponent, selectors: [["app-chat-menu"]], inputs: { imgPath: "imgPath", currentRoom: "currentRoom", rooms: "rooms", lastMessageOfRooms: "lastMessageOfRooms" }, decls: 5, vars: 1, consts: [[1, "row", "tabs-list"], [1, "col"], ["class", "row tabs-card__item align-items-center", "routerLinkActive", "active", 3, "routerLink", "click", 4, "ngFor", "ngForOf"], ["routerLinkActive", "active", 1, "row", "tabs-card__item", "align-items-center", 3, "routerLink", "click"], [1, "col-md-3", "col-4"], ["alt", "", 1, "img-fluid", "card__img", 3, "src"], [1, "col-md-9", "col-8"], [1, "row"], [1, "card__title"], ["style", "float: right", "matBadge", ".", 4, "ngIf"], [1, "card__desc"], ["matBadge", ".", 2, "float", "right"]], template: function ChatMenuComponent_Template(rf, ctx) { if (rf & 1) {
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "app-search");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, "Search");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](4, "div", 2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](5, ChatMenuComponent_div_5_Template, 11, 7, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, ChatMenuComponent_div_4_Template, 11, 7, "div", 2);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.isMessageInRoomRead);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.rooms);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_4__["NgForOf"], _search_search_component__WEBPACK_IMPORTED_MODULE_5__["SearchComponent"], _angular_router__WEBPACK_IMPORTED_MODULE_6__["RouterLinkActive"], _angular_router__WEBPACK_IMPORTED_MODULE_6__["RouterLink"], _angular_common__WEBPACK_IMPORTED_MODULE_4__["NgIf"], _angular_material_badge__WEBPACK_IMPORTED_MODULE_7__["MatBadge"]], styles: [".mat-badge-content[_ngcontent-%COMP%] {\n  background-color: red;\n}\n\n\n\n.active[_ngcontent-%COMP%] {\n  background-color: var(--color-1);\n  transition: all 750ms;\n}\n\n.tabs-list[_ngcontent-%COMP%] {\n  height: 72.5vh;\n  max-height: 72.5vh;\n  overflow: scroll;\n  margin: 0.5rem -0.5rem;\n  background-color: var(--color-2);\n}\n\n.tabs-list[_ngcontent-%COMP%]::-webkit-scrollbar {\n  width: 6px;\n}\n\n.tabs-list[_ngcontent-%COMP%]::-webkit-scrollbar-thumb {\n  background-color: var(--color-4);\n  border-radius: 5px;\n}\n\n\n\n.tabs-card__item[_ngcontent-%COMP%] {\n  width: 100%;\n  margin: 0.5rem 0rem;\n  padding: 0.5rem;\n  background-color: var(--color-2);\n  border: 1px solid var(--color-1);\n  border-radius: 15px;\n  transition: all 750ms;\n  cursor: pointer;\n  box-shadow: 2px 2px 5px -1px var(--color-1);\n}\n\n.tabs-card__item[_ngcontent-%COMP%]:hover, .tabs-card__item.active[_ngcontent-%COMP%] {\n  background-color: var(--color-1);\n  transition: all 750ms;\n}\n\n.tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > img[_ngcontent-%COMP%] {\n  width: 4vw;\n  height: 4vw;\n  object-fit: cover;\n  border-radius: 50%;\n}\n\n.tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > span[_ngcontent-%COMP%] {\n  margin: 0.25rem 0;\n  font-size: 1rem;\n  color: var(--color-3);\n  width: 90%;\n  max-width: 85%;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > i[_ngcontent-%COMP%] {\n  margin: 0.25rem;\n  width: 90%;\n  max-width: 85%;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  font-size: 0.8rem;\n  color: var(--color-3);\n}\n\n@media only screen and (max-width: 500px) {\n  .tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > img[_ngcontent-%COMP%] {\n    width: 15vw;\n    height: 15vw;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYXQtbWVudS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UscUJBQXFCO0FBQ3ZCOztBQUVBLGNBQWM7O0FBRWQ7RUFDRSxnQ0FBZ0M7RUFDaEMscUJBQXFCO0FBQ3ZCOztBQUVBO0VBQ0UsY0FBYztFQUNkLGtCQUFrQjtFQUNsQixnQkFBZ0I7RUFDaEIsc0JBQXNCO0VBQ3RCLGdDQUFnQztBQUNsQzs7QUFFQTtFQUNFLFVBQVU7QUFDWjs7QUFFQTtFQUNFLGdDQUFnQztFQUNoQyxrQkFBa0I7QUFDcEI7O0FBRUEsY0FBYzs7QUFFZDtFQUNFLFdBQVc7RUFDWCxtQkFBbUI7RUFDbkIsZUFBZTtFQUNmLGdDQUFnQztFQUNoQyxnQ0FBZ0M7RUFDaEMsbUJBQW1CO0VBQ25CLHFCQUFxQjtFQUNyQixlQUFlO0VBQ2YsMkNBQTJDO0FBQzdDOztBQUVBOztFQUVFLGdDQUFnQztFQUNoQyxxQkFBcUI7QUFDdkI7O0FBRUE7RUFDRSxVQUFVO0VBQ1YsV0FBVztFQUNYLGlCQUFpQjtFQUNqQixrQkFBa0I7QUFDcEI7O0FBRUE7RUFDRSxpQkFBaUI7RUFDakIsZUFBZTtFQUNmLHFCQUFxQjtFQUNyQixVQUFVO0VBQ1YsY0FBYztFQUNkLG1CQUFtQjtFQUNuQixnQkFBZ0I7RUFDaEIsdUJBQXVCO0FBQ3pCOztBQUVBO0VBQ0UsZUFBZTtFQUNmLFVBQVU7RUFDVixjQUFjO0VBQ2QsbUJBQW1CO0VBQ25CLGdCQUFnQjtFQUNoQix1QkFBdUI7RUFDdkIsaUJBQWlCO0VBQ2pCLHFCQUFxQjtBQUN2Qjs7QUFFQTtFQUNFO0lBQ0UsV0FBVztJQUNYLFlBQVk7RUFDZDtBQUNGIiwiZmlsZSI6ImNoYXQtbWVudS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLm1hdC1iYWRnZS1jb250ZW50IHtcbiAgYmFja2dyb3VuZC1jb2xvcjogcmVkO1xufVxuXG4vKiBUYWJzIGxpc3QgKi9cblxuLmFjdGl2ZSB7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTEpO1xuICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG59XG5cbi50YWJzLWxpc3Qge1xuICBoZWlnaHQ6IDcyLjV2aDtcbiAgbWF4LWhlaWdodDogNzIuNXZoO1xuICBvdmVyZmxvdzogc2Nyb2xsO1xuICBtYXJnaW46IDAuNXJlbSAtMC41cmVtO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0yKTtcbn1cblxuLnRhYnMtbGlzdDo6LXdlYmtpdC1zY3JvbGxiYXIge1xuICB3aWR0aDogNnB4O1xufVxuXG4udGFicy1saXN0Ojotd2Via2l0LXNjcm9sbGJhci10aHVtYiB7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTQpO1xuICBib3JkZXItcmFkaXVzOiA1cHg7XG59XG5cbi8qIFRhYnMgSXRlbSAqL1xuXG4udGFicy1jYXJkX19pdGVtIHtcbiAgd2lkdGg6IDEwMCU7XG4gIG1hcmdpbjogMC41cmVtIDByZW07XG4gIHBhZGRpbmc6IDAuNXJlbTtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gIGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWNvbG9yLTEpO1xuICBib3JkZXItcmFkaXVzOiAxNXB4O1xuICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG4gIGN1cnNvcjogcG9pbnRlcjtcbiAgYm94LXNoYWRvdzogMnB4IDJweCA1cHggLTFweCB2YXIoLS1jb2xvci0xKTtcbn1cblxuLnRhYnMtY2FyZF9faXRlbTpob3Zlcixcbi50YWJzLWNhcmRfX2l0ZW0uYWN0aXZlIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG4gIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbn1cblxuLnRhYnMtY2FyZF9faXRlbSA+IGRpdiA+IGltZyB7XG4gIHdpZHRoOiA0dnc7XG4gIGhlaWdodDogNHZ3O1xuICBvYmplY3QtZml0OiBjb3ZlcjtcbiAgYm9yZGVyLXJhZGl1czogNTAlO1xufVxuXG4udGFicy1jYXJkX19pdGVtID4gZGl2ID4gZGl2ID4gc3BhbiB7XG4gIG1hcmdpbjogMC4yNXJlbSAwO1xuICBmb250LXNpemU6IDFyZW07XG4gIGNvbG9yOiB2YXIoLS1jb2xvci0zKTtcbiAgd2lkdGg6IDkwJTtcbiAgbWF4LXdpZHRoOiA4NSU7XG4gIHdoaXRlLXNwYWNlOiBub3dyYXA7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xufVxuXG4udGFicy1jYXJkX19pdGVtID4gZGl2ID4gZGl2ID4gaSB7XG4gIG1hcmdpbjogMC4yNXJlbTtcbiAgd2lkdGg6IDkwJTtcbiAgbWF4LXdpZHRoOiA4NSU7XG4gIHdoaXRlLXNwYWNlOiBub3dyYXA7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xuICBmb250LXNpemU6IDAuOHJlbTtcbiAgY29sb3I6IHZhcigtLWNvbG9yLTMpO1xufVxuXG5AbWVkaWEgb25seSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDUwMHB4KSB7XG4gIC50YWJzLWNhcmRfX2l0ZW0gPiBkaXYgPiBpbWcge1xuICAgIHdpZHRoOiAxNXZ3O1xuICAgIGhlaWdodDogMTV2dztcbiAgfVxufVxuIl19 */"] });
+    } }, directives: [_search_search_component__WEBPACK_IMPORTED_MODULE_5__["SearchComponent"], _angular_common__WEBPACK_IMPORTED_MODULE_6__["NgForOf"], _angular_router__WEBPACK_IMPORTED_MODULE_7__["RouterLinkActive"], _angular_router__WEBPACK_IMPORTED_MODULE_7__["RouterLink"], _angular_common__WEBPACK_IMPORTED_MODULE_6__["NgIf"], _angular_material_badge__WEBPACK_IMPORTED_MODULE_8__["MatBadge"]], styles: [".mat-badge-content[_ngcontent-%COMP%] {\n  background-color: red;\n}\n\n\n\n.active[_ngcontent-%COMP%] {\n  background-color: var(--color-1);\n  transition: all 750ms;\n}\n\n.tabs-list[_ngcontent-%COMP%] {\n  height: 72.5vh;\n  max-height: 72.5vh;\n  overflow: scroll;\n  margin: 0.5rem -0.5rem;\n  background-color: var(--color-2);\n}\n\n.tabs-list[_ngcontent-%COMP%]::-webkit-scrollbar {\n  width: 6px;\n}\n\n.tabs-list[_ngcontent-%COMP%]::-webkit-scrollbar-thumb {\n  background-color: var(--color-4);\n  border-radius: 5px;\n}\n\n\n\n.tabs-card__item[_ngcontent-%COMP%] {\n  width: 100%;\n  margin: 0.5rem 0rem;\n  padding: 0.5rem;\n  background-color: var(--color-2);\n  border: 1px solid var(--color-1);\n  border-radius: 15px;\n  transition: all 750ms;\n  cursor: pointer;\n  box-shadow: 2px 2px 5px -1px var(--color-1);\n}\n\n.tabs-card__item[_ngcontent-%COMP%]:hover, .tabs-card__item.active[_ngcontent-%COMP%] {\n  background-color: var(--color-1);\n  transition: all 750ms;\n}\n\n.tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > img[_ngcontent-%COMP%] {\n  width: 4vw;\n  height: 4vw;\n  object-fit: cover;\n  border-radius: 50%;\n}\n\n.tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > span[_ngcontent-%COMP%] {\n  margin: 0.25rem 0;\n  font-size: 1rem;\n  color: var(--color-3);\n  width: 90%;\n  max-width: 85%;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n\n.tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > i[_ngcontent-%COMP%] {\n  margin: 0.25rem;\n  width: 90%;\n  max-width: 85%;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  font-size: 0.8rem;\n  color: var(--color-3);\n}\n\n@media only screen and (max-width: 500px) {\n  .tabs-card__item[_ngcontent-%COMP%]    > div[_ngcontent-%COMP%]    > img[_ngcontent-%COMP%] {\n    width: 15vw;\n    height: 15vw;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYXQtbWVudS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UscUJBQXFCO0FBQ3ZCOztBQUVBLGNBQWM7O0FBRWQ7RUFDRSxnQ0FBZ0M7RUFDaEMscUJBQXFCO0FBQ3ZCOztBQUVBO0VBQ0UsY0FBYztFQUNkLGtCQUFrQjtFQUNsQixnQkFBZ0I7RUFDaEIsc0JBQXNCO0VBQ3RCLGdDQUFnQztBQUNsQzs7QUFFQTtFQUNFLFVBQVU7QUFDWjs7QUFFQTtFQUNFLGdDQUFnQztFQUNoQyxrQkFBa0I7QUFDcEI7O0FBRUEsY0FBYzs7QUFFZDtFQUNFLFdBQVc7RUFDWCxtQkFBbUI7RUFDbkIsZUFBZTtFQUNmLGdDQUFnQztFQUNoQyxnQ0FBZ0M7RUFDaEMsbUJBQW1CO0VBQ25CLHFCQUFxQjtFQUNyQixlQUFlO0VBQ2YsMkNBQTJDO0FBQzdDOztBQUVBOztFQUVFLGdDQUFnQztFQUNoQyxxQkFBcUI7QUFDdkI7O0FBRUE7RUFDRSxVQUFVO0VBQ1YsV0FBVztFQUNYLGlCQUFpQjtFQUNqQixrQkFBa0I7QUFDcEI7O0FBRUE7RUFDRSxpQkFBaUI7RUFDakIsZUFBZTtFQUNmLHFCQUFxQjtFQUNyQixVQUFVO0VBQ1YsY0FBYztFQUNkLG1CQUFtQjtFQUNuQixnQkFBZ0I7RUFDaEIsdUJBQXVCO0FBQ3pCOztBQUVBO0VBQ0UsZUFBZTtFQUNmLFVBQVU7RUFDVixjQUFjO0VBQ2QsbUJBQW1CO0VBQ25CLGdCQUFnQjtFQUNoQix1QkFBdUI7RUFDdkIsaUJBQWlCO0VBQ2pCLHFCQUFxQjtBQUN2Qjs7QUFFQTtFQUNFO0lBQ0UsV0FBVztJQUNYLFlBQVk7RUFDZDtBQUNGIiwiZmlsZSI6ImNoYXQtbWVudS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLm1hdC1iYWRnZS1jb250ZW50IHtcbiAgYmFja2dyb3VuZC1jb2xvcjogcmVkO1xufVxuXG4vKiBUYWJzIGxpc3QgKi9cblxuLmFjdGl2ZSB7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTEpO1xuICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG59XG5cbi50YWJzLWxpc3Qge1xuICBoZWlnaHQ6IDcyLjV2aDtcbiAgbWF4LWhlaWdodDogNzIuNXZoO1xuICBvdmVyZmxvdzogc2Nyb2xsO1xuICBtYXJnaW46IDAuNXJlbSAtMC41cmVtO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0yKTtcbn1cblxuLnRhYnMtbGlzdDo6LXdlYmtpdC1zY3JvbGxiYXIge1xuICB3aWR0aDogNnB4O1xufVxuXG4udGFicy1saXN0Ojotd2Via2l0LXNjcm9sbGJhci10aHVtYiB7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTQpO1xuICBib3JkZXItcmFkaXVzOiA1cHg7XG59XG5cbi8qIFRhYnMgSXRlbSAqL1xuXG4udGFicy1jYXJkX19pdGVtIHtcbiAgd2lkdGg6IDEwMCU7XG4gIG1hcmdpbjogMC41cmVtIDByZW07XG4gIHBhZGRpbmc6IDAuNXJlbTtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gIGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWNvbG9yLTEpO1xuICBib3JkZXItcmFkaXVzOiAxNXB4O1xuICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG4gIGN1cnNvcjogcG9pbnRlcjtcbiAgYm94LXNoYWRvdzogMnB4IDJweCA1cHggLTFweCB2YXIoLS1jb2xvci0xKTtcbn1cblxuLnRhYnMtY2FyZF9faXRlbTpob3Zlcixcbi50YWJzLWNhcmRfX2l0ZW0uYWN0aXZlIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG4gIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbn1cblxuLnRhYnMtY2FyZF9faXRlbSA+IGRpdiA+IGltZyB7XG4gIHdpZHRoOiA0dnc7XG4gIGhlaWdodDogNHZ3O1xuICBvYmplY3QtZml0OiBjb3ZlcjtcbiAgYm9yZGVyLXJhZGl1czogNTAlO1xufVxuXG4udGFicy1jYXJkX19pdGVtID4gZGl2ID4gZGl2ID4gc3BhbiB7XG4gIG1hcmdpbjogMC4yNXJlbSAwO1xuICBmb250LXNpemU6IDFyZW07XG4gIGNvbG9yOiB2YXIoLS1jb2xvci0zKTtcbiAgd2lkdGg6IDkwJTtcbiAgbWF4LXdpZHRoOiA4NSU7XG4gIHdoaXRlLXNwYWNlOiBub3dyYXA7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xufVxuXG4udGFicy1jYXJkX19pdGVtID4gZGl2ID4gZGl2ID4gaSB7XG4gIG1hcmdpbjogMC4yNXJlbTtcbiAgd2lkdGg6IDkwJTtcbiAgbWF4LXdpZHRoOiA4NSU7XG4gIHdoaXRlLXNwYWNlOiBub3dyYXA7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xuICBmb250LXNpemU6IDAuOHJlbTtcbiAgY29sb3I6IHZhcigtLWNvbG9yLTMpO1xufVxuXG5AbWVkaWEgb25seSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDUwMHB4KSB7XG4gIC50YWJzLWNhcmRfX2l0ZW0gPiBkaXYgPiBpbWcge1xuICAgIHdpZHRoOiAxNXZ3O1xuICAgIGhlaWdodDogMTV2dztcbiAgfVxufVxuIl19 */"] });
 
 
 /***/ }),
@@ -1128,8 +1311,30 @@ class AppComponent {
         this.sharingService = sharingService;
         this.socketService = socketService;
         this.isUserAuthenticated = false;
+        this.isNewMessageReceive = false;
+        this.currentUserId = localStorage.getItem('userId');
+        this.menuItems = [
+            {
+                key: 'message',
+                content: 'Tin nhắn',
+                url: 'chat',
+                showBadge: false,
+                numOfPeopleWaitToReply: 0
+            },
+            {
+                key: 'contact',
+                content: 'Danh bạ',
+                url: 'contact',
+                showBadge: false,
+            },
+            {
+                key: 'personal',
+                content: 'Chỉnh sửa',
+                url: 'personal-information',
+                showBadge: false,
+            },
+        ];
     }
-    ;
     ngOnInit() {
         // this.sharingService.currentMenuItems.subscribe(newItems => this.itemsInAppComponent = newItems);
         // this.sharingService.currentMenuClass.subscribe(newItems => this.menuClass = newItems);
@@ -1138,23 +1343,113 @@ class AppComponent {
         this.isUserAuthenticated = this.authService.getIsAuthenticated();
         this.authListenerSub = this.authService
             .getAuthStatusListener()
-            .subscribe(isAuth => {
+            .subscribe((isAuth) => {
             this.isUserAuthenticated = isAuth;
+            if (isAuth) {
+                this.currentUserId = this.authService.getUserId();
+            }
+            this.socketService.setUpConnnection();
+            this.onMessageReceive();
+        });
+        this.socketService.setUpConnnection();
+        this.onMessageReceive();
+        this.onNewVideoCallReceive();
+        this.subscribeRoomStatusOfRoom();
+    }
+    onMessageReceive() {
+        this.socketService.onMessage().subscribe((newMessage) => {
+            if (newMessage.sender !== this.currentUserId) {
+                this.sharingService.changeMessageInRoomRead({ roomId: newMessage.room, value: true });
+                this.sharingService.changeLastMessageOfRoom({ roomId: newMessage.room, value: newMessage.data.content });
+            }
+        });
+    }
+    onNewVideoCallReceive() {
+        this.socketService
+            .onNewVideoCall()
+            .subscribe((response) => {
+            console.log("VIdeo call init");
+        });
+    }
+    subscribeRoomStatusOfRoom() {
+        this.sharingService
+            .currentMessageInRommReadedSourceStatus
+            .subscribe((newMessage) => {
+            if ((newMessage === null || newMessage === void 0 ? void 0 : newMessage.length) > 0) {
+                let isAllMessagesRead = true;
+                newMessage.forEach(message => {
+                    if ((message === null || message === void 0 ? void 0 : message.value) === true) {
+                        isAllMessagesRead = false;
+                    }
+                });
+                if (isAllMessagesRead) {
+                    this.menuItems[0].showBadge = false;
+                }
+                else {
+                    this.menuItems[0].showBadge = true;
+                    let numOfPeopleWaitToReply = 0;
+                    newMessage.forEach(message => {
+                        if ((message === null || message === void 0 ? void 0 : message.value) === true) {
+                            numOfPeopleWaitToReply++;
+                        }
+                    });
+                    this.menuItems[0].numOfPeopleWaitToReply = numOfPeopleWaitToReply;
+                }
+            }
+            else {
+                this.menuItems[0].showBadge = false;
+            }
         });
     }
 }
 AppComponent.ɵfac = function AppComponent_Factory(t) { return new (t || AppComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_personal_information_profile_service__WEBPACK_IMPORTED_MODULE_2__["ProfileService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_auth_auth_service__WEBPACK_IMPORTED_MODULE_3__["AutheService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_sharing_service__WEBPACK_IMPORTED_MODULE_0__["SharingService"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdirectiveInject"](_socket_socket_service__WEBPACK_IMPORTED_MODULE_4__["SocketService"])); };
-AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: AppComponent, selectors: [["app-root"]], features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵProvidersFeature"]([
-            _sharing_service__WEBPACK_IMPORTED_MODULE_0__["SharingService"]
-        ])], decls: 3, vars: 1, consts: [[1, "container-fluid"], [1, "row", 3, "isUserAuthenticated"], [1, "row"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
+AppComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineComponent"]({ type: AppComponent, selectors: [["app-root"]], features: [_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵProvidersFeature"]([_sharing_service__WEBPACK_IMPORTED_MODULE_0__["SharingService"]])], decls: 3, vars: 2, consts: [[1, "container-fluid"], [1, "row", 3, "isUserAuthenticated", "menuItems"], [1, "row"]], template: function AppComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementStart"](0, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](1, "app-header", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelement"](2, "router-outlet", 2);
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵadvance"](1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("isUserAuthenticated", ctx.isUserAuthenticated);
+        _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵproperty"]("isUserAuthenticated", ctx.isUserAuthenticated)("menuItems", ctx.menuItems);
     } }, directives: [_header_header_component__WEBPACK_IMPORTED_MODULE_5__["HeaderComponent"], _angular_router__WEBPACK_IMPORTED_MODULE_6__["RouterOutlet"]], styles: [".menu[_ngcontent-%COMP%] {\n  padding: 0.5rem 1rem;\n}\n\n.content[_ngcontent-%COMP%] {\n  padding: 1rem;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImFwcC5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0Usb0JBQW9CO0FBQ3RCOztBQUVBO0VBQ0UsYUFBYTtBQUNmIiwiZmlsZSI6ImFwcC5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLm1lbnUge1xuICBwYWRkaW5nOiAwLjVyZW0gMXJlbTtcbn1cblxuLmNvbnRlbnQge1xuICBwYWRkaW5nOiAxcmVtO1xufVxuIl19 */"] });
+
+
+/***/ }),
+
+/***/ "T8x4":
+/*!***************************************************************************!*\
+  !*** ./src/app/chat/chat-roomchat/chat-roomchat-send/sendFile.service.ts ***!
+  \***************************************************************************/
+/*! exports provided: FileService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "FileService", function() { return FileService; });
+/* harmony import */ var _environments_environment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../../../environments/environment */ "AytR");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @angular/common/http */ "tk/3");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "tyNb");
+
+
+
+
+const BACKEND_URL = _environments_environment__WEBPACK_IMPORTED_MODULE_0__["environment"].apiUrl + "/images/";
+class FileService {
+    constructor(http, router) {
+        this.http = http;
+        this.router = router;
+    }
+    ;
+    sendImage(image) {
+        const formData = new FormData();
+        formData.append("file", image);
+        return this.http
+            .post(BACKEND_URL, formData);
+    }
+}
+FileService.ɵfac = function FileService_Factory(t) { return new (t || FileService)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"])); };
+FileService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: FileService, factory: FileService.ɵfac, providedIn: 'root' });
 
 
 /***/ }),
@@ -1288,7 +1583,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sharing_service__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! ./sharing.service */ "hTjv");
 /* harmony import */ var _socket_socket_service__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! ./socket/socket.service */ "FRSv");
 /* harmony import */ var _relogin_relogin_component__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! ./relogin/relogin.component */ "ozsY");
-/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @angular/core */ "fXoL");
+/* harmony import */ var _angular_material_badge__WEBPACK_IMPORTED_MODULE_19__ = __webpack_require__(/*! @angular/material/badge */ "TU8p");
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_20__ = __webpack_require__(/*! @angular/core */ "fXoL");
+
 
 
 
@@ -1312,8 +1609,8 @@ __webpack_require__.r(__webpack_exports__);
 class AppModule {
 }
 AppModule.ɵfac = function AppModule_Factory(t) { return new (t || AppModule)(); };
-AppModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_19__["ɵɵdefineNgModule"]({ type: AppModule, bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"]] });
-AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_19__["ɵɵdefineInjector"]({ providers: [
+AppModule.ɵmod = _angular_core__WEBPACK_IMPORTED_MODULE_20__["ɵɵdefineNgModule"]({ type: AppModule, bootstrap: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"]] });
+AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_20__["ɵɵdefineInjector"]({ providers: [
         { provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HTTP_INTERCEPTORS"], useClass: _auth_auth_interceptor__WEBPACK_IMPORTED_MODULE_7__["AuthInterceptor"], multi: true },
         { provide: _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HTTP_INTERCEPTORS"], useClass: _err_interceptor__WEBPACK_IMPORTED_MODULE_9__["ErrInterceptor"], multi: true },
         _personal_information_profile_service__WEBPACK_IMPORTED_MODULE_15__["ProfileService"],
@@ -1329,8 +1626,9 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_19__["ɵɵdefineInjecto
             _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClientModule"],
             _menu_menu_module__WEBPACK_IMPORTED_MODULE_12__["MenuModule"],
             _search_search_module__WEBPACK_IMPORTED_MODULE_13__["SearchModule"],
+            _angular_material_badge__WEBPACK_IMPORTED_MODULE_19__["MatBadgeModule"]
         ]] });
-(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_19__["ɵɵsetNgModuleScope"](AppModule, { declarations: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"],
+(function () { (typeof ngJitMode === "undefined" || ngJitMode) && _angular_core__WEBPACK_IMPORTED_MODULE_20__["ɵɵsetNgModuleScope"](AppModule, { declarations: [_app_component__WEBPACK_IMPORTED_MODULE_5__["AppComponent"],
         _header_header_component__WEBPACK_IMPORTED_MODULE_6__["HeaderComponent"],
         _personal_information_personal_information_component__WEBPACK_IMPORTED_MODULE_8__["PersonalInformationComponent"],
         _error_error_component__WEBPACK_IMPORTED_MODULE_10__["ErrorComponent"],
@@ -1343,7 +1641,8 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_19__["ɵɵdefineInjecto
         _angular_platform_browser_animations__WEBPACK_IMPORTED_MODULE_1__["BrowserAnimationsModule"],
         _angular_common_http__WEBPACK_IMPORTED_MODULE_3__["HttpClientModule"],
         _menu_menu_module__WEBPACK_IMPORTED_MODULE_12__["MenuModule"],
-        _search_search_module__WEBPACK_IMPORTED_MODULE_13__["SearchModule"]] }); })();
+        _search_search_module__WEBPACK_IMPORTED_MODULE_13__["SearchModule"],
+        _angular_material_badge__WEBPACK_IMPORTED_MODULE_19__["MatBadgeModule"]] }); })();
 
 
 /***/ }),
@@ -1389,6 +1688,85 @@ class ChatService {
 }
 ChatService.ɵfac = function ChatService_Factory(t) { return new (t || ChatService)(_angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_2__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵinject"](_angular_router__WEBPACK_IMPORTED_MODULE_3__["Router"])); };
 ChatService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjectable"]({ token: ChatService, factory: ChatService.ɵfac, providedIn: 'root' });
+
+
+/***/ }),
+
+/***/ "brEo":
+/*!***************************************!*\
+  !*** ./src/app/socket/VCall.model.ts ***!
+  \***************************************/
+/*! exports provided: VCallAPI */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "VCallAPI", function() { return VCallAPI; });
+const errorBoxShow = (content) => {
+    alert(content);
+};
+const profile = { name: "Lê Thành Nhân" };
+class VCallAPI {
+    constructor(signal, index) {
+        this.indexFile = "/video-call.html";
+        this.errorBox = { show: errorBoxShow, };
+        this.frProfile = profile;
+        this.calling = false;
+        this.signal = signal;
+        this.indexFile = index;
+    }
+    ;
+    /**
+     * @param {Object} config
+     */
+    setErrorBox(config) {
+        this.errorBox = config;
+    }
+    /**
+     * @param {Object} config
+     */
+    setGetProfile(config) {
+        this.frProfile = config;
+    }
+    /**
+     *
+     */
+    createView() {
+        if (this.calling) {
+            this.errorBox.show("Only one call");
+            return;
+        }
+        this.calling = false;
+        const nWindow = window.open(this.indexFile, "_blank", "top=0, left=0, height=720, width=480");
+        nWindow.vCall = {};
+        console.log("vcall");
+        console.log(nWindow.vCall);
+        nWindow.vCall.signal = this.signal;
+        console.log('signal');
+        console.log(this.signal);
+        nWindow.vCall.frProfile = this.frProfile;
+        nWindow.onunload = (event) => {
+            console.log(event);
+            this.calling = false;
+        };
+        return nWindow;
+    }
+    /**
+     * @param {string} to  - Indentify of receiver
+     */
+    createCallView(to) {
+        const nWindow = this.createView();
+        nWindow.vCall.to = to;
+    }
+    /**
+     * @param {string} from - Indentify of sender
+     */
+    createReceiveView(from) {
+        console.log(`from: ${from}`);
+        const nWindow = this.createView();
+        nWindow.vCall.from = from;
+    }
+}
 
 
 /***/ }),
@@ -1483,6 +1861,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sharing_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../sharing.service */ "hTjv");
 /* harmony import */ var _personal_information_profile_service__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../personal-information/profile.service */ "ctZf");
 /* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/common */ "ofXK");
+/* harmony import */ var _angular_material_badge__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/material/badge */ "TU8p");
+
 
 
 
@@ -1505,35 +1885,45 @@ function HeaderComponent_div_0_span_4_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", (ctx_r3.currentUser == null ? null : ctx_r3.currentUser.name) || (ctx_r3.userDataInLocalStorage == null ? null : ctx_r3.userDataInLocalStorage.name), " ");
 } }
 function HeaderComponent_div_0_div_7_div_2_span_1_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "span", 18);
+} if (rf & 2) {
+    const item_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("matBadge", (item_r8 == null ? null : item_r8.numOfPeopleWaitToReply) || "...");
+} }
+function HeaderComponent_div_0_div_7_div_2_span_2_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 19);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const item_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", "/" + item_r8[1]);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", "/" + item_r8.url);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", item_r8[0], " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", item_r8.content, " ");
 } }
 function HeaderComponent_div_0_div_7_div_2_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, HeaderComponent_div_0_div_7_div_2_span_1_Template, 2, 2, "span", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, HeaderComponent_div_0_div_7_div_2_span_1_Template, 1, 1, "span", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, HeaderComponent_div_0_div_7_div_2_span_2_Template, 2, 2, "span", 17);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
+    const item_r8 = ctx.$implicit;
     const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", item_r8.showBadge && item_r8.key === "message");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r6.isUserAuthenticated);
 } }
 function HeaderComponent_div_0_div_7_span_4_Template(rf, ctx) { if (rf & 1) {
-    const _r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 18);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HeaderComponent_div_0_div_7_span_4_Template_span_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r12); const ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r11.onLogout(); });
+    const _r14 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HeaderComponent_div_0_div_7_span_4_Template_span_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r14); const ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r13.onLogout(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " \u0110\u0103ng xu\u1EA5t ");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } }
 function HeaderComponent_div_0_div_7_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 12);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 13);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, HeaderComponent_div_0_div_7_div_2_Template, 2, 1, "div", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, HeaderComponent_div_0_div_7_div_2_Template, 3, 2, "div", 14);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, HeaderComponent_div_0_div_7_span_4_Template, 2, 0, "span", 15);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
@@ -1542,33 +1932,33 @@ function HeaderComponent_div_0_div_7_Template(rf, ctx) { if (rf & 1) {
 } if (rf & 2) {
     const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r4.items);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r4.menuItems);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.isUserAuthenticated);
 } }
 function HeaderComponent_div_0_div_8_div_2_span_1_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 22);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const item_r15 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", "/" + item_r15[1]);
+    const item_r17 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", "/" + item_r17.url);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", item_r15[0], " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", item_r17.content, " ");
 } }
 function HeaderComponent_div_0_div_8_div_2_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, HeaderComponent_div_0_div_8_div_2_span_1_Template, 2, 2, "span", 19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, HeaderComponent_div_0_div_8_div_2_span_1_Template, 2, 2, "span", 21);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
-    const ctx_r13 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
+    const ctx_r15 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r13.isUserAuthenticated);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r15.isUserAuthenticated);
 } }
 function HeaderComponent_div_0_div_8_span_4_Template(rf, ctx) { if (rf & 1) {
-    const _r19 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 18);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HeaderComponent_div_0_div_8_span_4_Template_span_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r19); const ctx_r18 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r18.onLogout(); });
+    const _r21 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span", 20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HeaderComponent_div_0_div_8_span_4_Template_span_click_0_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r21); const ctx_r20 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3); return ctx_r20.onLogout(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " \u0110\u0103ng xu\u1EA5t ");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } }
@@ -1584,12 +1974,12 @@ function HeaderComponent_div_0_div_8_Template(rf, ctx) { if (rf & 1) {
 } if (rf & 2) {
     const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r5.items);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx_r5.menuItems);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r5.isUserAuthenticated);
 } }
 function HeaderComponent_div_0_Template(rf, ctx) { if (rf & 1) {
-    const _r21 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
+    const _r23 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵgetCurrentView"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "nav", 3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "span", 4);
@@ -1597,7 +1987,7 @@ function HeaderComponent_div_0_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, HeaderComponent_div_0_span_4_Template, 2, 1, "span", 6);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "button", 7);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HeaderComponent_div_0_Template_button_click_5_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r21); const ctx_r20 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r20.showMenuMobile(); });
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HeaderComponent_div_0_Template_button_click_5_listener() { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵrestoreView"](_r23); const ctx_r22 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](); return ctx_r22.showMenuMobile(); });
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](6, "i", 8);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, HeaderComponent_div_0_div_7_Template, 5, 2, "div", 9);
@@ -1617,23 +2007,23 @@ function HeaderComponent_div_0_Template(rf, ctx) { if (rf & 1) {
 } }
 function HeaderComponent_div_1_li_1_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "li");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "span", 23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "span", 25);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, " \u0110\u0103ng nh\u1EADp ");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } }
 function HeaderComponent_div_1_li_2_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "li");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "span", 24);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "span", 26);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "\u0110\u0103ng k\u00FD");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } }
 const _c0 = function (a0) { return { center_sceen: a0 }; };
 function HeaderComponent_div_1_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 21);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, HeaderComponent_div_1_li_1_Template, 3, 0, "li", 22);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, HeaderComponent_div_1_li_2_Template, 3, 0, "li", 22);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 23);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, HeaderComponent_div_1_li_1_Template, 3, 0, "li", 24);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, HeaderComponent_div_1_li_2_Template, 3, 0, "li", 24);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
@@ -1651,12 +2041,7 @@ class HeaderComponent {
         this.profileService = profileService;
         this.isUserAuthenticated = false;
         this.menuMobile = false;
-        this.tmpImgPath = "https://images.pexels.com/photos/4397900/pexels-photo-4397900.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260";
-        this.items = [
-            ['Tin nhắn', 'chat'],
-            ['Danh bạ', 'contact'],
-            ['Chỉnh sửa', 'personal-information'],
-        ];
+        this.tmpImgPath = 'https://images.pexels.com/photos/4397900/pexels-photo-4397900.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260';
     }
     ngOnChanges() {
         console.log('Data in header changed');
@@ -1671,15 +2056,14 @@ class HeaderComponent {
             .subscribe((isAuth) => {
             this.isUserAuthenticated = isAuth;
         });
-        this.sharingService.currentUserData
-            .subscribe((currentUser) => {
+        this.sharingService.currentUserData.subscribe((currentUser) => {
             if (currentUser) {
                 this.currentUser = currentUser;
             }
             else {
                 this.userListenerSub = this.profileService
                     .getUserStatusListener()
-                    .subscribe(userData => {
+                    .subscribe((userData) => {
                     this.currentUser = userData;
                     localStorage.setItem('userData', JSON.stringify(userData));
                 });
@@ -1703,14 +2087,14 @@ class HeaderComponent {
     }
 }
 HeaderComponent.ɵfac = function HeaderComponent_Factory(t) { return new (t || HeaderComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_auth_auth_service__WEBPACK_IMPORTED_MODULE_1__["AutheService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_angular_router__WEBPACK_IMPORTED_MODULE_2__["Router"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_sharing_service__WEBPACK_IMPORTED_MODULE_3__["SharingService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](_personal_information_profile_service__WEBPACK_IMPORTED_MODULE_4__["ProfileService"])); };
-HeaderComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: HeaderComponent, selectors: [["app-header"]], inputs: { isUserAuthenticated: "isUserAuthenticated" }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]], decls: 2, vars: 2, consts: [["class", "row align-items-center header", 4, "ngIf"], ["class", "row justify-content-center align-items-center header", 3, "ngClass", 4, "ngIf"], [1, "row", "align-items-center", "header"], [1, "navbar", "navbar-expand-lg"], [1, "navbar-brand"], ["alt", "", "class", "img-fluid user__avatar", "routerLink", "/personal-information", 3, "src", 4, "ngIf"], ["class", "user__name", "routerLink", "/personal-information", 4, "ngIf"], ["data-toggle", "collapse", "data-target", "#navbarSupportedContent", "aria-controls", "navbarSupportedContent", "aria-expanded", "false", "aria-label", "Toggle navigation", 1, "navbar-toggler", 3, "click"], [1, "fas", "fa-bars"], ["class", "collapse navbar-collapse", "id", "navbarSupportedContent", 4, "ngIf"], ["alt", "", "routerLink", "/personal-information", 1, "img-fluid", "user__avatar", 3, "src"], ["routerLink", "/personal-information", 1, "user__name"], ["id", "navbarSupportedContent", 1, "collapse", "navbar-collapse"], [1, "row", "justify-content-center"], [4, "ngFor", "ngForOf"], ["class", "user__case--item", 3, "click", 4, "ngIf"], ["class", "user__case--item", "routerLinkActive", "highlight", 3, "routerLink", 4, "ngIf"], ["routerLinkActive", "highlight", 1, "user__case--item", 3, "routerLink"], [1, "user__case--item", 3, "click"], ["class", "user__case--item", "routerLinkActive", "highlight", "data-toggle", "collapse", "data-target", "#navbarSupportedContent", 3, "routerLink", 4, "ngIf"], ["routerLinkActive", "highlight", "data-toggle", "collapse", "data-target", "#navbarSupportedContent", 1, "user__case--item", 3, "routerLink"], [1, "row", "justify-content-center", "align-items-center", "header", 3, "ngClass"], [4, "ngIf"], ["mat-button", "", "routerLink", "/auth/login", "routerLinkActive", "mat-accent", 1, "user__case--item", "log-res"], ["mat-button", "", "routerLink", "/auth/signup", "routerLinkActive", "mat-accent", 1, "user__case--item", "log-res"]], template: function HeaderComponent_Template(rf, ctx) { if (rf & 1) {
+HeaderComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: HeaderComponent, selectors: [["app-header"]], inputs: { isUserAuthenticated: "isUserAuthenticated", socketChangeIn: "socketChangeIn", menuItems: "menuItems" }, features: [_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵNgOnChangesFeature"]], decls: 2, vars: 2, consts: [["class", "row align-items-center header", 4, "ngIf"], ["class", "row justify-content-center align-items-center header", 3, "ngClass", 4, "ngIf"], [1, "row", "align-items-center", "header"], [1, "navbar", "navbar-expand-lg"], [1, "navbar-brand"], ["alt", "", "class", "img-fluid user__avatar", "routerLink", "/personal-information", 3, "src", 4, "ngIf"], ["class", "user__name", "routerLink", "/personal-information", 4, "ngIf"], ["data-toggle", "collapse", "data-target", "#navbarSupportedContent", "aria-controls", "navbarSupportedContent", "aria-expanded", "false", "aria-label", "Toggle navigation", 1, "navbar-toggler", 3, "click"], [1, "fas", "fa-bars"], ["class", "collapse navbar-collapse", "id", "navbarSupportedContent", 4, "ngIf"], ["alt", "", "routerLink", "/personal-information", 1, "img-fluid", "user__avatar", 3, "src"], ["routerLink", "/personal-information", 1, "user__name"], ["id", "navbarSupportedContent", 1, "collapse", "navbar-collapse"], [1, "row", "justify-content-center"], [4, "ngFor", "ngForOf"], ["class", "user__case--item", 3, "click", 4, "ngIf"], [3, "matBadge", 4, "ngIf"], ["class", "user__case--item", "routerLinkActive", "highlight", 3, "routerLink", 4, "ngIf"], [3, "matBadge"], ["routerLinkActive", "highlight", 1, "user__case--item", 3, "routerLink"], [1, "user__case--item", 3, "click"], ["class", "user__case--item", "routerLinkActive", "highlight", "data-toggle", "collapse", "data-target", "#navbarSupportedContent", 3, "routerLink", 4, "ngIf"], ["routerLinkActive", "highlight", "data-toggle", "collapse", "data-target", "#navbarSupportedContent", 1, "user__case--item", 3, "routerLink"], [1, "row", "justify-content-center", "align-items-center", "header", 3, "ngClass"], [4, "ngIf"], ["mat-button", "", "routerLink", "/auth/login", "routerLinkActive", "mat-accent", 1, "user__case--item", "log-res"], ["mat-button", "", "routerLink", "/auth/signup", "routerLinkActive", "mat-accent", 1, "user__case--item", "log-res"]], template: function HeaderComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](0, HeaderComponent_div_0_Template, 9, 4, "div", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, HeaderComponent_div_1_Template, 3, 5, "div", 1);
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.isUserAuthenticated);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", !ctx.isUserAuthenticated);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["NgIf"], _angular_router__WEBPACK_IMPORTED_MODULE_2__["RouterLink"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgForOf"], _angular_router__WEBPACK_IMPORTED_MODULE_2__["RouterLinkActive"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgClass"]], styles: [".highlight[_ngcontent-%COMP%] {\n  background-color: var(--color-1) !important;\n}\n\n.bg_color[_ngcontent-%COMP%] {\n  background-color: red;\n}\n\n.header[_ngcontent-%COMP%] {\n  margin: 0 !important;\n  padding: 0rem 1rem;\n  width: 100%;\n  height: 12.5vh;\n  background-color: var(--color-1);\n}\n\n.user__avatar[_ngcontent-%COMP%] {\n  width: 4rem;\n  height: 4rem;\n  object-fit: cover;\n  border-radius: 50%;\n  border: 2px solid var(--color-2);\n  cursor: pointer;\n}\n\n.user__name[_ngcontent-%COMP%] {\n  margin: 0 1rem;\n  font-size: 1.1rem;\n  font-weight: 700;\n  max-width: 60%;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  cursor: pointer;\n}\n\n.user__case--item[_ngcontent-%COMP%] {\n  display: inline-block;\n  padding: 0.75rem 2rem;\n  margin: 0.25rem;\n  border: 1px solid var(--color-2);\n  color: var(--color-3);\n  background-color: var(--color-2);\n  border-radius: 15px;\n  transition: all 750ms;\n  cursor: pointer;\n  box-shadow: 2px 2px 10px -1px var(--color-4);\n}\n\n.user__case--item[_ngcontent-%COMP%]:hover, .user__case--item.active[_ngcontent-%COMP%] {\n  text-decoration: none;\n  color: var(--color-3);\n  background-color: var(--color-1);\n  transition: all 750ms;\n}\n\n.user__icon-close[_ngcontent-%COMP%]:hover {\n  background-color: var(--color-2);\n  transition: all 750ms;\n}\n\n\n\n.navbar[_ngcontent-%COMP%] {\n  width: 100vw;\n  padding: 0 !important;\n}\n\n.navbar-brand[_ngcontent-%COMP%] {\n  width: 22.5vw;\n}\n\n.navbar-collapse[_ngcontent-%COMP%] {\n  justify-content: flex-end;\n  width: 72.5vw;\n  padding-right: 1rem;\n}\n\n\n\n@media only screen and (max-width: 480px) {\n  .header[_ngcontent-%COMP%] {\n    height: 10vh;\n    padding: 0 1rem;\n  }\n\n  .navbar-collapse[_ngcontent-%COMP%] {\n    position: fixed;\n    margin: 0;\n    padding: 2.5rem 0;\n    width: 100%;\n    top: 10.25vh;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background-color: var(--color-1);\n    z-index: 5;\n  }\n\n  .navbar-toggler[_ngcontent-%COMP%] {\n    padding: 0.5rem 0.75rem;\n    background-color: var(--color-2);\n    border-radius: 10px !important;\n  }\n  .user__case--item.log-res[_ngcontent-%COMP%] {\n    width: 9.5rem;\n    margin: 0rem 0.25rem;\n  }\n\n  .user__case--item[_ngcontent-%COMP%] {\n    margin-bottom: 2rem;\n    text-align: center;\n    width: 16rem;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImhlYWRlci5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UsMkNBQTJDO0FBQzdDOztBQUVBO0VBQ0UscUJBQXFCO0FBQ3ZCOztBQUVBO0VBQ0Usb0JBQW9CO0VBQ3BCLGtCQUFrQjtFQUNsQixXQUFXO0VBQ1gsY0FBYztFQUNkLGdDQUFnQztBQUNsQzs7QUFFQTtFQUNFLFdBQVc7RUFDWCxZQUFZO0VBQ1osaUJBQWlCO0VBQ2pCLGtCQUFrQjtFQUNsQixnQ0FBZ0M7RUFDaEMsZUFBZTtBQUNqQjs7QUFFQTtFQUNFLGNBQWM7RUFDZCxpQkFBaUI7RUFDakIsZ0JBQWdCO0VBQ2hCLGNBQWM7RUFDZCxtQkFBbUI7RUFDbkIsZ0JBQWdCO0VBQ2hCLHVCQUF1QjtFQUN2QixlQUFlO0FBQ2pCOztBQUVBO0VBQ0UscUJBQXFCO0VBQ3JCLHFCQUFxQjtFQUNyQixlQUFlO0VBQ2YsZ0NBQWdDO0VBQ2hDLHFCQUFxQjtFQUNyQixnQ0FBZ0M7RUFDaEMsbUJBQW1CO0VBQ25CLHFCQUFxQjtFQUNyQixlQUFlO0VBQ2YsNENBQTRDO0FBQzlDOztBQUVBOztFQUVFLHFCQUFxQjtFQUNyQixxQkFBcUI7RUFDckIsZ0NBQWdDO0VBQ2hDLHFCQUFxQjtBQUN2Qjs7QUFFQTtFQUNFLGdDQUFnQztFQUNoQyxxQkFBcUI7QUFDdkI7O0FBRUEsaUJBQWlCOztBQUNqQjtFQUNFLFlBQVk7RUFDWixxQkFBcUI7QUFDdkI7O0FBQ0E7RUFDRSxhQUFhO0FBQ2Y7O0FBRUE7RUFDRSx5QkFBeUI7RUFDekIsYUFBYTtFQUNiLG1CQUFtQjtBQUNyQjs7QUFFQSxlQUFlOztBQUVmO0VBQ0U7SUFDRSxZQUFZO0lBQ1osZUFBZTtFQUNqQjs7RUFFQTtJQUNFLGVBQWU7SUFDZixTQUFTO0lBQ1QsaUJBQWlCO0lBQ2pCLFdBQVc7SUFDWCxZQUFZO0lBQ1osT0FBTztJQUNQLFFBQVE7SUFDUixTQUFTO0lBQ1QsZ0NBQWdDO0lBQ2hDLFVBQVU7RUFDWjs7RUFFQTtJQUNFLHVCQUF1QjtJQUN2QixnQ0FBZ0M7SUFDaEMsOEJBQThCO0VBQ2hDO0VBQ0E7SUFDRSxhQUFhO0lBQ2Isb0JBQW9CO0VBQ3RCOztFQUVBO0lBQ0UsbUJBQW1CO0lBQ25CLGtCQUFrQjtJQUNsQixZQUFZO0VBQ2Q7QUFDRiIsImZpbGUiOiJoZWFkZXIuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5oaWdobGlnaHQge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0xKSAhaW1wb3J0YW50O1xufVxuXG4uYmdfY29sb3Ige1xuICBiYWNrZ3JvdW5kLWNvbG9yOiByZWQ7XG59XG5cbi5oZWFkZXIge1xuICBtYXJnaW46IDAgIWltcG9ydGFudDtcbiAgcGFkZGluZzogMHJlbSAxcmVtO1xuICB3aWR0aDogMTAwJTtcbiAgaGVpZ2h0OiAxMi41dmg7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTEpO1xufVxuXG4udXNlcl9fYXZhdGFyIHtcbiAgd2lkdGg6IDRyZW07XG4gIGhlaWdodDogNHJlbTtcbiAgb2JqZWN0LWZpdDogY292ZXI7XG4gIGJvcmRlci1yYWRpdXM6IDUwJTtcbiAgYm9yZGVyOiAycHggc29saWQgdmFyKC0tY29sb3ItMik7XG4gIGN1cnNvcjogcG9pbnRlcjtcbn1cblxuLnVzZXJfX25hbWUge1xuICBtYXJnaW46IDAgMXJlbTtcbiAgZm9udC1zaXplOiAxLjFyZW07XG4gIGZvbnQtd2VpZ2h0OiA3MDA7XG4gIG1heC13aWR0aDogNjAlO1xuICB3aGl0ZS1zcGFjZTogbm93cmFwO1xuICBvdmVyZmxvdzogaGlkZGVuO1xuICB0ZXh0LW92ZXJmbG93OiBlbGxpcHNpcztcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4udXNlcl9fY2FzZS0taXRlbSB7XG4gIGRpc3BsYXk6IGlubGluZS1ibG9jaztcbiAgcGFkZGluZzogMC43NXJlbSAycmVtO1xuICBtYXJnaW46IDAuMjVyZW07XG4gIGJvcmRlcjogMXB4IHNvbGlkIHZhcigtLWNvbG9yLTIpO1xuICBjb2xvcjogdmFyKC0tY29sb3ItMyk7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTIpO1xuICBib3JkZXItcmFkaXVzOiAxNXB4O1xuICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG4gIGN1cnNvcjogcG9pbnRlcjtcbiAgYm94LXNoYWRvdzogMnB4IDJweCAxMHB4IC0xcHggdmFyKC0tY29sb3ItNCk7XG59XG5cbi51c2VyX19jYXNlLS1pdGVtOmhvdmVyLFxuLnVzZXJfX2Nhc2UtLWl0ZW0uYWN0aXZlIHtcbiAgdGV4dC1kZWNvcmF0aW9uOiBub25lO1xuICBjb2xvcjogdmFyKC0tY29sb3ItMyk7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTEpO1xuICB0cmFuc2l0aW9uOiBhbGwgNzUwbXM7XG59XG5cbi51c2VyX19pY29uLWNsb3NlOmhvdmVyIHtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbn1cblxuLyogU2V0IEJvb3N0cmFwICovXG4ubmF2YmFyIHtcbiAgd2lkdGg6IDEwMHZ3O1xuICBwYWRkaW5nOiAwICFpbXBvcnRhbnQ7XG59XG4ubmF2YmFyLWJyYW5kIHtcbiAgd2lkdGg6IDIyLjV2dztcbn1cblxuLm5hdmJhci1jb2xsYXBzZSB7XG4gIGp1c3RpZnktY29udGVudDogZmxleC1lbmQ7XG4gIHdpZHRoOiA3Mi41dnc7XG4gIHBhZGRpbmctcmlnaHQ6IDFyZW07XG59XG5cbi8qIFJlc3BvbnNpdmUgKi9cblxuQG1lZGlhIG9ubHkgc2NyZWVuIGFuZCAobWF4LXdpZHRoOiA0ODBweCkge1xuICAuaGVhZGVyIHtcbiAgICBoZWlnaHQ6IDEwdmg7XG4gICAgcGFkZGluZzogMCAxcmVtO1xuICB9XG5cbiAgLm5hdmJhci1jb2xsYXBzZSB7XG4gICAgcG9zaXRpb246IGZpeGVkO1xuICAgIG1hcmdpbjogMDtcbiAgICBwYWRkaW5nOiAyLjVyZW0gMDtcbiAgICB3aWR0aDogMTAwJTtcbiAgICB0b3A6IDEwLjI1dmg7XG4gICAgbGVmdDogMDtcbiAgICByaWdodDogMDtcbiAgICBib3R0b206IDA7XG4gICAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG4gICAgei1pbmRleDogNTtcbiAgfVxuXG4gIC5uYXZiYXItdG9nZ2xlciB7XG4gICAgcGFkZGluZzogMC41cmVtIDAuNzVyZW07XG4gICAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gICAgYm9yZGVyLXJhZGl1czogMTBweCAhaW1wb3J0YW50O1xuICB9XG4gIC51c2VyX19jYXNlLS1pdGVtLmxvZy1yZXMge1xuICAgIHdpZHRoOiA5LjVyZW07XG4gICAgbWFyZ2luOiAwcmVtIDAuMjVyZW07XG4gIH1cblxuICAudXNlcl9fY2FzZS0taXRlbSB7XG4gICAgbWFyZ2luLWJvdHRvbTogMnJlbTtcbiAgICB0ZXh0LWFsaWduOiBjZW50ZXI7XG4gICAgd2lkdGg6IDE2cmVtO1xuICB9XG59XG4iXX0= */"] });
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["NgIf"], _angular_router__WEBPACK_IMPORTED_MODULE_2__["RouterLink"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgForOf"], _angular_material_badge__WEBPACK_IMPORTED_MODULE_6__["MatBadge"], _angular_router__WEBPACK_IMPORTED_MODULE_2__["RouterLinkActive"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgClass"]], styles: [".mat-badge-content[_ngcontent-%COMP%] {\n  background-color: red;\n}\n\n.highlight[_ngcontent-%COMP%] {\n  background-color: var(--color-1) !important;\n}\n\n.bg_color[_ngcontent-%COMP%] {\n  background-color: red;\n}\n\n.header[_ngcontent-%COMP%] {\n  margin: 0 !important;\n  padding: 0rem 1rem;\n  width: 100%;\n  height: 12.5vh;\n  background-color: var(--color-1);\n}\n\n.user__avatar[_ngcontent-%COMP%] {\n  width: 4rem;\n  height: 4rem;\n  object-fit: cover;\n  border-radius: 50%;\n  border: 2px solid var(--color-2);\n  cursor: pointer;\n}\n\n.user__name[_ngcontent-%COMP%] {\n  margin: 0 1rem;\n  font-size: 1.1rem;\n  font-weight: 700;\n  max-width: 60%;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  cursor: pointer;\n}\n\n.user__case--item[_ngcontent-%COMP%] {\n  display: inline-block;\n  padding: 0.75rem 2rem;\n  margin: 0.25rem;\n  border: 1px solid var(--color-2);\n  color: var(--color-3);\n  background-color: var(--color-2);\n  border-radius: 15px;\n  transition: all 750ms;\n  cursor: pointer;\n  box-shadow: 2px 2px 10px -1px var(--color-4);\n}\n\n.user__case--item[_ngcontent-%COMP%]:hover, .user__case--item.active[_ngcontent-%COMP%] {\n  text-decoration: none;\n  color: var(--color-3);\n  background-color: var(--color-1);\n  transition: all 750ms;\n}\n\n.user__icon-close[_ngcontent-%COMP%]:hover {\n  background-color: var(--color-2);\n  transition: all 750ms;\n}\n\n\n\n.navbar[_ngcontent-%COMP%] {\n  width: 100vw;\n  padding: 0 !important;\n}\n\n.navbar-brand[_ngcontent-%COMP%] {\n  width: 22.5vw;\n}\n\n.navbar-collapse[_ngcontent-%COMP%] {\n  justify-content: flex-end;\n  width: 72.5vw;\n  padding-right: 1rem;\n}\n\n\n\n@media only screen and (max-width: 480px) {\n  .header[_ngcontent-%COMP%] {\n    height: 10vh;\n    padding: 0 1rem;\n  }\n\n  .navbar-collapse[_ngcontent-%COMP%] {\n    position: fixed;\n    margin: 0;\n    padding: 2.5rem 0;\n    width: 100%;\n    top: 10.25vh;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background-color: var(--color-1);\n    z-index: 5;\n  }\n\n  .navbar-toggler[_ngcontent-%COMP%] {\n    padding: 0.5rem 0.75rem;\n    background-color: var(--color-2);\n    border-radius: 10px !important;\n  }\n  .user__case--item.log-res[_ngcontent-%COMP%] {\n    width: 9.5rem;\n    margin: 0rem 0.25rem;\n  }\n\n  .user__case--item[_ngcontent-%COMP%] {\n    margin-bottom: 2rem;\n    text-align: center;\n    width: 16rem;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImhlYWRlci5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0VBQ0UscUJBQXFCO0FBQ3ZCOztBQUVBO0VBQ0UsMkNBQTJDO0FBQzdDOztBQUVBO0VBQ0UscUJBQXFCO0FBQ3ZCOztBQUVBO0VBQ0Usb0JBQW9CO0VBQ3BCLGtCQUFrQjtFQUNsQixXQUFXO0VBQ1gsY0FBYztFQUNkLGdDQUFnQztBQUNsQzs7QUFFQTtFQUNFLFdBQVc7RUFDWCxZQUFZO0VBQ1osaUJBQWlCO0VBQ2pCLGtCQUFrQjtFQUNsQixnQ0FBZ0M7RUFDaEMsZUFBZTtBQUNqQjs7QUFFQTtFQUNFLGNBQWM7RUFDZCxpQkFBaUI7RUFDakIsZ0JBQWdCO0VBQ2hCLGNBQWM7RUFDZCxtQkFBbUI7RUFDbkIsZ0JBQWdCO0VBQ2hCLHVCQUF1QjtFQUN2QixlQUFlO0FBQ2pCOztBQUVBO0VBQ0UscUJBQXFCO0VBQ3JCLHFCQUFxQjtFQUNyQixlQUFlO0VBQ2YsZ0NBQWdDO0VBQ2hDLHFCQUFxQjtFQUNyQixnQ0FBZ0M7RUFDaEMsbUJBQW1CO0VBQ25CLHFCQUFxQjtFQUNyQixlQUFlO0VBQ2YsNENBQTRDO0FBQzlDOztBQUVBOztFQUVFLHFCQUFxQjtFQUNyQixxQkFBcUI7RUFDckIsZ0NBQWdDO0VBQ2hDLHFCQUFxQjtBQUN2Qjs7QUFFQTtFQUNFLGdDQUFnQztFQUNoQyxxQkFBcUI7QUFDdkI7O0FBRUEsaUJBQWlCOztBQUNqQjtFQUNFLFlBQVk7RUFDWixxQkFBcUI7QUFDdkI7O0FBQ0E7RUFDRSxhQUFhO0FBQ2Y7O0FBRUE7RUFDRSx5QkFBeUI7RUFDekIsYUFBYTtFQUNiLG1CQUFtQjtBQUNyQjs7QUFFQSxlQUFlOztBQUVmO0VBQ0U7SUFDRSxZQUFZO0lBQ1osZUFBZTtFQUNqQjs7RUFFQTtJQUNFLGVBQWU7SUFDZixTQUFTO0lBQ1QsaUJBQWlCO0lBQ2pCLFdBQVc7SUFDWCxZQUFZO0lBQ1osT0FBTztJQUNQLFFBQVE7SUFDUixTQUFTO0lBQ1QsZ0NBQWdDO0lBQ2hDLFVBQVU7RUFDWjs7RUFFQTtJQUNFLHVCQUF1QjtJQUN2QixnQ0FBZ0M7SUFDaEMsOEJBQThCO0VBQ2hDO0VBQ0E7SUFDRSxhQUFhO0lBQ2Isb0JBQW9CO0VBQ3RCOztFQUVBO0lBQ0UsbUJBQW1CO0lBQ25CLGtCQUFrQjtJQUNsQixZQUFZO0VBQ2Q7QUFDRiIsImZpbGUiOiJoZWFkZXIuY29tcG9uZW50LmNzcyIsInNvdXJjZXNDb250ZW50IjpbIi5tYXQtYmFkZ2UtY29udGVudCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbn1cblxuLmhpZ2hsaWdodCB7XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTEpICFpbXBvcnRhbnQ7XG59XG5cbi5iZ19jb2xvciB7XG4gIGJhY2tncm91bmQtY29sb3I6IHJlZDtcbn1cblxuLmhlYWRlciB7XG4gIG1hcmdpbjogMCAhaW1wb3J0YW50O1xuICBwYWRkaW5nOiAwcmVtIDFyZW07XG4gIHdpZHRoOiAxMDAlO1xuICBoZWlnaHQ6IDEyLjV2aDtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG59XG5cbi51c2VyX19hdmF0YXIge1xuICB3aWR0aDogNHJlbTtcbiAgaGVpZ2h0OiA0cmVtO1xuICBvYmplY3QtZml0OiBjb3ZlcjtcbiAgYm9yZGVyLXJhZGl1czogNTAlO1xuICBib3JkZXI6IDJweCBzb2xpZCB2YXIoLS1jb2xvci0yKTtcbiAgY3Vyc29yOiBwb2ludGVyO1xufVxuXG4udXNlcl9fbmFtZSB7XG4gIG1hcmdpbjogMCAxcmVtO1xuICBmb250LXNpemU6IDEuMXJlbTtcbiAgZm9udC13ZWlnaHQ6IDcwMDtcbiAgbWF4LXdpZHRoOiA2MCU7XG4gIHdoaXRlLXNwYWNlOiBub3dyYXA7XG4gIG92ZXJmbG93OiBoaWRkZW47XG4gIHRleHQtb3ZlcmZsb3c6IGVsbGlwc2lzO1xuICBjdXJzb3I6IHBvaW50ZXI7XG59XG5cbi51c2VyX19jYXNlLS1pdGVtIHtcbiAgZGlzcGxheTogaW5saW5lLWJsb2NrO1xuICBwYWRkaW5nOiAwLjc1cmVtIDJyZW07XG4gIG1hcmdpbjogMC4yNXJlbTtcbiAgYm9yZGVyOiAxcHggc29saWQgdmFyKC0tY29sb3ItMik7XG4gIGNvbG9yOiB2YXIoLS1jb2xvci0zKTtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMik7XG4gIGJvcmRlci1yYWRpdXM6IDE1cHg7XG4gIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbiAgY3Vyc29yOiBwb2ludGVyO1xuICBib3gtc2hhZG93OiAycHggMnB4IDEwcHggLTFweCB2YXIoLS1jb2xvci00KTtcbn1cblxuLnVzZXJfX2Nhc2UtLWl0ZW06aG92ZXIsXG4udXNlcl9fY2FzZS0taXRlbS5hY3RpdmUge1xuICB0ZXh0LWRlY29yYXRpb246IG5vbmU7XG4gIGNvbG9yOiB2YXIoLS1jb2xvci0zKTtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG4gIHRyYW5zaXRpb246IGFsbCA3NTBtcztcbn1cblxuLnVzZXJfX2ljb24tY2xvc2U6aG92ZXIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0yKTtcbiAgdHJhbnNpdGlvbjogYWxsIDc1MG1zO1xufVxuXG4vKiBTZXQgQm9vc3RyYXAgKi9cbi5uYXZiYXIge1xuICB3aWR0aDogMTAwdnc7XG4gIHBhZGRpbmc6IDAgIWltcG9ydGFudDtcbn1cbi5uYXZiYXItYnJhbmQge1xuICB3aWR0aDogMjIuNXZ3O1xufVxuXG4ubmF2YmFyLWNvbGxhcHNlIHtcbiAganVzdGlmeS1jb250ZW50OiBmbGV4LWVuZDtcbiAgd2lkdGg6IDcyLjV2dztcbiAgcGFkZGluZy1yaWdodDogMXJlbTtcbn1cblxuLyogUmVzcG9uc2l2ZSAqL1xuXG5AbWVkaWEgb25seSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDQ4MHB4KSB7XG4gIC5oZWFkZXIge1xuICAgIGhlaWdodDogMTB2aDtcbiAgICBwYWRkaW5nOiAwIDFyZW07XG4gIH1cblxuICAubmF2YmFyLWNvbGxhcHNlIHtcbiAgICBwb3NpdGlvbjogZml4ZWQ7XG4gICAgbWFyZ2luOiAwO1xuICAgIHBhZGRpbmc6IDIuNXJlbSAwO1xuICAgIHdpZHRoOiAxMDAlO1xuICAgIHRvcDogMTAuMjV2aDtcbiAgICBsZWZ0OiAwO1xuICAgIHJpZ2h0OiAwO1xuICAgIGJvdHRvbTogMDtcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0xKTtcbiAgICB6LWluZGV4OiA1O1xuICB9XG5cbiAgLm5hdmJhci10b2dnbGVyIHtcbiAgICBwYWRkaW5nOiAwLjVyZW0gMC43NXJlbTtcbiAgICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci0yKTtcbiAgICBib3JkZXItcmFkaXVzOiAxMHB4ICFpbXBvcnRhbnQ7XG4gIH1cbiAgLnVzZXJfX2Nhc2UtLWl0ZW0ubG9nLXJlcyB7XG4gICAgd2lkdGg6IDkuNXJlbTtcbiAgICBtYXJnaW46IDByZW0gMC4yNXJlbTtcbiAgfVxuXG4gIC51c2VyX19jYXNlLS1pdGVtIHtcbiAgICBtYXJnaW4tYm90dG9tOiAycmVtO1xuICAgIHRleHQtYWxpZ246IGNlbnRlcjtcbiAgICB3aWR0aDogMTZyZW07XG4gIH1cbn1cbiJdfQ== */"] });
 
 
 /***/ }),
@@ -1743,11 +2127,58 @@ class SharingService {
         this.currentReloginStatus = this.reloginSource.asObservable();
         this.messageSource = new rxjs__WEBPACK_IMPORTED_MODULE_0__["BehaviorSubject"](null);
         this.currentMessageStatus = this.messageSource.asObservable();
+        // save history of room
         this.messageInRommReadSource = new rxjs__WEBPACK_IMPORTED_MODULE_0__["BehaviorSubject"](null);
         this.currentMessageInRommReadedSourceStatus = this.messageInRommReadSource.asObservable();
+        this.messageReadHistory = [];
+        // save lastMessage of each room
+        // nữa đỗi từ từ qua variable and variable$ dễ đọc hơn
+        this.lastMessage = new rxjs__WEBPACK_IMPORTED_MODULE_0__["BehaviorSubject"](null);
+        this.lastMessage$ = this.lastMessage.asObservable();
+        this.lastMessageHistory = [];
+        this.sendNewImageSource = new rxjs__WEBPACK_IMPORTED_MODULE_0__["BehaviorSubject"](null);
+        this.currentSendNewImageStatus = this.sendNewImageSource.asObservable();
+    }
+    changeSendNewImage(message) {
+        this.sendNewImageSource.next(message);
     }
     changeMessageInRoomRead(data) {
-        this.messageInRommReadSource.next(data);
+        if (this.messageReadHistory.length > 0) {
+            this.messageReadHistory.forEach((history) => {
+                if ((history === null || history === void 0 ? void 0 : history.roomId) !== (data === null || data === void 0 ? void 0 : data.roomId)) {
+                    this.messageReadHistory.push(data);
+                }
+                else {
+                    if ((history === null || history === void 0 ? void 0 : history.value) !== (data === null || data === void 0 ? void 0 : data.value)) {
+                        const index = this.messageReadHistory.indexOf(history);
+                        this.messageReadHistory[index] = data;
+                    }
+                }
+            });
+        }
+        else {
+            this.messageReadHistory.push(data);
+        }
+        this.messageInRommReadSource.next(this.messageReadHistory);
+    }
+    changeLastMessageOfRoom(data) {
+        if (this.lastMessageHistory.length > 0) {
+            this.lastMessageHistory.forEach((history) => {
+                if ((history === null || history === void 0 ? void 0 : history.roomId) !== (data === null || data === void 0 ? void 0 : data.roomId)) {
+                    this.lastMessageHistory.push(data);
+                }
+                else {
+                    if ((history === null || history === void 0 ? void 0 : history.value) !== (data === null || data === void 0 ? void 0 : data.value)) {
+                        const index = this.lastMessageHistory.indexOf(history);
+                        this.lastMessageHistory[index] = data;
+                    }
+                }
+            });
+        }
+        else {
+            this.lastMessageHistory.push(data);
+        }
+        this.lastMessage.next(this.lastMessageHistory);
     }
     changeMessage(messages) {
         this.messageSource.next(messages);
@@ -2067,15 +2498,15 @@ const _c0 = ["scrollMe"];
 function ChatRoomchatBodyComponent_div_3_div_1_img_1_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "img", 11);
 } if (rf & 2) {
-    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r5.chatroom == null ? null : ctx_r5.chatroom.avatar, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+    const ctx_r7 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r7.chatroom == null ? null : ctx_r7.chatroom.avatar, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
 } }
 function ChatRoomchatBodyComponent_div_3_div_1_img_2_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "img", 11);
 } if (rf & 2) {
     const message_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2).$implicit;
-    const ctx_r6 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r6.profileOfFriends[message_r2.sender] == null ? null : ctx_r6.profileOfFriends[message_r2.sender].avatar, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+    const ctx_r8 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r8.profileOfFriends[message_r2.sender] == null ? null : ctx_r8.profileOfFriends[message_r2.sender].avatar, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
 } }
 function ChatRoomchatBodyComponent_div_3_div_1_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 6);
@@ -2103,62 +2534,117 @@ function ChatRoomchatBodyComponent_div_3_div_1_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("title", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](5, 5, message_r2.created_at, "medium"));
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", message_r2.data, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", message_r2.data == null ? null : message_r2.data.content, " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r3.profileOfFriends[message_r2.sender] == null ? null : ctx_r3.profileOfFriends[message_r2.sender].name, " ");
 } }
-function ChatRoomchatBodyComponent_div_3_div_2_span_6_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " You ");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+function ChatRoomchatBodyComponent_div_3_div_2_img_1_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "img", 11);
+} if (rf & 2) {
+    const ctx_r11 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r11.chatroom == null ? null : ctx_r11.chatroom.avatar, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
 } }
-function ChatRoomchatBodyComponent_div_3_div_2_span_7_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+function ChatRoomchatBodyComponent_div_3_div_2_img_2_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](0, "img", 11);
 } if (rf & 2) {
     const message_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2).$implicit;
-    const ctx_r10 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r10.profileOfFriends[message_r2.sender] == null ? null : ctx_r10.profileOfFriends[message_r2.sender].name, " ");
+    const ctx_r12 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", ctx_r12.profileOfFriends[message_r2.sender] == null ? null : ctx_r12.profileOfFriends[message_r2.sender].avatar, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
 } }
 function ChatRoomchatBodyComponent_div_3_div_2_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 12);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 13);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "span", 9);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](3, "date");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, ChatRoomchatBodyComponent_div_3_div_2_img_1_Template, 1, 1, "img", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, ChatRoomchatBodyComponent_div_3_div_2_img_2_Template, 1, 1, "img", 7);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "div", 8);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](4, "img", 12);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](6, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](7);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 14);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, ChatRoomchatBodyComponent_div_3_div_2_span_6_Template, 2, 0, "span", 15);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, ChatRoomchatBodyComponent_div_3_div_2_span_7_Template, 2, 1, "span", 15);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const message_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
     const ctx_r4 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.profileOfFriends.length === 2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx_r4.profileOfFriends.length !== 2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", message_r2.data == null ? null : message_r2.data.url, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r4.profileOfFriends[message_r2.sender] == null ? null : ctx_r4.profileOfFriends[message_r2.sender].name, " ");
+} }
+function ChatRoomchatBodyComponent_div_3_div_3_span_6_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1, " You ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} }
+function ChatRoomchatBodyComponent_div_3_div_3_span_7_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "span");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const message_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"](2).$implicit;
+    const ctx_r16 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r16.profileOfFriends[message_r2.sender] == null ? null : ctx_r16.profileOfFriends[message_r2.sender].name, " ");
+} }
+function ChatRoomchatBodyComponent_div_3_div_3_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "span", 9);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipe"](3, "date");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "div", 15);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](6, ChatRoomchatBodyComponent_div_3_div_3_span_6_Template, 2, 0, "span", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](7, ChatRoomchatBodyComponent_div_3_div_3_span_7_Template, 2, 1, "span", 16);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const message_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    const ctx_r5 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("title", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpipeBind2"](3, 4, message_r2.created_at, "medium"));
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", message_r2.data, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", message_r2.data == null ? null : message_r2.data.content, " ");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", (ctx_r4.profileOfFriends[message_r2.sender] == null ? null : ctx_r4.profileOfFriends[message_r2.sender]._id) === ctx_r4.currentUserId);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", (ctx_r5.profileOfFriends[message_r2.sender] == null ? null : ctx_r5.profileOfFriends[message_r2.sender]._id) === ctx_r5.currentUserId);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", (ctx_r4.profileOfFriends[message_r2.sender] == null ? null : ctx_r4.profileOfFriends[message_r2.sender]._id) !== ctx_r4.currentUserId);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", (ctx_r5.profileOfFriends[message_r2.sender] == null ? null : ctx_r5.profileOfFriends[message_r2.sender]._id) !== ctx_r5.currentUserId);
+} }
+function ChatRoomchatBodyComponent_div_3_div_4_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 13);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 14);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](2, "img", 12);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const message_r2 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]().$implicit;
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("src", message_r2.data == null ? null : message_r2.data.url, _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵsanitizeUrl"]);
 } }
 function ChatRoomchatBodyComponent_div_3_Template(rf, ctx) { if (rf & 1) {
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div");
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](1, ChatRoomchatBodyComponent_div_3_div_1_Template, 10, 8, "div", 4);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, ChatRoomchatBodyComponent_div_3_div_2_Template, 8, 7, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](2, ChatRoomchatBodyComponent_div_3_div_2_Template, 8, 4, "div", 4);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, ChatRoomchatBodyComponent_div_3_div_3_Template, 8, 7, "div", 5);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](4, ChatRoomchatBodyComponent_div_3_div_4_Template, 3, 1, "div", 5);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
     const message_r2 = ctx.$implicit;
     const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", message_r2.sender !== ctx_r1.currentUserId);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", message_r2.sender !== ctx_r1.currentUserId && !(message_r2.data == null ? null : message_r2.data.url));
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", message_r2.sender === ctx_r1.currentUserId);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", message_r2.sender !== ctx_r1.currentUserId && (message_r2.data == null ? null : message_r2.data.url));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", message_r2.sender === ctx_r1.currentUserId && !(message_r2.data == null ? null : message_r2.data.url));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", message_r2.sender === ctx_r1.currentUserId && (message_r2.data == null ? null : message_r2.data.url));
 } }
 class ChatRoomchatBodyComponent {
     constructor(roomService, sharingService, socketService, profileService) {
@@ -2171,8 +2657,10 @@ class ChatRoomchatBodyComponent {
         this.profileOfFriends = [];
     }
     ngOnInit() {
-        this.socketService.getMessages().subscribe((message) => {
+        this.socketService.onMessage().subscribe((message) => {
             if (message.room === this.chatroom._id) {
+                console.log('new message: ');
+                console.log(message);
                 this.messages.push(message);
             }
         });
@@ -2182,13 +2670,8 @@ class ChatRoomchatBodyComponent {
     }
     scrollToBottom() {
         try {
-            console.log(`ChatRoom Top: ${this.chatroom.top}`);
-            var height = this.myScroller.nativeElement.scrollHeight;
-            if (this.chatroom.top > 1000) {
-                this.chatroom.top = 500;
-            }
-            console.log(`Height: ${height}`);
-            if (this.chatroom.top < height) {
+            var heightRoomChat = this.myScroller.nativeElement.scrollHeight;
+            if (this.chatroom.top != heightRoomChat) {
                 this.myScroller.nativeElement.scrollTop =
                     this.myScroller.nativeElement.scrollHeight;
                 this.chatroom.top = this.myScroller.nativeElement.scrollHeight;
@@ -2203,16 +2686,16 @@ ChatRoomchatBodyComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵ
     } if (rf & 2) {
         let _t;
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵqueryRefresh"](_t = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵloadQuery"]()) && (ctx.myScroller = _t.first);
-    } }, inputs: { chatroom: "chatroom", messages: "messages", profileOfFriends: "profileOfFriends" }, decls: 4, vars: 1, consts: [[1, "row", "chat-box__body"], ["scrollMe", ""], [1, "col"], [4, "ngFor", "ngForOf"], ["class", "row", 4, "ngIf"], ["class", "row justify-content-end", 4, "ngIf"], [1, "row"], ["class", "user__avatar", 3, "src", 4, "ngIf"], [1, "mess", "mess-left"], [3, "title"], [1, "mess-sender"], [1, "user__avatar", 3, "src"], [1, "row", "justify-content-end"], [1, "mess", "mess-right"], [1, "mess-sender", 2, "text-align", "end"], [4, "ngIf"]], template: function ChatRoomchatBodyComponent_Template(rf, ctx) { if (rf & 1) {
+    } }, inputs: { chatroom: "chatroom", messages: "messages", profileOfFriends: "profileOfFriends" }, decls: 4, vars: 1, consts: [[1, "row", "chat-box__body"], ["scrollMe", ""], [1, "col"], [4, "ngFor", "ngForOf"], ["class", "row", 4, "ngIf"], ["class", "row justify-content-end", 4, "ngIf"], [1, "row"], ["class", "user__avatar", 3, "src", 4, "ngIf"], [1, "mess", "mess-left"], [3, "title"], [1, "mess-sender"], [1, "user__avatar", 3, "src"], ["alt", "h\u00ECnh \u1EA3nh", 1, "mess-image", 3, "src"], [1, "row", "justify-content-end"], [1, "mess", "mess-right"], [1, "mess-sender", 2, "text-align", "end"], [4, "ngIf"]], template: function ChatRoomchatBodyComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "div", 0, 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "div", 2);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, ChatRoomchatBodyComponent_div_3_Template, 3, 2, "div", 3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](3, ChatRoomchatBodyComponent_div_3_Template, 5, 4, "div", 3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngForOf", ctx.messages);
-    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["NgForOf"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgIf"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["DatePipe"]], styles: [".user__avatar[_ngcontent-%COMP%] {\n  width: 2rem;\n  height: 2rem;\n  object-fit: cover;\n  border-radius: 50%;\n  border: 2px solid var(--color-2);\n  cursor: pointer;\n}\n.chat-box__body[_ngcontent-%COMP%] {\n  height: 55vh;\n  max-height: 55vh;\n  padding: 0.5rem 1rem;\n  overflow-y: auto;\n  background-color: var(--color-2);\n  border-left: 1px solid var(--color-1);\n  border-right: 1px solid var(--color-1);\n}\n.chat-box__body[_ngcontent-%COMP%]::-webkit-scrollbar {\n  width: 6px;\n}\n.chat-box__body[_ngcontent-%COMP%]::-webkit-scrollbar-thumb {\n  background-color: var(--color-4);\n  border-radius: 5px;\n}\n.mess-sender[_ngcontent-%COMP%] {\n  width: 100%;\n  padding: 0 1rem;\n  font-size: 0.6rem;\n}\n.mess[_ngcontent-%COMP%] {\n  display: inline;\n  \n  padding: 1rem;\n  max-width: 32.5rem;\n  font-size: 0.9rem;\n  border-radius: 15px;\n}\n.mess-left[_ngcontent-%COMP%] {\n  margin: 0.5rem 2rem 0.5rem 0;\n  background-color: var(--color-1);\n  box-shadow: 2px 2px 5px 0px var(--color-4);\n}\n.mess-right[_ngcontent-%COMP%] {\n  margin: 0.5rem 0 0.5rem 2rem;\n  background-color: var(--color-4);\n  box-shadow: 2px 2px 5px 0px var(--color-1);\n}\n@media only screen and (max-width: 480px) {\n  .chat-box__body[_ngcontent-%COMP%] {\n    height: 72.5vh;\n    max-height: 72.5vh;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYXQtcm9vbWNoYXQtYm9keS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLGtCQUFrQjtBQUNsQjtFQUNFLFdBQVc7RUFDWCxZQUFZO0VBQ1osaUJBQWlCO0VBQ2pCLGtCQUFrQjtFQUNsQixnQ0FBZ0M7RUFDaEMsZUFBZTtBQUNqQjtBQUVBO0VBQ0UsWUFBWTtFQUNaLGdCQUFnQjtFQUNoQixvQkFBb0I7RUFDcEIsZ0JBQWdCO0VBQ2hCLGdDQUFnQztFQUNoQyxxQ0FBcUM7RUFDckMsc0NBQXNDO0FBQ3hDO0FBRUE7RUFDRSxVQUFVO0FBQ1o7QUFFQTtFQUNFLGdDQUFnQztFQUNoQyxrQkFBa0I7QUFDcEI7QUFFQTtFQUNFLFdBQVc7RUFDWCxlQUFlO0VBQ2YsaUJBQWlCO0FBQ25CO0FBRUE7RUFDRSxlQUFlO0VBQ2Y7Ozt1QkFHcUI7RUFDckIsYUFBYTtFQUNiLGtCQUFrQjtFQUNsQixpQkFBaUI7RUFDakIsbUJBQW1CO0FBQ3JCO0FBRUE7RUFDRSw0QkFBNEI7RUFDNUIsZ0NBQWdDO0VBQ2hDLDBDQUEwQztBQUM1QztBQUVBO0VBQ0UsNEJBQTRCO0VBQzVCLGdDQUFnQztFQUNoQywwQ0FBMEM7QUFDNUM7QUFFQTtFQUNFO0lBQ0UsY0FBYztJQUNkLGtCQUFrQjtFQUNwQjtBQUNGIiwiZmlsZSI6ImNoYXQtcm9vbWNoYXQtYm9keS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLyogQ2hhdCBCb3ggQm9keSAqL1xuLnVzZXJfX2F2YXRhciB7XG4gIHdpZHRoOiAycmVtO1xuICBoZWlnaHQ6IDJyZW07XG4gIG9iamVjdC1maXQ6IGNvdmVyO1xuICBib3JkZXItcmFkaXVzOiA1MCU7XG4gIGJvcmRlcjogMnB4IHNvbGlkIHZhcigtLWNvbG9yLTIpO1xuICBjdXJzb3I6IHBvaW50ZXI7XG59XG5cbi5jaGF0LWJveF9fYm9keSB7XG4gIGhlaWdodDogNTV2aDtcbiAgbWF4LWhlaWdodDogNTV2aDtcbiAgcGFkZGluZzogMC41cmVtIDFyZW07XG4gIG92ZXJmbG93LXk6IGF1dG87XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTIpO1xuICBib3JkZXItbGVmdDogMXB4IHNvbGlkIHZhcigtLWNvbG9yLTEpO1xuICBib3JkZXItcmlnaHQ6IDFweCBzb2xpZCB2YXIoLS1jb2xvci0xKTtcbn1cblxuLmNoYXQtYm94X19ib2R5Ojotd2Via2l0LXNjcm9sbGJhciB7XG4gIHdpZHRoOiA2cHg7XG59XG5cbi5jaGF0LWJveF9fYm9keTo6LXdlYmtpdC1zY3JvbGxiYXItdGh1bWIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci00KTtcbiAgYm9yZGVyLXJhZGl1czogNXB4O1xufVxuXG4ubWVzcy1zZW5kZXIge1xuICB3aWR0aDogMTAwJTtcbiAgcGFkZGluZzogMCAxcmVtO1xuICBmb250LXNpemU6IDAuNnJlbTtcbn1cblxuLm1lc3Mge1xuICBkaXNwbGF5OiBpbmxpbmU7XG4gIC8qIGRpc3BsYXk6IC13ZWJraXQtYm94O1xuICAgIC13ZWJraXQtbGluZS1jbGFtcDogMTA7XG4gICAgLXdlYmtpdC1ib3gtb3JpZW50OiB2ZXJ0aWNhbDtcbiAgICBvdmVyZmxvdzogaGlkZGVuOyAqL1xuICBwYWRkaW5nOiAxcmVtO1xuICBtYXgtd2lkdGg6IDMyLjVyZW07XG4gIGZvbnQtc2l6ZTogMC45cmVtO1xuICBib3JkZXItcmFkaXVzOiAxNXB4O1xufVxuXG4ubWVzcy1sZWZ0IHtcbiAgbWFyZ2luOiAwLjVyZW0gMnJlbSAwLjVyZW0gMDtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG4gIGJveC1zaGFkb3c6IDJweCAycHggNXB4IDBweCB2YXIoLS1jb2xvci00KTtcbn1cblxuLm1lc3MtcmlnaHQge1xuICBtYXJnaW46IDAuNXJlbSAwIDAuNXJlbSAycmVtO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci00KTtcbiAgYm94LXNoYWRvdzogMnB4IDJweCA1cHggMHB4IHZhcigtLWNvbG9yLTEpO1xufVxuXG5AbWVkaWEgb25seSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDQ4MHB4KSB7XG4gIC5jaGF0LWJveF9fYm9keSB7XG4gICAgaGVpZ2h0OiA3Mi41dmg7XG4gICAgbWF4LWhlaWdodDogNzIuNXZoO1xuICB9XG59XG4iXX0= */"] });
+    } }, directives: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["NgForOf"], _angular_common__WEBPACK_IMPORTED_MODULE_5__["NgIf"]], pipes: [_angular_common__WEBPACK_IMPORTED_MODULE_5__["DatePipe"]], styles: [".user__avatar[_ngcontent-%COMP%] {\n  width: 2rem;\n  height: 2rem;\n  object-fit: cover;\n  border-radius: 50%;\n  border: 2px solid var(--color-2);\n  cursor: pointer;\n}\n.chat-box__body[_ngcontent-%COMP%] {\n  height: 55vh;\n  max-height: 55vh;\n  padding: 0.5rem 1rem;\n  overflow-y: auto;\n  background-color: var(--color-2);\n  border-left: 1px solid var(--color-1);\n  border-right: 1px solid var(--color-1);\n}\n.chat-box__body[_ngcontent-%COMP%]::-webkit-scrollbar {\n  width: 6px;\n}\n.chat-box__body[_ngcontent-%COMP%]::-webkit-scrollbar-thumb {\n  background-color: var(--color-4);\n  border-radius: 5px;\n}\n.mess-sender[_ngcontent-%COMP%] {\n  width: 100%;\n  padding: 0 1rem;\n  font-size: 0.6rem;\n}\n.mess[_ngcontent-%COMP%] {\n  display: inline;\n  \n  padding: 1rem;\n  max-width: 32.5rem;\n  font-size: 0.9rem;\n  border-radius: 15px;\n}\n.mess-left[_ngcontent-%COMP%] {\n  margin: 0.5rem 2rem 0.5rem 0;\n  background-color: var(--color-1);\n  box-shadow: 2px 2px 5px 0px var(--color-4);\n}\n.mess-right[_ngcontent-%COMP%] {\n  margin: 0.5rem 0 0.5rem 2rem;\n  background-color: var(--color-4);\n  box-shadow: 2px 2px 5px 0px var(--color-1);\n}\n.mess-image[_ngcontent-%COMP%] {\n  max-width: 30rem;\n  max-height: 15rem;\n  object-fit: contain;\n  border-radius: 15px;\n}\n@media only screen and (max-width: 480px) {\n  .chat-box__body[_ngcontent-%COMP%] {\n    height: 72.5vh;\n    max-height: 72.5vh;\n  }\n  .mess[_ngcontent-%COMP%] {\n    max-width: 80vw;\n  }\n\n  .mess-image[_ngcontent-%COMP%] {\n    max-width: 70vw;\n    max-height: 50vw;\n  }\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImNoYXQtcm9vbWNoYXQtYm9keS5jb21wb25lbnQuY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBLGtCQUFrQjtBQUNsQjtFQUNFLFdBQVc7RUFDWCxZQUFZO0VBQ1osaUJBQWlCO0VBQ2pCLGtCQUFrQjtFQUNsQixnQ0FBZ0M7RUFDaEMsZUFBZTtBQUNqQjtBQUVBO0VBQ0UsWUFBWTtFQUNaLGdCQUFnQjtFQUNoQixvQkFBb0I7RUFDcEIsZ0JBQWdCO0VBQ2hCLGdDQUFnQztFQUNoQyxxQ0FBcUM7RUFDckMsc0NBQXNDO0FBQ3hDO0FBRUE7RUFDRSxVQUFVO0FBQ1o7QUFFQTtFQUNFLGdDQUFnQztFQUNoQyxrQkFBa0I7QUFDcEI7QUFFQTtFQUNFLFdBQVc7RUFDWCxlQUFlO0VBQ2YsaUJBQWlCO0FBQ25CO0FBRUE7RUFDRSxlQUFlO0VBQ2Y7Ozt1QkFHcUI7RUFDckIsYUFBYTtFQUNiLGtCQUFrQjtFQUNsQixpQkFBaUI7RUFDakIsbUJBQW1CO0FBQ3JCO0FBRUE7RUFDRSw0QkFBNEI7RUFDNUIsZ0NBQWdDO0VBQ2hDLDBDQUEwQztBQUM1QztBQUVBO0VBQ0UsNEJBQTRCO0VBQzVCLGdDQUFnQztFQUNoQywwQ0FBMEM7QUFDNUM7QUFFQTtFQUNFLGdCQUFnQjtFQUNoQixpQkFBaUI7RUFDakIsbUJBQW1CO0VBQ25CLG1CQUFtQjtBQUNyQjtBQUVBO0VBQ0U7SUFDRSxjQUFjO0lBQ2Qsa0JBQWtCO0VBQ3BCO0VBQ0E7SUFDRSxlQUFlO0VBQ2pCOztFQUVBO0lBQ0UsZUFBZTtJQUNmLGdCQUFnQjtFQUNsQjtBQUNGIiwiZmlsZSI6ImNoYXQtcm9vbWNoYXQtYm9keS5jb21wb25lbnQuY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLyogQ2hhdCBCb3ggQm9keSAqL1xuLnVzZXJfX2F2YXRhciB7XG4gIHdpZHRoOiAycmVtO1xuICBoZWlnaHQ6IDJyZW07XG4gIG9iamVjdC1maXQ6IGNvdmVyO1xuICBib3JkZXItcmFkaXVzOiA1MCU7XG4gIGJvcmRlcjogMnB4IHNvbGlkIHZhcigtLWNvbG9yLTIpO1xuICBjdXJzb3I6IHBvaW50ZXI7XG59XG5cbi5jaGF0LWJveF9fYm9keSB7XG4gIGhlaWdodDogNTV2aDtcbiAgbWF4LWhlaWdodDogNTV2aDtcbiAgcGFkZGluZzogMC41cmVtIDFyZW07XG4gIG92ZXJmbG93LXk6IGF1dG87XG4gIGJhY2tncm91bmQtY29sb3I6IHZhcigtLWNvbG9yLTIpO1xuICBib3JkZXItbGVmdDogMXB4IHNvbGlkIHZhcigtLWNvbG9yLTEpO1xuICBib3JkZXItcmlnaHQ6IDFweCBzb2xpZCB2YXIoLS1jb2xvci0xKTtcbn1cblxuLmNoYXQtYm94X19ib2R5Ojotd2Via2l0LXNjcm9sbGJhciB7XG4gIHdpZHRoOiA2cHg7XG59XG5cbi5jaGF0LWJveF9fYm9keTo6LXdlYmtpdC1zY3JvbGxiYXItdGh1bWIge1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci00KTtcbiAgYm9yZGVyLXJhZGl1czogNXB4O1xufVxuXG4ubWVzcy1zZW5kZXIge1xuICB3aWR0aDogMTAwJTtcbiAgcGFkZGluZzogMCAxcmVtO1xuICBmb250LXNpemU6IDAuNnJlbTtcbn1cblxuLm1lc3Mge1xuICBkaXNwbGF5OiBpbmxpbmU7XG4gIC8qIGRpc3BsYXk6IC13ZWJraXQtYm94O1xuICAgIC13ZWJraXQtbGluZS1jbGFtcDogMTA7XG4gICAgLXdlYmtpdC1ib3gtb3JpZW50OiB2ZXJ0aWNhbDtcbiAgICBvdmVyZmxvdzogaGlkZGVuOyAqL1xuICBwYWRkaW5nOiAxcmVtO1xuICBtYXgtd2lkdGg6IDMyLjVyZW07XG4gIGZvbnQtc2l6ZTogMC45cmVtO1xuICBib3JkZXItcmFkaXVzOiAxNXB4O1xufVxuXG4ubWVzcy1sZWZ0IHtcbiAgbWFyZ2luOiAwLjVyZW0gMnJlbSAwLjVyZW0gMDtcbiAgYmFja2dyb3VuZC1jb2xvcjogdmFyKC0tY29sb3ItMSk7XG4gIGJveC1zaGFkb3c6IDJweCAycHggNXB4IDBweCB2YXIoLS1jb2xvci00KTtcbn1cblxuLm1lc3MtcmlnaHQge1xuICBtYXJnaW46IDAuNXJlbSAwIDAuNXJlbSAycmVtO1xuICBiYWNrZ3JvdW5kLWNvbG9yOiB2YXIoLS1jb2xvci00KTtcbiAgYm94LXNoYWRvdzogMnB4IDJweCA1cHggMHB4IHZhcigtLWNvbG9yLTEpO1xufVxuXG4ubWVzcy1pbWFnZSB7XG4gIG1heC13aWR0aDogMzByZW07XG4gIG1heC1oZWlnaHQ6IDE1cmVtO1xuICBvYmplY3QtZml0OiBjb250YWluO1xuICBib3JkZXItcmFkaXVzOiAxNXB4O1xufVxuXG5AbWVkaWEgb25seSBzY3JlZW4gYW5kIChtYXgtd2lkdGg6IDQ4MHB4KSB7XG4gIC5jaGF0LWJveF9fYm9keSB7XG4gICAgaGVpZ2h0OiA3Mi41dmg7XG4gICAgbWF4LWhlaWdodDogNzIuNXZoO1xuICB9XG4gIC5tZXNzIHtcbiAgICBtYXgtd2lkdGg6IDgwdnc7XG4gIH1cblxuICAubWVzcy1pbWFnZSB7XG4gICAgbWF4LXdpZHRoOiA3MHZ3O1xuICAgIG1heC1oZWlnaHQ6IDUwdnc7XG4gIH1cbn1cbiJdfQ== */"] });
 
 
 /***/ }),

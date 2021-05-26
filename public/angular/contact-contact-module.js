@@ -614,9 +614,6 @@ class ContactAddFriendComponent {
                         phone: response.data.phone,
                         avatar: response.data.avatar
                     };
-                    console.log(`valHideContactContent: ${this.hideFriend}`);
-                    console.log(response);
-                    console.log(this.friend);
                 }
                 else {
                     this.hideFriend = true;
@@ -627,8 +624,7 @@ class ContactAddFriendComponent {
                     console.log("Dont find user");
                 };
         }
-        catch (error) {
-        }
+        catch (error) { }
     }
     addFriend(friendId, introduce) {
         if (!introduce) {

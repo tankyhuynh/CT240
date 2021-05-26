@@ -77,16 +77,18 @@ class SocketController {
             await this.sendTo(member, "room:new", data)
         });
     }
+    
+    static nonNotifyList = [/call:.+/, "vcall"];
     static async sendTo(to, type, data){
         console.log(`socket send ${to} with type ${type} `);
         // let socketId = await SocketService.getSocket(to);
         let socketId = await SocketService.getLocalSocket(SocketController.io, to);
         if(!socketId) {
             try {
-                if(type=="call:new") {
-                    type = "call:miss"
+                let isNonNoti = this.nonNotifyList.some(el=>((new RegExp(el)).test(type)));
+                if(!isNonNoti) {
+                    await NotifyService.create(to,type, data);
                 }
-                await NotifyService.create(to,type, data);
             } catch {};
         } else {    
             SocketController.io.to(socketId).emit(type, data);

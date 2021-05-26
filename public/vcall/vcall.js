@@ -18,21 +18,33 @@ let to = window.vCall.to;
 let from = window.vCall.from;
 let isCaller = !(!to);
 
+
 const btnCall = document.querySelector("#btnCall");
 const btnEnd = document.querySelector("#btnEnd");
 const btnReceive = document.querySelector("#btnReceive");
+const timeOver = 30000;
+let callTimeOver = window.setTimeout(()=> {
+    this.close();
+}, timeOver)
 
-btnEnd.addEventListener("click", () => {
-    socket.emit("call:end", { to });
-})
+window.onbeforeunload = ()=> {
+    if(isSetup) {
+        socket.emit("call:end", {to: isCaller?to:from});
+    }
+}
 
+socket.on("call:end", ()=> {
+    window.close();
+});
 btnReceive.addEventListener("click", async () => {
     await setup();
+    window.clearTimeout(callTimeOver);
     socket.emit("call:accept", { to: from });
 });
 socket.on("call:accept", async (data) => {
     console.log("call:accept run!");
     to = data.from;
+    window.clearTimeout(callTimeOver);
     await setup();
 }, {onetime: true},)
 
@@ -47,6 +59,8 @@ navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(
         // remoteVideo.srcObject = localStream; // view code time
     }
 );
+
+
 let isSetup = false;
 async function setup(){
     if(!isSetup) {

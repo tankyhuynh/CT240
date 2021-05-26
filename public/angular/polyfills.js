@@ -7,7 +7,7 @@
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /home/tnhan/CT240/CT240/src/polyfills.ts */"hN/g");
+module.exports = __webpack_require__(/*! /home/tnhan/CT240/src/polyfills.ts */"hN/g");
 
 
 /***/ }),
