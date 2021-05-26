@@ -83,6 +83,9 @@ class SocketController {
         let socketId = await SocketService.getLocalSocket(SocketController.io, to);
         if(!socketId) {
             try {
+                if(type=="call:new") {
+                    type = "call:miss"
+                }
                 await NotifyService.create(to,type, data);
             } catch {};
         } else {    
