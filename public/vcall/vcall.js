@@ -52,7 +52,10 @@ const remoteVideo = document.querySelector('#frVideo');
 const localVideo = document.querySelector('#meVideo');
 
 let localStream = null;
-navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(
+navigator.mediaDevices.getUserMedia({video:{
+    width:  360 ,
+    height:  420 ,
+  }, audio: true }).then(
     (stream) => {
         localStream = stream;
         localVideo.srcObject = localStream;
