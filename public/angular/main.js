@@ -362,7 +362,7 @@ class SocketService {
     constructor(authService) {
         this.authService = authService;
         this.message = "Hello from TanKy";
-        this.url = 'http://localhost:3000';
+        this.url = '';
         this.signal = {
             on: (handle) => {
                 this.socket.on("vCall", handle);
