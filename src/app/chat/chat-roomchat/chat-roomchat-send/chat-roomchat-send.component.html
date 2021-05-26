@@ -1,11 +1,26 @@
-
-
 <div
-  class="filePreview row justify-content-between"
+  class="filePreview row justify-content-between align-items-center"
   *ngIf="imageURL !== '' && imageURL"
 >
-  <img class="imagePreview" [src]="imageURL" />
-  <span class="filePreview__icon-close align-self-start" (click)="closePreview()">
+  <div>
+    <img class="imagePreview" [src]="imageURL" />
+
+    <!-- Thêm ngIf check Preview File -->
+    <div style="display: none">
+      <img
+        class="imageFilePreview"
+        src="http://localhost:3000/public/images/defaultFile.png"
+      />
+      <span class="nameFilePreview">
+        báo-cáo-bài-tập-nhóm-03.docx-1622046850571..docx
+      </span>
+    </div>
+    <!--  -->
+  </div>
+  <span
+    class="filePreview__icon-close align-self-start"
+    (click)="closePreview()"
+  >
     <i class="fas fa-times"></i>
   </span>
 </div>
@@ -26,9 +41,7 @@
       </button>
     </div>
 
-    <form
-      class="row justify-content-center"
-      [formGroup]="form">
+    <form class="row justify-content-center" [formGroup]="form">
       <label for="send_file" class="chat-box__send--btn">
         <i class="fas fa-paperclip"></i>
       </label>
@@ -41,8 +54,5 @@
         (change)="onFilePicked($event)"
       />
     </form>
-
-
-
   </div>
 </div>

@@ -46,7 +46,7 @@
 
 .filePreview {
   position: absolute;
-  width: 63vw;
+  width: 64vw;
   background-color: rgba(0, 0, 0, 0.125);
   bottom: 15.3vh;
   padding: 0.5rem;
@@ -73,6 +73,21 @@
 .filePreview__icon-close:focus {
   background-color: var(--color-2);
   transition: all 750ms;
+}
+
+/* Name File */
+.nameFilePreview {
+  display: inline-block;
+  margin: 0;
+  max-width: 20vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.imageFilePreview {
+  width: 5rem;
+  height: auto;
 }
 
 /* Responsive */
@@ -117,11 +132,15 @@
     transition: all 750ms;
   }
 
-/* File Preview */
+  /* File Preview */
 
-.filePreview {
-  bottom: 17.5vh;
-  width: 101%;
-  padding: 0.5rem 1rem;
-}
+  .filePreview {
+    bottom: 17.5vh;
+    width: 101%;
+    padding: 0.5rem 1rem;
+  }
+
+  .nameFilePreview {
+    max-width: 30vw;
+  }
 }

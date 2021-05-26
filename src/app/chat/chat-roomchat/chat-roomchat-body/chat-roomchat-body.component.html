@@ -1,10 +1,11 @@
 <div #scrollMe class="row chat-box__body">
   <div class="col">
     <div *ngFor="let message of messages">
-
-<!-- Receiver -->
-      <div class="row" *ngIf="message.sender !== currentUserId && !message.data?.url">
-
+      <!-- Receiver -->
+      <div
+        class="row"
+        *ngIf="message.sender !== currentUserId && !message.data?.url"
+      >
         <img
           *ngIf="profileOfFriends.length === 2"
           class="user__avatar"
@@ -29,7 +30,10 @@
       </div>
 
       <!-- message URL exist -->
-      <div class="row" *ngIf="message.sender !== currentUserId && message.data?.url">
+      <div
+        class="row"
+        *ngIf="message.sender !== currentUserId && message.data?.url"
+      >
         <img
           *ngIf="profileOfFriends.length === 2"
           class="user__avatar"
@@ -41,11 +45,7 @@
           [src]="profileOfFriends[message.sender]?.avatar"
         />
         <div class="mess mess-left">
-          <img
-            [src]="message.data?.url"
-            alt="hình ảnh"
-            class="mess-image"
-          />
+          <img [src]="message.data?.url" alt="hình ảnh" class="mess-image" />
         </div>
 
         <div class="mess-sender">
@@ -55,11 +55,11 @@
         </div>
       </div>
 
-
-<!-- Sender -->
+      <!-- Sender -->
       <div
         class="row justify-content-end"
-        *ngIf="message.sender === currentUserId && !message.data?.url">
+        *ngIf="message.sender === currentUserId && !message.data?.url"
+      >
         <div class="mess mess-right">
           <span [title]="message.created_at | date: 'medium'">
             {{ message.data?.content }}
@@ -77,19 +77,30 @@
 
       <div
         class="row justify-content-end"
-        *ngIf="message.sender === currentUserId && message.data?.url">
-
+        *ngIf="message.sender === currentUserId && message.data?.url"
+      >
         <div class="mess mess-right">
-          <img
-            [src]="message.data?.url"
-            alt="hình ảnh"
-            class="mess-image"
-          />
+          <img [src]="message.data?.url" alt="hình ảnh" class="mess-image" />
         </div>
       </div>
-
-
-
+      <!-- Message File -->
+      <div
+        style="display: none"
+        class="row justify-content-end"
+        *ngIf="message.sender === currentUserId && message.data?.url"
+      >
+        <div class="mess mess-right">
+          <img
+            src="http://localhost:3000/public/images/defaultFile.png"
+            alt="hình ảnh"
+            class="mess-img-file"
+          />
+          <span class="mess-label-file">
+            báo-cáo-bài-tập-nhóm-03.docx-1622046850571..docx
+          </span>
+        </div>
+      </div>
+      <!-- End Message File -->
     </div>
   </div>
 </div>

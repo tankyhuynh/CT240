@@ -64,6 +64,22 @@
   border-radius: 15px;
 }
 
+/* Mess File */
+.mess-img-file {
+  width: 3.5rem;
+  height: auto;
+  object-fit: contain;
+  border-radius: 15px;
+}
+
+.mess-label-file {
+  display: inline-block;
+  max-width: 20vw;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @media only screen and (max-width: 480px) {
   .chat-box__body {
     height: 72.5vh;
@@ -76,5 +92,9 @@
   .mess-image {
     max-width: 70vw;
     max-height: 50vw;
+  }
+
+  .mess-label-file {
+    max-width: 50vw;
   }
 }
