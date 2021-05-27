@@ -4,7 +4,7 @@
       <!-- Receiver -->
       <div
         class="row"
-        *ngIf="message.sender !== currentUserId && !message.data?.url"
+        *ngIf="message.sender !== currentUserId && !message.data?.url && !message.data?.fileName"
       >
         <img
           *ngIf="profileOfFriends.length === 2"
@@ -55,10 +55,47 @@
         </div>
       </div>
 
+      <!-- file exist -->
+      <div
+        class="row"
+        *ngIf="message.sender !== currentUserId && message.data?.fileName"
+      >
+        <img
+          *ngIf="profileOfFriends.length === 2"
+          class="user__avatar"
+          [src]="chatroom?.avatar"
+        />
+        <img
+          *ngIf="profileOfFriends.length !== 2"
+          class="user__avatar"
+          [src]="profileOfFriends[message.sender]?.avatar"
+        />
+        <div
+            class="row justify-content-end"
+            *ngIf="message.sender !== currentUserId && message.data?.fileName"
+            style="cursor: pointer;"
+            target="_blank"
+        >
+            <div class="mess mess-right">
+              <i class="{{getFileExtension(message.data?.fileName)}}" style="color:#5cb85c;" aria-hidden="true"></i>
+              <span class="mess-label-file">
+                {{ message.data?.fileName.split('/images/')[1] }}
+              </span>
+            </div>
+      </div>
+
+        <div class="mess-sender">
+          <span>
+            {{ profileOfFriends[message.sender]?.name }}
+          </span>
+        </div>
+      </div>
+
+
       <!-- Sender -->
       <div
         class="row justify-content-end"
-        *ngIf="message.sender === currentUserId && !message.data?.url"
+        *ngIf="message.sender === currentUserId && !message.data?.url && !message.data?.fileName"
       >
         <div class="mess mess-right">
           <span [title]="message.created_at | date: 'medium'">
@@ -83,20 +120,19 @@
           <img [src]="message.data?.url" alt="hình ảnh" class="mess-image" />
         </div>
       </div>
+
+
       <!-- Message File -->
       <div
-        style="display: none"
         class="row justify-content-end"
-        *ngIf="message.sender === currentUserId && message.data?.url"
+        *ngIf="message.sender === currentUserId && message.data?.fileName"
+        style="cursor: pointer;"
+        (click)="openFile(message.data?.fileName)"
       >
         <div class="mess mess-right">
-          <img
-            src="http://localhost:3000/public/images/defaultFile.png"
-            alt="hình ảnh"
-            class="mess-img-file"
-          />
+          <i class="{{getFileExtension(message.data?.fileName)}}" style="color:#5cb85c;" aria-hidden="true"></i>
           <span class="mess-label-file">
-            báo-cáo-bài-tập-nhóm-03.docx-1622046850571..docx
+            {{ message.data?.fileName.split('/images/')[1] }}
           </span>
         </div>
       </div>

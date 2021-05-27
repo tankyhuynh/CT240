@@ -1,13 +1,21 @@
 <div class="content" [ngClass]="{ show: valShowMessContent }">
   <!-- ChatRoom Header -->
-  <app-chat-roomchat-header [currentRoom]="chatroom"></app-chat-roomchat-header>
+  <app-chat-roomchat-header
+      [currentRoom]="chatroom">
+  </app-chat-roomchat-header>
   <!-- end ChatRoom Header -->
 
   <!-- ChatRoom Body -->
-  <app-chat-roomchat-body [chatroom]="chatroom" [messages]="messages" [profileOfFriends]="profileOfFriends" ></app-chat-roomchat-body>
+  <app-chat-roomchat-body
+      [chatroom]="chatroom"
+      [messages]="messages"
+      [profileOfFriends]="profileOfFriends">
+  </app-chat-roomchat-body>
   <!-- end ChatRoom Body -->
 
   <!-- ChatRoom Send -->
-  <app-chat-roomchat-send [roomId]="chatroom._id"></app-chat-roomchat-send>
+  <app-chat-roomchat-send
+      [roomId]="chatroom._id">
+  </app-chat-roomchat-send>
   <!-- end ChatRoom Send -->
 </div>

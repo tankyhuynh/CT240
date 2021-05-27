@@ -3,7 +3,8 @@ export interface MessageModel {
   room: string,
   data: {
     content?: string,
-    url?: string
+    url?: string,
+    fileName?: string
   },
   created_at: Date,
   imageUrl?: string

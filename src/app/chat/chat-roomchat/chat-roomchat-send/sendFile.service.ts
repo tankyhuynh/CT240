@@ -13,7 +13,7 @@ export class FileService {
 
   constructor(private http: HttpClient, private router: Router){};
 
-  sendImage(image: File){
+  sendFile(image: File){
     const formData = new FormData();
     formData.append("file", image);
     return this.http

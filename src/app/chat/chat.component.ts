@@ -119,9 +119,18 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                 if ( room.messagelast.data?.content ) {
                   this.lastMessageOfRooms[room._id] = room.messagelast;
                 }
-                else {
-                  room.messagelast.data.content = "Image";
+
+                try {
+                  if ( room.messagelast.data?.url ) {
+                    room.messagelast.data.content = "Image";
+                  }
+                  if ( room.messagelast.data?.fileName ) {
+                    room.messagelast.data.content = "File";
+                  }
+                } catch (error) {
+
                 }
+
                 this.lastMessageOfRooms[room._id] = room.messagelast;
                 if ( newMessage?.length > 0 ) {
                   newMessage.forEach(element => {

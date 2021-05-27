@@ -23,6 +23,16 @@ export class ChatRoomchatComponent implements OnInit {
 
   @Input() rooms: RoomModel[] = [];
   @Input() chatroom: RoomModel;
+
+  iconList = [ // array of icon class list based on type
+    { type: "xlsx", icon: "fa fa-file-excel-o" },
+    { type: "pdf", icon: "fa fa-file-pdf-o" },
+    { type: "jpg", icon: "fa fa-file-image-o" },
+    { type: "doc", icon: "fas fa-file-word" },
+    { type: "docx", icon: "fas fa-file-word" },
+    { type: "pptx", icon: "fas fa-file-powerpoint" }
+  ];
+
   constructor(private showContent: SharingService) {}
 
   ngOnInit(): void {

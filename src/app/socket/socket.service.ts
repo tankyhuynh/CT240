@@ -54,10 +54,19 @@ export class SocketService {
     this.message = '';
   }
 
-  sendImage(room: string, url: string) {
-    const DATA = {
-      url: url
-    };
+  sendFile(room: string, type: string, url: string) {
+    let DATA:any;
+    if (type === 'image') {
+      DATA = {
+        url: url
+      }
+    }
+    if (type === 'file') {
+      DATA = {
+        fileName: url
+      }
+    }
+
     this.socket.emit('message:send', {room: room, data: DATA});
     this.socket.on('message:receive', (data) => {
       this.newMessage = data;
