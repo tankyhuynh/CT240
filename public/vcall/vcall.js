@@ -13,7 +13,6 @@ const socket = {
         signal.emit({ type, ...data });
     },
 }
-
 let to = window.vCall.to;
 let from = window.vCall.from;
 let isCaller = !(!to);
@@ -22,20 +21,21 @@ let isCaller = !(!to);
 const btnCall = document.querySelector("#btnCall");
 const btnEnd = document.querySelector("#btnEnd");
 const btnReceive = document.querySelector("#btnReceive");
+
 const timeOver = 30000;
 let callTimeOver = window.setTimeout(()=> {
     this.close();
 }, timeOver)
-
 window.onbeforeunload = ()=> {
     if(isSetup) {
         socket.emit("call:end", {to: isCaller?to:from});
     }
 }
-
 socket.on("call:end", ()=> {
+	console.log("window close handle");
     window.close();
 });
+
 btnReceive.addEventListener("click", async () => {
     await setup();
     window.clearTimeout(callTimeOver);
@@ -53,8 +53,8 @@ const localVideo = document.querySelector('#meVideo');
 
 let localStream = null;
 navigator.mediaDevices.getUserMedia({video:{
-    width:  360 ,
-    height:  420 ,
+    width:  true ,
+    height:  true ,
   }, audio: true }).then(
     (stream) => {
         localStream = stream;
@@ -140,7 +140,6 @@ async function setupCall() {
         await peerConnection.setLocalDescription(offer);
         socket.emit("media:request", { to, 'offer': offer });
     }
-
 }
 
 
