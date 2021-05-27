@@ -174,9 +174,9 @@ class SocketController {
             	this.sendTo(to, "call:reject", {to, from});
             });
             socket.on("vCall", async(data)=>{
-		const {to} = data;
-		let from = socket.account;
-		this.sendTo(to, "vCall", {from, ...data});
+                const {to} = data;
+                let from = socket.account;
+                this.sendTo(to, "vCall", {...data, from});
             });
                 
         });
