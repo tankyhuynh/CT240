@@ -18,7 +18,7 @@ class SocketService {
     }
     /**
      * 
-     * @param {object} io 
+     * @param {object} io  
      * @param {string} account 
      * @returns 
      */

@@ -176,6 +176,7 @@ class SocketController {
             socket.on("vCall", async(data)=>{
                 const {to} = data;
                 let from = socket.account;
+                console.log(`vcall send to ${to} with type ${data.type}`)
                 this.sendTo(to, "vCall", {...data, from});
             });
                 
