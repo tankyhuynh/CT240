@@ -21,19 +21,15 @@
   class="filePreview row justify-content-between align-items-center"
   *ngIf="fileURL !== '' && fileURL"
 >
-  <div>
-    <!-- <img class="imagePreview" [src]="imageURL" /> -->
+  <div style="padding: 0.5rem;">
     <i class="{{getFileExtension(fileURL)}}" style="color:#5cb85c;" aria-hidden="true"></i>
-
     <span class="nameFilePreview">
       {{ fileURL }}
     </span>
-
   </div>
   <span
     class="filePreview__icon-close align-self-start"
-    (click)="closePreview()"
-  >
+    (click)="closePreview()">
   </span>
 </div>
 <!--End File preview -->

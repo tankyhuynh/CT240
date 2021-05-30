@@ -152,8 +152,12 @@ export class ChatRoomchatSendComponent implements OnInit {
     if ( !this.isImage(file) ) {
       this.fileURL = file.name;
       this.isFile = true;
+      this.imageURL = null;
       console.log(`fileName: ${this.fileURL}`);
-    } else this.isFile = false;
+    } else {
+      this.isFile = false;
+      this.fileURL = null;
+    }
     this.form.patchValue({ image: file });
     this.form.get('image').updateValueAndValidity();
 
@@ -168,5 +172,6 @@ export class ChatRoomchatSendComponent implements OnInit {
   closePreview() {
     this.imageURL = null;
     this.fileURL = null;
+    this.resetForm();
   }
 }
