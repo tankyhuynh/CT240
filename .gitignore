@@ -44,7 +44,7 @@ jspm_packages/
 # Document for project
 # document/
 # front-end/
-# public/angular/
+public/images/
 # public/angularDeploy
 # TypeScript v1 declaration files
 typings/
