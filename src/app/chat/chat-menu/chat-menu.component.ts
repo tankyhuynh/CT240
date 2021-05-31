@@ -42,10 +42,14 @@ export class ChatMenuComponent implements OnInit {
   ngOnInit(): void {
 
     this.socketService.onMessage().subscribe((newMessage: any) => {
-      this.updateRoomStatus(newMessage, true)
+
       if ( !newMessage?.data?.content ) {
-        newMessage.data.content = "Image";
+        newMessage.data.content =
+          ((newMessage.data.url)? (newMessage.data.url) : (newMessage.data.fileName))
+            .split('/images/')[1];
       }
+
+      this.updateRoomStatus(newMessage, true);
     });
 
   }

@@ -120,13 +120,14 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                   this.lastMessageOfRooms[room._id] = room.messagelast;
                 }
 
+                // set content of last message if last message is a file or an image
                 try {
-                  if ( room.messagelast.data?.url ) {
-                    room.messagelast.data.content = "Image";
+                  if ( !room.messagelast?.data?.content ) {
+                    room.messagelast.data.content =
+                    ((room.messagelast.data.url)? (room.messagelast.data.url) : (room.messagelast.data.fileName))
+                      ?.split('/images/')[1];
                   }
-                  if ( room.messagelast.data?.fileName ) {
-                    room.messagelast.data.content = "File";
-                  }
+
                 } catch (error) {
 
                 }

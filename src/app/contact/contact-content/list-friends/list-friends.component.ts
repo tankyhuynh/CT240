@@ -14,10 +14,14 @@ import { FriendModel } from './friend.model';
 })
 export class ListFriendsComponent implements OnInit {
   valHideContactContent = false;
+  isShowMessageAlert:boolean = false;
 
   currentUser: string = localStorage.getItem('userId');
 
   listFriends: FriendModel[];
+
+  private tokenTimer: any;
+
 
   constructor(
     private route: Router,
@@ -63,8 +67,18 @@ export class ListFriendsComponent implements OnInit {
             console.log(`delete friend ${friendId}`);
             console.log(response);
             this.fetchAllData();
+
+            this.isShowMessageAlert = true;
+            this.setMessageAlertTimer(2);
           });
 
+  }
+
+  private setMessageAlertTimer(duration: number) {
+    this.tokenTimer = setTimeout(() => {
+      this.isShowMessageAlert = false;
+    }, duration * 1000);
+    console.log('Setting timer alert message: ' + duration);
   }
 
   contactContent() {

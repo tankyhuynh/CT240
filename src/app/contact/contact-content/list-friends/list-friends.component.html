@@ -21,8 +21,10 @@
       </div>
       <div class="row list-contacts__tbl">
         <div class="col">
+
           <div class="row">
             <div class="list-contacts__card" *ngFor="let friend of listFriends">
+
               <div>
                 <img
                   [src]="friend?.avatar"
@@ -42,6 +44,8 @@
                 <span class="card__icon" (click)="deleteFriend(friend._id)"> Xóa bạn </span>
               </div>
             </div>
+            <div class="text-success" *ngIf="isShowMessageAlert">Delete friend success</div>
+
           </div>
         </div>
       </div>

@@ -9,4 +9,5 @@ export interface RoomModel {
   messagelast?: MessageModel;
   top: number;
   newMessage?: boolean;
+  numOfNewMessage?: number;
 }

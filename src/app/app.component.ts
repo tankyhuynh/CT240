@@ -109,7 +109,7 @@ export class AppComponent implements OnInit {
     this.socketService
       .onNewVideoCall()
       .subscribe( (response:any) => {
-        console.log("VIdeo call init");
+        console.log("Video call init");
       } );
   }
 
@@ -131,12 +131,14 @@ export class AppComponent implements OnInit {
                 else  {
                   this.menuItems[0].showBadge = true;
                   let numOfPeopleWaitToReply = 0;
+
                   newMessage.forEach(message => {
                     if (message?.value === true) {
                       numOfPeopleWaitToReply ++;
                     }
                   });
                   this.menuItems[0].numOfPeopleWaitToReply = numOfPeopleWaitToReply;
+
                 }
 
               }

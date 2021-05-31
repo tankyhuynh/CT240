@@ -86,6 +86,7 @@ export class ChatRoomchatSendComponent implements OnInit {
         this.socketService.sendMessage(this.roomId, data);
       }
     }
+    this.seenAllMessageInCurrentRoom();
     this.resetForm();
 }
 
@@ -167,6 +168,13 @@ export class ChatRoomchatSendComponent implements OnInit {
     };
     this.message.nativeElement.focus();
     reader.readAsDataURL(file);
+  }
+
+  seenAllMessageInCurrentRoom(){
+    this.sharingService.changeMessageInRoomRead({
+      roomId: this.roomId,
+      value: false
+    });
   }
 
   closePreview() {

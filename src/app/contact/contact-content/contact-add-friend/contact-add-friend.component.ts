@@ -24,7 +24,7 @@ export class ContactAddFriendComponent implements OnInit {
   isShowMessageAlert: boolean = false;
 
   friend: FriendModel;
-  @ViewChild("friendId") friendId: ElementRef<any>;
+  @ViewChild("friendPhone") friendPhone: ElementRef<any>;
   @ViewChild("introduction") introduction: ElementRef<any>;
 
   private tokenTimer: any;
@@ -95,10 +95,9 @@ export class ContactAddFriendComponent implements OnInit {
             this.isLoading = false;
             this.isShowMessageAlert = true;
 
-            let isShowMessageAlert = this.isShowMessageAlert;
             this.setMessageAlertTimer(2);
 
-            this.friendId.nativeElement.value = "";
+            this.friendPhone.nativeElement.value = "";
             this.introduction.nativeElement.value = "";
           });
 
