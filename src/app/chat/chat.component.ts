@@ -97,8 +97,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
         this.roomService.getMembersById(roomId).subscribe((response: any) => {
           const responseData = response.data;
-          console.log('members of room: ');
-          console.log(responseData);
 
           // this.profileOfFriends = responseData;
           responseData.forEach((element) => {
@@ -168,11 +166,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   searchRoomByName(roomName: any){
     this.roomName = this.slug(roomName);
-    console.log(`roomName search: ${this.roomName} length: ${roomName.length}`)
     if ( roomName ) {
-      console.log('! undefined');
       this.rooms = this.fetchedRooms.filter(room => (this.slug(room.name)).includes(this.roomName));
-      console.log(this.rooms)
     }
     else {
       this.rooms = this.fetchedRooms;
