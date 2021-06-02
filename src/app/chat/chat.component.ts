@@ -36,12 +36,16 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   profileOfFriends: Array<any> = [];
 
   rooms: RoomModel[] = [];
+  fetchedRooms:RoomModel[] = [];
+
   messages: MessageModel[] = [];
   lastMessageOfRooms: Array<any> = [];
 
   currentUserId: string = localStorage.getItem('userId');
 
   profiles: ProfileModel[] = [];
+
+  roomName: string;
 
   constructor(
     private sharingService: SharingService,
@@ -54,6 +58,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
+
 
     this.fetchAllData();
 
@@ -104,13 +109,13 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
     });
 
-
   }
 
   fetchAllData(){
     console.log('fetch all data');
     this.roomService.getAll().subscribe((response: any) => {
       this.rooms = response.data.data;
+      this.fetchedRooms = this.rooms;
 
       this.sharingService
             .currentMessageInRommReadedSourceStatus
@@ -142,11 +147,36 @@ export class ChatComponent implements OnInit, AfterViewChecked {
                 }
               });
             } );
-
-
-
-
     });
+  }
+
+  private slug(val) {
+    val = val.replace(/[áàãâä]/g, 'a')
+    val = val.replace(/[ÁÀÃÂÄ]/g, 'a')
+    val = val.replace(/[éèêë]/g, 'e')
+    val = val.replace(/[ÉÈÊË]/g, 'e')
+    val = val.replace(/[íìîï]/g, 'i')
+    val = val.replace(/[ÍÌÎÏ]/g, 'i')
+    val = val.replace(/[óòõôö]/g, 'o')
+    val = val.replace(/[ÓÒÕÔÖ]/g, 'o')
+    val = val.replace(/[úùûü]/g, 'u')
+    val = val.replace(/[ÚÙÛÜ]/g, 'u')
+    val = val.replace(/[ç]/g, 'c')
+    val = val.replace(/[Ç]/g, 'c')
+    return val;
+  }
+
+  searchRoomByName(roomName: any){
+    this.roomName = this.slug(roomName);
+    console.log(`roomName search: ${this.roomName} length: ${roomName.length}`)
+    if ( roomName ) {
+      console.log('! undefined');
+      this.rooms = this.fetchedRooms.filter(room => (this.slug(room.name)).includes(this.roomName));
+      console.log(this.rooms)
+    }
+    else {
+      this.rooms = this.fetchedRooms;
+    }
   }
 
   updateLastMessageOfAllRoom(){

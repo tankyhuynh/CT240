@@ -3,8 +3,10 @@
     type="text"
     name=""
     id=""
+    #inputValue
     class="tabs-search__input"
     placeholder="Search"
+    (keyup)="onValueChange(inputValue.value)"
   />
   <span class="tabs-search__icon">
     <i class="fas fa-search"></i>

@@ -41,6 +41,9 @@ export class ChatMenuComponent implements OnInit {
 
   ngOnInit(): void {
 
+    console.log("Rooms: ");
+    console.log(this.rooms)
+
     this.socketService.onMessage().subscribe((newMessage: any) => {
 
       if ( !newMessage?.data?.content ) {
