@@ -64,11 +64,6 @@ export class AppComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // this.sharingService.currentMenuItems.subscribe(newItems => this.itemsInAppComponent = newItems);
-
-    // this.sharingService.currentMenuClass.subscribe(newItems => this.menuClass = newItems);
-
-    // this.itemsInAppComponent = JSON.parse(localStorage.getItem('menuItems'));
 
     this.authService.autoAuthUser();
 
@@ -86,6 +81,8 @@ export class AppComponent implements OnInit {
         this.socketService.setUpConnnection();
 
         this.onMessageReceive();
+
+        this.onNewVideoCallReceive();
       });
 
     this.socketService.setUpConnnection();
