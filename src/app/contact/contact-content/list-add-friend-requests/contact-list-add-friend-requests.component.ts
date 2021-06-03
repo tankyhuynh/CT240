@@ -42,7 +42,7 @@ export class ListAddFriendsComponent implements OnInit {
     .getAll()
     .subscribe( (response:any) => {
       this.listAddFriendRequests = response.data;
-      console.log(response.data);
+      // console.log(response.data);
     });
   }
 
@@ -51,7 +51,7 @@ export class ListAddFriendsComponent implements OnInit {
     this.listAddFriendRequestService
           .isAcceptFriendRequest(id, isAccept)
           .subscribe( (response:any) => {
-            console.log(response);
+            // console.log(response);
             this.fetchAllData();
             this.isLoading = false;
           });
@@ -68,7 +68,7 @@ export class ListAddFriendsComponent implements OnInit {
     this.listAddFriendRequestService
           .deleteFriendRequest(id)
           .subscribe( response => {
-            console.log(response);
+            // console.log(response);
             this.fetchAllData();
             this.isLoading = false;
           });

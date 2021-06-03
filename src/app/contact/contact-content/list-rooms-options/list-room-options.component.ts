@@ -53,8 +53,8 @@ export class ListRoomOptionsComponent implements OnInit {
       this.roomService
           .addNewMember(this.data.roomId, member)
           .subscribe( (response:any) => {
-            console.log("Add new member to room");
-            console.log(response)
+            // console.log("Add new member to room");
+            // console.log(response)
           });
     })
     this.dialogRef.close();
@@ -66,8 +66,8 @@ export class ListRoomOptionsComponent implements OnInit {
       this.roomService
           .deleteMember(this.data.roomId, member)
           .subscribe( (response:any) => {
-            console.log("Delete member of room");
-            console.log(response)
+            // console.log("Delete member of room");
+            // console.log(response)
           });
           this.dialogRef.close();
     })
@@ -78,11 +78,11 @@ export class ListRoomOptionsComponent implements OnInit {
     this.roomService
           .changeAdminOfRoom(this.data.roomId, this.members)
           .subscribe( (response:any) => {
-            console.log('Leave room');
+            // console.log('Leave room');
             this.roomService
                   .outRoom(this.data.roomId)
                   .subscribe( (response:any) => {
-                    console.log(response);
+                    // console.log(response);
                   });
           } );
 
@@ -91,9 +91,9 @@ export class ListRoomOptionsComponent implements OnInit {
 
 
   checkBoxClick(e: any){
-    console.log(`isChecked: ${e.target.checked} , value: ${e.target.value}`);
+    // console.log(`isChecked: ${e.target.checked} , value: ${e.target.value}`);
     if (e.target.checked) {
-     console.log(e.target.value);
+    //  console.log(e.target.value);
      this.members.push(e.target.value);
     }
     console.log(`members: ${this.members}`);
@@ -103,7 +103,7 @@ export class ListRoomOptionsComponent implements OnInit {
   radioClick(){
     const memberIdClicked = this.form.controls['members'].value;
     this.members = memberIdClicked;
-    console.log(`members: ${this.members}`);
+    // console.log(`members: ${this.members}`);
   }
 
 

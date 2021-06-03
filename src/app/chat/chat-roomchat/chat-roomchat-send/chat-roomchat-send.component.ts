@@ -73,16 +73,16 @@ export class ChatRoomchatSendComponent implements OnInit {
 
   sendMessage(data: any) {
     if ( this.form.value.image ) {
-      console.log("Have image");
+      // console.log("Have image");
       this.sendFile(this.form.value.image);
       if ( this.message.nativeElement.value !== '\n' && this.message.nativeElement.value !== '' ) {
-        console.log(`Have message and image ${ this.message.nativeElement.value}`);
+        // console.log(`Have message and image ${ this.message.nativeElement.value}`);
         this.socketService.sendMessage(this.roomId, data);
       }
     }
     else {
       if ( this.message.nativeElement.value !== '\n' ) {
-        console.log("Have only message");
+        // console.log("Have only message");
         this.socketService.sendMessage(this.roomId, data);
       }
     }
@@ -98,8 +98,8 @@ export class ChatRoomchatSendComponent implements OnInit {
           .sendFile(file)
           .subscribe( (response:any) => {
             const url = response.data.url;
-            console.log('send file: ');
-            console.log(url);
+            // console.log('send file: ');
+            // console.log(url);
 
             let type: string;
 
@@ -127,7 +127,7 @@ export class ChatRoomchatSendComponent implements OnInit {
   }
 
   isImage(file: File){
-    console.log(`extention: ${file.type}`);
+    // console.log(`extention: ${file.type}`);
     const imageType = ['image/png', 'image/jpeg', 'image/jpg'];
     let isImage:boolean = false;
     imageType.forEach(type => {
@@ -148,13 +148,13 @@ export class ChatRoomchatSendComponent implements OnInit {
   onFilePicked(event: Event) {
     const file = (event.target as HTMLInputElement).files[0];
     const fileType = file.type;
-    console.log(`file picked: ${fileType}`);
+    // console.log(`file picked: ${fileType}`);
 
     if ( !this.isImage(file) ) {
       this.fileURL = file.name;
       this.isFile = true;
       this.imageURL = null;
-      console.log(`fileName: ${this.fileURL}`);
+      // console.log(`fileName: ${this.fileURL}`);
     } else {
       this.isFile = false;
       this.fileURL = null;

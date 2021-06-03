@@ -48,7 +48,7 @@
   position: absolute;
   width: 64vw;
   background-color: rgba(0, 0, 0, 0.125);
-  bottom: 15.3vh;
+  bottom: 16.8vh;
   padding: 0.5rem;
 }
 
@@ -141,6 +141,6 @@
   }
 
   .nameFilePreview {
-    max-width: 30vw;
+    max-width: 70vw;
   }
 }

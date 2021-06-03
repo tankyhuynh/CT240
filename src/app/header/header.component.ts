@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
   ) {}
 
   ngOnChanges() {
-    console.log('Data in header changed');
+    // console.log('Data in header changed');
   }
 
   ngOnInit() {
@@ -67,7 +67,6 @@ export class HeaderComponent implements OnInit, OnDestroy, OnChanges {
           });
       }
     });
-
   }
 
   onClick() {

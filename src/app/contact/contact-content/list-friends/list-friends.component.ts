@@ -42,7 +42,7 @@ export class ListFriendsComponent implements OnInit {
             .getAll()
             .subscribe( (response:any) => {
               this.listFriends = response.data.data;
-              console.log(this.listFriends);
+              // console.log(this.listFriends);
             });
   }
 
@@ -54,8 +54,8 @@ export class ListFriendsComponent implements OnInit {
     this.roomService
           .saveOne(name, members)
           .subscribe( (response:any) => {
-            console.log('create new room');
-            console.log(response.data);
+            // console.log('create new room');
+            // console.log(response.data);
             this.route.navigate(['chat', response.data._id]);
           });
   }
@@ -64,8 +64,8 @@ export class ListFriendsComponent implements OnInit {
     this.listFriendService
           .delete(friendId)
           .subscribe( response => {
-            console.log(`delete friend ${friendId}`);
-            console.log(response);
+            // console.log(`delete friend ${friendId}`);
+            // console.log(response);
             this.fetchAllData();
 
             this.isShowMessageAlert = true;
@@ -78,7 +78,7 @@ export class ListFriendsComponent implements OnInit {
     this.tokenTimer = setTimeout(() => {
       this.isShowMessageAlert = false;
     }, duration * 1000);
-    console.log('Setting timer alert message: ' + duration);
+    // console.log('Setting timer alert message: ' + duration);
   }
 
   contactContent() {

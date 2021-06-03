@@ -18,6 +18,6 @@ export class ContactMenuComponent implements OnInit {
       (isHide) => (this.hide = isHide)
     );
     this.hideContent.changeShowValue(false);
-    console.log(this.hide);
+    // console.log(this.hide);
   }
 }

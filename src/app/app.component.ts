@@ -40,7 +40,7 @@ export class AppComponent implements OnInit {
       content: 'Tin nhắn',
       url: 'chat',
       showBadge: false,
-      numOfPeopleWaitToReply: 0
+      numOfPeopleWaitToReply: 0,
     },
     {
       key: 'contact',
@@ -79,7 +79,9 @@ export class AppComponent implements OnInit {
       .subscribe((isAuth) => {
         this.isUserAuthenticated = isAuth;
 
-        if (isAuth) {this.currentUserId = this.authService.getUserId();}
+        if (isAuth) {
+          this.currentUserId = this.authService.getUserId();
+        }
 
         this.socketService.setUpConnnection();
 
@@ -93,59 +95,56 @@ export class AppComponent implements OnInit {
     this.onNewVideoCallReceive();
 
     this.subscribeRoomStatusOfRoom();
-
   }
 
   onMessageReceive() {
     this.socketService.onMessage().subscribe((newMessage: any) => {
       if (newMessage.sender !== this.currentUserId) {
-        this.sharingService.changeMessageInRoomRead({roomId: newMessage.room, value: true});
-        this.sharingService.changeLastMessageOfRoom({roomId: newMessage.room, value: newMessage.data.content});
+        this.sharingService.changeMessageInRoomRead({
+          roomId: newMessage.room,
+          value: true,
+        });
+        this.sharingService.changeLastMessageOfRoom({
+          roomId: newMessage.room,
+          value: newMessage.data.content,
+        });
       }
     });
   }
 
-  onNewVideoCallReceive(){
-    this.socketService
-      .onNewVideoCall()
-      .subscribe( (response:any) => {
-        console.log("Video call init");
-      } );
+  onNewVideoCallReceive() {
+    this.socketService.onNewVideoCall().subscribe((response: any) => {
+      // console.log("Video call init");
+    });
   }
 
+  subscribeRoomStatusOfRoom() {
+    this.sharingService.currentMessageInRommReadedSourceStatus.subscribe(
+      (newMessage: any) => {
+        if (newMessage?.length > 0) {
+          let isAllMessagesRead = true;
+          newMessage.forEach((message) => {
+            if (message?.value === true) {
+              isAllMessagesRead = false;
+            }
+          });
+          if (isAllMessagesRead) {
+            this.menuItems[0].showBadge = false;
+          } else {
+            this.menuItems[0].showBadge = true;
+            let numOfPeopleWaitToReply = 0;
 
-  subscribeRoomStatusOfRoom(){
-    this.sharingService
-            .currentMessageInRommReadedSourceStatus
-            .subscribe( (newMessage:any) => {
-              if ( newMessage?.length > 0 ) {
-                let isAllMessagesRead = true;
-                newMessage.forEach(message => {
-                  if (message?.value === true) {
-                    isAllMessagesRead = false;
-                  }
-                });
-                if ( isAllMessagesRead ) {
-                  this.menuItems[0].showBadge = false;
-                }
-                else  {
-                  this.menuItems[0].showBadge = true;
-                  let numOfPeopleWaitToReply = 0;
-
-                  newMessage.forEach(message => {
-                    if (message?.value === true) {
-                      numOfPeopleWaitToReply ++;
-                    }
-                  });
-                  this.menuItems[0].numOfPeopleWaitToReply = numOfPeopleWaitToReply;
-
-                }
-
+            newMessage.forEach((message) => {
+              if (message?.value === true) {
+                numOfPeopleWaitToReply++;
               }
-              else {
-                this.menuItems[0].showBadge = false;
-              }
-            } );
+            });
+            this.menuItems[0].numOfPeopleWaitToReply = numOfPeopleWaitToReply;
+          }
+        } else {
+          this.menuItems[0].showBadge = false;
+        }
+      }
+    );
   }
-
 }

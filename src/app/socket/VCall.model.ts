@@ -36,14 +36,14 @@ export class VCallAPI {
 
       const nWindow:any = window.open(this.indexFile, "_blank", "top=0, left=0, height=720, width=480",);
       nWindow.vCall = {};
-      console.log("vcall");
-      console.log(nWindow.vCall);
+    //   console.log("vcall");
+    //   console.log(nWindow.vCall);
       nWindow.vCall.signal = this.signal;
-      console.log('signal');
-      console.log(this.signal);
+    //   console.log('signal');
+    //   console.log(this.signal);
       nWindow.vCall.frProfile = this.frProfile;
       nWindow.onunload = (event)=>{
-          console.log(event)
+        //   console.log(event)
           this.calling = false;
       }
       return nWindow;
@@ -59,7 +59,7 @@ export class VCallAPI {
    * @param {string} from - Indentify of sender
    */
   createReceiveView(from) {
-    console.log(`from: ${from}`);
+    // console.log(`from: ${from}`);
       const nWindow = this.createView();
       nWindow.vCall.from = from;
   }

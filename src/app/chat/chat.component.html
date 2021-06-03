@@ -1,18 +1,12 @@
 <div class="row">
-  <app-search
-    class="col-md-4"
-    (value)="searchRoomByName($event)">
-  </app-search>
-</div>
-
-
-<div class="row">
-
   <div class="col-md-4 col-12 menu">
+    <app-search class="col-md-4" (value)="searchRoomByName($event)">
+    </app-search>
     <app-chat-menu
       [rooms]="rooms"
       [lastMessageOfRooms]="lastMessageOfRooms"
-      [currentRoom]="currentRoom">
+      [currentRoom]="currentRoom"
+    >
     </app-chat-menu>
   </div>
 
@@ -21,8 +15,8 @@
       [rooms]="rooms"
       [profileOfFriends]="profileOfFriends"
       [chatroom]="currentRoom"
-      [messages]="messages">
+      [messages]="messages"
+    >
     </app-chat-roomchat>
   </div>
-
 </div>

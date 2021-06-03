@@ -15,26 +15,29 @@
 </div>
 <!-- End Image preview -->
 
-
 <!-- File preview -->
 <div
   class="filePreview row justify-content-between align-items-center"
   *ngIf="fileURL !== '' && fileURL"
 >
-  <div style="padding: 0.5rem;">
-    <i class="{{getFileExtension(fileURL)}}" style="color:#5cb85c;" aria-hidden="true"></i>
+  <div style="padding: 0.5rem">
+    <i
+      class="{{ getFileExtension(fileURL) }} mr-2"
+      style="color: #5cb85c; font-size: 3rem"
+      aria-hidden="true"
+    ></i>
     <span class="nameFilePreview">
       {{ fileURL }}
     </span>
   </div>
   <span
     class="filePreview__icon-close align-self-start"
-    (click)="closePreview()">
+    (click)="closePreview()"
+  >
+    <i class="fas fa-times"></i>
   </span>
 </div>
 <!--End File preview -->
-
-
 
 <div class="row chat-box__send align-items-center">
   <div class="col-md-11 col-10">

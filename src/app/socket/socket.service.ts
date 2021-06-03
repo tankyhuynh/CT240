@@ -49,7 +49,7 @@ export class SocketService {
     this.socket.emit('message:send', {room: room, data: DATA});
     this.socket.on('message:receive', (data) => {
       this.newMessage = data;
-      console.log(this.newMessage);
+      // console.log(this.newMessage);
     });
     this.message = '';
   }
@@ -70,7 +70,7 @@ export class SocketService {
     this.socket.emit('message:send', {room: room, data: DATA});
     this.socket.on('message:receive', (data) => {
       this.newMessage = data;
-      console.log(this.newMessage);
+      // console.log(this.newMessage);
     });
     this.message = '';
   }
@@ -78,8 +78,8 @@ export class SocketService {
   public onMessage(): Observable<MessageModel> {
     return new Observable<MessageModel>(observer => {
         this.socket.on('message:receive', (data: MessageModel) => {
-          console.log("respones in socket receive message: ");
-          console.log(data);
+          // console.log("respones in socket receive message: ");
+          // console.log(data);
           observer.next(data)
         });
     });
@@ -91,7 +91,7 @@ export class SocketService {
 onNewVideoCall(){
   return new Observable<MessageModel>(observer => {
     this.socket.on("call:new", data=>{
-      console.log(`from ${data?.from}`);
+      // console.log(`from ${data?.from}`);
        this.vCallAPI.createReceiveView(data.from);
      })
 });
@@ -102,7 +102,7 @@ onNewVideoCall(){
 //Create new video call request
 createNewVideoCall(to: string){
   this.socket.emit("call:new", {to});
-    console.log(`to ${to}`);
+    // console.log(`to ${to}`);
     this.vCallAPI.createCallView(to);
 
 }

@@ -18,7 +18,7 @@ export class SuccessComponent {
     this.tokenTimer = setTimeout(() => {
       func();
     }, duration * 1000);
-    console.log('Setting timer alert message: ' + duration);
+    // console.log('Setting timer alert message: ' + duration);
   }
 
 }

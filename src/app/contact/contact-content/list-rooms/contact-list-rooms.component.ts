@@ -47,15 +47,15 @@ export class ListGroupsComponent implements OnInit {
     this.roomsService.getAll().subscribe((response: any) => {
       const responseData = response.data.data;
       this.rooms = responseData.filter(room => room.members.length > 2);
-      console.log(this.rooms);
+      // console.log(this.rooms);
     });
 
     this.friendService
           .getAll()
           .subscribe( (response:any) => {
             this.friendOfCurrentUser = response.data.data;
-            console.log("Friends of current userId: ");
-            console.log(this.friendOfCurrentUser);
+            // console.log("Friends of current userId: ");
+            // console.log(this.friendOfCurrentUser);
           } );
   }
 
@@ -112,8 +112,8 @@ export class ListGroupsComponent implements OnInit {
 
             //filter if friends are members => dag FAIL
             const memberFilterWithoutFriendExist = membersFilter.filter(item => !this.friendOfCurrentUser.includes(item));
-            console.log("Filter if friends are member");
-            console.log(memberFilterWithoutFriendExist);
+            // console.log("Filter if friends are member");
+            // console.log(memberFilterWithoutFriendExist);
 
             const dialogRef = this.dialog.open(ListRoomOptionsComponent, {
               data: {
@@ -125,7 +125,7 @@ export class ListGroupsComponent implements OnInit {
                 subTitle: "Thành viên trong nhóm",
                 }} );
 
-            console.log(members);
+            // console.log(members);
           });
 
 
@@ -151,7 +151,7 @@ export class ListGroupsComponent implements OnInit {
                 }} );
               this.fetchAllData();
 
-            console.log(members);
+            // console.log(members);
           });
   }
 
@@ -160,8 +160,8 @@ export class ListGroupsComponent implements OnInit {
     this.roomService
           .outRoom(idRoom)
           .subscribe( (response:any) => {
-            console.log("Out room: ");
-            console.log(response);
+            // console.log("Out room: ");
+            // console.log(response);
             this.fetchAllData();
           });
   }

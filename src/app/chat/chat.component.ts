@@ -36,7 +36,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   profileOfFriends: Array<any> = [];
 
   rooms: RoomModel[] = [];
-  fetchedRooms:RoomModel[] = [];
+  fetchedRooms: RoomModel[] = [];
 
   messages: MessageModel[] = [];
   lastMessageOfRooms: Array<any> = [];
@@ -58,14 +58,11 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   ) {}
 
   ngOnInit(): void {
-
-
     this.fetchAllData();
 
     this.socketService.onMessage().subscribe((newMessage: any) => {
       this.updateLastMessageOfAllRoom();
     });
-
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('roomId')) {
@@ -75,23 +72,22 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           this.currentRoom = response.data;
           this.currentRoom.top = 500;
 
-          console.log(this.currentRoom);
+          // console.log(this.currentRoom);
 
           //Change status all message in room read
-          console.log(`currentRoom Name: ${this.currentRoom.name}`);
+          // console.log(`currentRoom Name: ${this.currentRoom.name}`);
           this.sharingService.changeMessageInRoomRead({
             roomId: this.currentRoom?._id,
             value: false,
           });
 
           this.fetchAllData();
-
         });
 
         this.roomService
           .getAllMessageByIdRoom(roomId)
           .subscribe((response: any) => {
-            console.log('get all messages in chat');
+            // console.log('get all messages in chat');
             this.messages = response.data;
           });
 
@@ -104,93 +100,89 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           });
         });
       }
-
     });
-
   }
 
-  fetchAllData(){
-    console.log('fetch all data');
+  fetchAllData() {
+    // console.log('fetch all data');
     this.roomService.getAll().subscribe((response: any) => {
       this.rooms = response.data.data;
       this.fetchedRooms = this.rooms;
 
-      this.sharingService
-            .currentMessageInRommReadedSourceStatus
-            .subscribe( (newMessage:any) => {
-              this.rooms.forEach((room) => {
-                if ( room.messagelast.data?.content ) {
-                  this.lastMessageOfRooms[room._id] = room.messagelast;
-                }
+      this.sharingService.currentMessageInRommReadedSourceStatus.subscribe(
+        (newMessage: any) => {
+          this.rooms.forEach((room) => {
+            if (room.messagelast.data?.content) {
+              this.lastMessageOfRooms[room._id] = room.messagelast;
+            }
 
-                // set content of last message if last message is a file or an image
-                try {
-                  if ( !room.messagelast?.data?.content ) {
-                    room.messagelast.data.content =
-                    ((room.messagelast.data.url)? (room.messagelast.data.url) : (room.messagelast.data.fileName))
-                      ?.split('/images/')[1];
-                  }
+            // set content of last message if last message is a file or an image
+            try {
+              if (!room.messagelast?.data?.content) {
+                room.messagelast.data.content = (
+                  room.messagelast.data.url
+                    ? room.messagelast.data.url
+                    : room.messagelast.data.fileName
+                )?.split('/images/')[1];
+              }
+            } catch (error) {}
 
-                } catch (error) {
-
-                }
-
-                this.lastMessageOfRooms[room._id] = room.messagelast;
-                if ( newMessage?.length > 0 ) {
-                  newMessage.forEach(element => {
-                    if ( element?.roomId === room._id ) {
-                      room.newMessage = element.value;
-                    }
-                  });
+            this.lastMessageOfRooms[room._id] = room.messagelast;
+            if (newMessage?.length > 0) {
+              newMessage.forEach((element) => {
+                if (element?.roomId === room._id) {
+                  room.newMessage = element.value;
                 }
               });
-            } );
+            }
+          });
+        }
+      );
     });
   }
 
   private slug(val) {
-    val = val.replace(/[áàãâä]/g, 'a')
-    val = val.replace(/[ÁÀÃÂÄ]/g, 'a')
-    val = val.replace(/[éèêë]/g, 'e')
-    val = val.replace(/[ÉÈÊË]/g, 'e')
-    val = val.replace(/[íìîï]/g, 'i')
-    val = val.replace(/[ÍÌÎÏ]/g, 'i')
-    val = val.replace(/[óòõôö]/g, 'o')
-    val = val.replace(/[ÓÒÕÔÖ]/g, 'o')
-    val = val.replace(/[úùûü]/g, 'u')
-    val = val.replace(/[ÚÙÛÜ]/g, 'u')
-    val = val.replace(/[ç]/g, 'c')
-    val = val.replace(/[Ç]/g, 'c')
+    val = val.replace(/[áàãâä]/g, 'a');
+    val = val.replace(/[ÁÀÃÂÄ]/g, 'a');
+    val = val.replace(/[éèêë]/g, 'e');
+    val = val.replace(/[ÉÈÊË]/g, 'e');
+    val = val.replace(/[íìîï]/g, 'i');
+    val = val.replace(/[ÍÌÎÏ]/g, 'i');
+    val = val.replace(/[óòõôö]/g, 'o');
+    val = val.replace(/[ÓÒÕÔÖ]/g, 'o');
+    val = val.replace(/[úùûü]/g, 'u');
+    val = val.replace(/[ÚÙÛÜ]/g, 'u');
+    val = val.replace(/[ç]/g, 'c');
+    val = val.replace(/[Ç]/g, 'c');
     return val;
   }
 
-  searchRoomByName(roomName: any){
+  searchRoomByName(roomName: any) {
     this.roomName = this.slug(roomName);
-    if ( roomName ) {
-      this.rooms = this.fetchedRooms.filter(room => (this.slug(room.name)).includes(this.roomName));
-    }
-    else {
+    if (roomName) {
+      this.rooms = this.fetchedRooms.filter((room) =>
+        this.slug(room.name).includes(this.roomName)
+      );
+    } else {
       this.rooms = this.fetchedRooms;
     }
   }
 
-  updateLastMessageOfAllRoom(){
-    console.log('updateLastMessageOfAllRoom');
+  updateLastMessageOfAllRoom() {
+    // console.log('updateLastMessageOfAllRoom');
     //fetch lastMessage of each room from sharing service lastMessage
-    this.sharingService
-    .lastMessage$
-    .subscribe( (lastMessage:any) => {
+    this.sharingService.lastMessage$.subscribe((lastMessage: any) => {
       this.rooms.forEach((room) => {
-        if ( lastMessage?.length > 0 ) {
-          lastMessage.forEach(element => {
-            if ( element?.roomId === room._id ) {
+        if (lastMessage?.length > 0) {
+          lastMessage.forEach((element) => {
+            if (element?.roomId === room._id) {
               room.messagelast.data.content = element.value;
               this.lastMessageOfRooms[room._id] = room.messagelast;
             }
           });
         }
       });
-    } );
+    });
   }
 
   ngAfterViewChecked() {}

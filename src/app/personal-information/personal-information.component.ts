@@ -127,7 +127,7 @@ export class PersonalInformationComponent implements OnInit {
   }
 
   updateInfo(){
-    console.log("Updated info worked!!");
+    // console.log("Updated info worked!!");
     this.isLoadingProfileProcess = true;
     this.profileService
           .updateInfo(this.userId, this.form.value.name, this.form.value.avatar)
@@ -137,7 +137,7 @@ export class PersonalInformationComponent implements OnInit {
             this.isChangProfileSuccess = true;
             this.setMessageChangeProfileSuccess(2);
 
-            console.log(response.data);
+            // console.log(response.data);
             this.isLoadingProfileProcess = false;
             const newProfile = {
               name: response.data.name,
@@ -170,14 +170,14 @@ export class PersonalInformationComponent implements OnInit {
     this.tokenTimer = setTimeout(() => {
       this.isChangProfileSuccess = false;
     }, duration * 1000);
-    console.log('Setting timer alert message: ' + duration);
+    // console.log('Setting timer alert message: ' + duration);
   }
 
   private setMessageChangPassSuccess(duration: number) {
     this.tokenTimer = setTimeout(() => {
       this.isChangePassSuccessed = false;
     }, duration * 1000);
-    console.log('Setting timer alert message: ' + duration);
+    // console.log('Setting timer alert message: ' + duration);
   }
 
 }

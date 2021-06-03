@@ -14,18 +14,17 @@ import { ContactAddFriendService } from './contact-addfriend.service';
   selector: 'app-contact-add-friend',
   templateUrl: './contact-add-friend.component.html',
   styleUrls: ['../contact-content.component.css'],
-  providers: [ContactAddFriendService, SuccessService]
+  providers: [ContactAddFriendService, SuccessService],
 })
 export class ContactAddFriendComponent implements OnInit {
-
   isLoading = false;
   valHideContactContent = false;
   hideFriend: boolean = true;
   isShowMessageAlert: boolean = false;
 
   friend: FriendModel;
-  @ViewChild("friendPhone") friendPhone: ElementRef<any>;
-  @ViewChild("introduction") introduction: ElementRef<any>;
+  @ViewChild('friendPhone') friendPhone: ElementRef<any>;
+  @ViewChild('introduction') introduction: ElementRef<any>;
 
   private tokenTimer: any;
 
@@ -44,71 +43,63 @@ export class ContactAddFriendComponent implements OnInit {
     );
   }
 
-  searchFriend(friendId: string){
+  searchFriend(friendId: string) {
     this.isLoading = true;
     if (!friendId) {
       this.isLoading = false;
-      return ;
+      return;
     }
 
-    if(friendId.length === 10){
-      console.log("input 10 digits");
-      friendId= "?phone=" + friendId;
+    if (friendId.length === 10) {
+      // console.log("input 10 digits");
+      friendId = '?phone=' + friendId;
     }
 
     try {
-      this.addFriendService
-          .getOneById(friendId)
-          .subscribe( (response:any) => {
-            if( response.data ){
-              this.isLoading = false;
-              this.hideFriend = false;
-              this.friend = {
-                _id: response.data._id,
-                name: response.data.name,
-                phone: response.data.phone,
-                avatar: response.data.avatar
-              }
-            }
-            else{
-              this.hideFriend = true;
-              console.log(`valHideContactContent: ${this.hideFriend}`)
-            }
-          }),
-          (error) => {
-            console.log("Dont find user");
+      this.addFriendService.getOneById(friendId).subscribe((response: any) => {
+        if (response.data) {
+          this.isLoading = false;
+          this.hideFriend = false;
+          this.friend = {
+            _id: response.data._id,
+            name: response.data.name,
+            phone: response.data.phone,
+            avatar: response.data.avatar,
           };
+        } else {
+          this.hideFriend = true;
+          // console.log(`valHideContactContent: ${this.hideFriend}`)
+        }
+      }),
+        (error) => {
+          // console.log("Dont find user");
+        };
     } catch (error) {}
-
   }
 
-  addFriend(friendId: string, introduce: string){
+  addFriend(friendId: string, introduce: string) {
     if (!introduce) {
-      introduce = "Hello";
+      introduce = 'Hello';
     }
     this.isLoading = true;
     this.hideFriend = true;
-    this.addFriendService
-          .saveOne(friendId, introduce)
-          .subscribe(response => {
-            console.log(response);
-            this.isLoading = false;
-            this.isShowMessageAlert = true;
+    this.addFriendService.saveOne(friendId, introduce).subscribe((response) => {
+      // console.log(response);
+      this.isLoading = false;
+      this.isShowMessageAlert = true;
 
-            this.setMessageAlertTimer(2);
+      this.setMessageAlertTimer(2);
 
-            this.friendPhone.nativeElement.value = "";
-            this.introduction.nativeElement.value = "";
-          });
-
+      this.friendPhone.nativeElement.value = '';
+      this.introduction.nativeElement.value = '';
+    });
   }
-
 
   private setMessageAlertTimer(duration: number) {
     this.tokenTimer = setTimeout(() => {
       this.isShowMessageAlert = false;
     }, duration * 1000);
-    console.log('Setting timer alert message: ' + duration);
+    // console.log('Setting timer alert message: ' + duration);
   }
 
   contactContent() {
@@ -117,5 +108,4 @@ export class ContactAddFriendComponent implements OnInit {
     );
     this.valHideContactContent = true;
   }
-
 }
