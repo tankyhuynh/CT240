@@ -111,7 +111,6 @@ export class AppComponent implements OnInit {
 
   onNewVideoCallReceive() {
     this.socketService.onNewVideoCall().subscribe((response: any) => {
-      // console.log("Video call init");
     });
   }
 

@@ -72,10 +72,6 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           this.currentRoom = response.data;
           this.currentRoom.top = 500;
 
-          // console.log(this.currentRoom);
-
-          //Change status all message in room read
-          // console.log(`currentRoom Name: ${this.currentRoom.name}`);
           this.sharingService.changeMessageInRoomRead({
             roomId: this.currentRoom?._id,
             value: false,
@@ -87,14 +83,12 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         this.roomService
           .getAllMessageByIdRoom(roomId)
           .subscribe((response: any) => {
-            // console.log('get all messages in chat');
             this.messages = response.data;
           });
 
         this.roomService.getMembersById(roomId).subscribe((response: any) => {
           const responseData = response.data;
 
-          // this.profileOfFriends = responseData;
           responseData.forEach((element) => {
             this.profileOfFriends[element._id] = element;
           });
@@ -104,7 +98,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   fetchAllData() {
-    // console.log('fetch all data');
+
     this.roomService.getAll().subscribe((response: any) => {
       this.rooms = response.data.data;
       this.fetchedRooms = this.rooms;
@@ -169,7 +163,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   }
 
   updateLastMessageOfAllRoom() {
-    // console.log('updateLastMessageOfAllRoom');
+
     //fetch lastMessage of each room from sharing service lastMessage
     this.sharingService.lastMessage$.subscribe((lastMessage: any) => {
       this.rooms.forEach((room) => {

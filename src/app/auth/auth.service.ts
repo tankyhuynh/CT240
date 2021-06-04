@@ -108,10 +108,9 @@ export class AutheService {
 
                     this.profileService.changeUserStatusListerner(response.data);
                     this.sharingService.changeUserData(response.data);
-                    // console.log("change user data work!!!");
+
                     this.sharingService.currentUserData
                           .subscribe((user) => {
-                            // console.log(user);
                           });
 
                     this.saveDataToLocalStorage(
@@ -165,7 +164,6 @@ export class AutheService {
     this.tokenTimer = setTimeout(() => {
       this.logout();
     }, duration * 1000 * 60);
-    // console.log('Setting timer: ' + duration);
   }
 
   autoAuthUser() {

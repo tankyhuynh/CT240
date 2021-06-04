@@ -51,8 +51,6 @@ export class ChatRoomchatBodyComponent implements OnInit, AfterViewChecked {
 
     this.socketService.onMessage().subscribe((message: MessageModel) => {
       if(message.room === this.chatroom._id){
-        // console.log('new message: ')
-        // console.log(message);
         this.messages.push(message);
       }
     });

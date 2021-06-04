@@ -51,7 +51,6 @@ export class ContactAddFriendComponent implements OnInit {
     }
 
     if (friendId.length === 10) {
-      // console.log("input 10 digits");
       friendId = '?phone=' + friendId;
     }
 
@@ -68,11 +67,9 @@ export class ContactAddFriendComponent implements OnInit {
           };
         } else {
           this.hideFriend = true;
-          // console.log(`valHideContactContent: ${this.hideFriend}`)
         }
       }),
         (error) => {
-          // console.log("Dont find user");
         };
     } catch (error) {}
   }
@@ -84,7 +81,7 @@ export class ContactAddFriendComponent implements OnInit {
     this.isLoading = true;
     this.hideFriend = true;
     this.addFriendService.saveOne(friendId, introduce).subscribe((response) => {
-      // console.log(response);
+
       this.isLoading = false;
       this.isShowMessageAlert = true;
 
@@ -99,7 +96,6 @@ export class ContactAddFriendComponent implements OnInit {
     this.tokenTimer = setTimeout(() => {
       this.isShowMessageAlert = false;
     }, duration * 1000);
-    // console.log('Setting timer alert message: ' + duration);
   }
 
   contactContent() {

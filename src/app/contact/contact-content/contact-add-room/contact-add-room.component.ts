@@ -44,17 +44,13 @@ export class ContactAddGroupComponent implements OnInit {
 
     this.friendService.getAll().subscribe((response: any) => {
       this.friends = response.data.data;
-      // console.log(this.friends);
     });
   }
 
   checkBoxClick(e: any) {
-    // console.log(`isChecked: ${e.target.checked} , value: ${e.target.value}`);
     if (e.target.checked) {
-      // console.log(e.target.value);
       this.members.push(e.target.value);
     }
-    // console.log(`members: ${this.members}`);
   }
 
   onAddRoom() {
@@ -70,7 +66,6 @@ export class ContactAddGroupComponent implements OnInit {
       top: 500, // ko biết chỗ này có lối ko
     };
     this.roomService.saveOne(room).subscribe((response) => {
-      // console.log(response);
     });
     this.router.navigate(['contact/content/list-rooms']);
   }

@@ -50,11 +50,9 @@ export class SignupComponent implements OnInit, OnDestroy {
 
   onSignup(){
     if(this.form.invalid){
-      // console.log("Invalid form !!!!");
       return;
     }
     if(this.form.value.password !== this.form.value.repassword){
-      // console.log("Password not mat ched !!!!");
       return ;
     }
     this.authService

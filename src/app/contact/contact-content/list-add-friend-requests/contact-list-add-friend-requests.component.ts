@@ -42,7 +42,6 @@ export class ListAddFriendsComponent implements OnInit {
     .getAll()
     .subscribe( (response:any) => {
       this.listAddFriendRequests = response.data;
-      // console.log(response.data);
     });
   }
 
@@ -51,16 +50,9 @@ export class ListAddFriendsComponent implements OnInit {
     this.listAddFriendRequestService
           .isAcceptFriendRequest(id, isAccept)
           .subscribe( (response:any) => {
-            // console.log(response);
             this.fetchAllData();
             this.isLoading = false;
           });
-    // let data= {message: ""};
-    // if (isAccept) {
-    //     data.message = "Chấp nhận lời mời kết bạn thành công"
-    // }else data.message = "Bạn đã xóa lời mời kết bạn"
-
-    // this.dialog.open(SuccessComponent, {data: data});
   }
 
   deleteFriendRequest(id: string){
@@ -68,11 +60,9 @@ export class ListAddFriendsComponent implements OnInit {
     this.listAddFriendRequestService
           .deleteFriendRequest(id)
           .subscribe( response => {
-            // console.log(response);
             this.fetchAllData();
             this.isLoading = false;
           });
-  // this.route.navigate(['/contact/content/list-add-friends']);
   }
 
   contactContent() {
