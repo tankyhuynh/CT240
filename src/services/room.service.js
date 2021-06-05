@@ -77,13 +77,16 @@ async function getName(actor, doc){
 
 async function getWithMember(member_id){
     let rooms = await RoomModel.find({"members.user": {$in: member_id}}).lean() || [];
+	console.dir(rooms);
     for(i=0; i<rooms.length; i++){
         rooms[i].name = await getName(member_id, rooms[i]);
         rooms[i].avatar = await getAvatar(member_id, rooms[i]);
     }
+    
     for(i=0; i<rooms.length; i++){
         rooms[i].messagelast = (await MessageService.getDetailMessageLastOfRoom(rooms[i]._id, member_id)) || {};
-        rooms[i].messagelast_at = (!rooms[i].messagelast?rooms[i].created_at:rooms[i].messagelast.created_at);
+        rooms[i].messagelast_at = rooms[i].messagelast.created_at || rooms[i].created_at;
+        console.dir(rooms[i].messagelast_at);
     }
     rooms = rooms.sort((a,b)=>{return a.messagelast_at > b.messagelast_at?-1:1})
     return rooms;
