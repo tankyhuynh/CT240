@@ -107,15 +107,7 @@ const configuration = {
     iceServers: [{
         urls: ["stun:ss-turn2.xirsys.com"]
     }, {
-        username: "34_4BWI79ObJgUI5JcUSJkTU1Ed04DhmyX2aOtPhndnD3i_E2r97UBAzrgIwlqsQAAAAAGCvhwJEZXZUaGFuaE5oYW4=",
-        credential: "6e147994-bee1-11eb-8888-0242ac140004",
-        urls: [
-            "turn:ss-turn2.xirsys.com:80?transport=udp",
-            "turn:ss-turn2.xirsys.com:3478?transport=udp",
-            "turn:ss-turn2.xirsys.com:80?transport=tcp",
-            "turn:ss-turn2.xirsys.com:3478?transport=tcp",
-            "turns:ss-turn2.xirsys.com:443?transport=tcp",
-            "turns:ss-turn2.xirsys.com:5349?transport=tcp"
+        urls: [{'urls': 'stun:stun.l.google.com:19302'}
         ]
     }]
 }
