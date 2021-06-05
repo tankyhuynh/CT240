@@ -105,10 +105,7 @@ async function setup() {
 // peertopeer config
 const configuration = {
     iceServers: [{
-        urls: ["stun:ss-turn2.xirsys.com"]
-    }, {
-        urls: [{'urls': 'stun:stun.l.google.com:19302'}
-        ]
+        urls: ["stun:stun.l.google.com:19302"]
     }]
 }
 const peerConnection = new RTCPeerConnection(configuration);
